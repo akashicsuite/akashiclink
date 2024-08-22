@@ -1,0 +1,5 @@
+/build/*
+!/build/.npmkeep
+
+keystore-staging.properties
+keystore-production.properties

@@ -1,0 +1,188 @@
+/** 
+  ion does not have --ion-grid-row-padding by default
+  add here to enable different row gap distance
+ */
+ion-col {
+  padding-top: var(--ion-grid-row-padding-xs, var(--ion-grid-row-padding, 5px));
+  padding-bottom: var(
+    --ion-grid-row-padding-xs,
+    var(--ion-grid-row-padding, 5px)
+  );
+  @media (min-width: 576px) {
+    padding-top: var(
+      --ion-grid-row-padding-sm,
+      var(--ion-grid-row-padding, 5px)
+    );
+    padding-bottom: var(
+      --ion-grid-row-padding-sm,
+      var(--ion-grid-row-padding, 5px)
+    );
+  }
+  @media (min-width: 768px) {
+    padding-top: var(
+      --ion-grid-row-padding-md,
+      var(--ion-grid-row-padding, 5px)
+    );
+    padding-bottom: var(
+      --ion-grid-row-padding-md,
+      var(--ion-grid-row-padding, 5px)
+    );
+  }
+  @media (min-width: 992px) {
+    padding-top: var(
+      --ion-grid-row-padding-lg,
+      var(--ion-grid-row-padding, 5px)
+    );
+    padding-bottom: var(
+      --ion-grid-row-padding-lg,
+      var(--ion-grid-row-padding, 5px)
+    );
+  }
+  @media (min-width: 1200px) {
+    padding-top: var(
+      --ion-grid-row-padding-xl,
+      var(--ion-grid-row-padding, 5px)
+    );
+    padding-bottom: var(
+      --ion-grid-row-padding-xl,
+      var(--ion-grid-row-padding, 5px)
+    );
+  }
+}
+
+/**
+   gap to both row and column.
+   noted that gap is 2x the value as ionic add padding to all IonCol
+*/
+.ion-grid-gap-xxxs {
+  --ion-grid-row-padding: 2px;
+  --ion-grid-column-padding: 2px;
+}
+.ion-grid-gap-xxs {
+  --ion-grid-row-padding: 4px;
+  --ion-grid-column-padding: 4px;
+}
+.ion-grid-gap-xs {
+  --ion-grid-row-padding: 8px;
+  --ion-grid-column-padding: 8px;
+}
+.ion-grid-gap-sm {
+  --ion-grid-row-padding: 12px;
+  --ion-grid-column-padding: 12px;
+}
+.ion-grid-gap,
+.ion-grid-gap-md {
+  --ion-grid-row-padding: 16px;
+  --ion-grid-column-padding: 16px;
+}
+.ion-grid-gap-xl {
+  --ion-grid-row-padding: 20px;
+  --ion-grid-column-padding: 20px;
+}
+.ion-grid-gap-xxl {
+  --ion-grid-row-padding: 32px;
+  --ion-grid-column-padding: 32px;
+}
+.ion-grid-gap-xxxl {
+  --ion-grid-row-padding: 40px;
+  --ion-grid-column-padding: 40px;
+}
+
+/**
+   gap to row.
+   noted that gap is 2x the value as ionic add padding to all IonCol
+*/
+.ion-grid-row-gap-xxxs {
+  --ion-grid-row-padding: 2px;
+}
+.ion-grid-row-gap-xxs {
+  --ion-grid-row-padding: 4px;
+}
+.ion-grid-row-gap-xs {
+  --ion-grid-row-padding: 8px;
+}
+.ion-grid-row-gap-sm {
+  --ion-grid-row-padding: 12px;
+}
+.ion-grid-row-gap,
+.ion-grid-row-gap-md {
+  --ion-grid-row-padding: 16px;
+}
+.ion-grid-row-gap-lg {
+  --ion-grid-row-padding: 20px;
+}
+.ion-grid-row-gap-xl {
+  --ion-grid-row-padding: 24px;
+}
+.ion-grid-row-gap-xxl {
+  --ion-grid-row-padding: 32px;
+}
+.ion-grid-row-gap-xxxl {
+  --ion-grid-row-padding: 40px;
+}
+
+/**
+   gap to column.
+   noted that gap is 2x the value as ionic add padding to all IonCol
+*/
+.ion-grid-column-gap-0 {
+  --ion-grid-column-padding: 0;
+}
+.ion-grid-column-gap-xxxs {
+  --ion-grid-column-padding: 2px;
+}
+.ion-grid-column-gap-xxs {
+  --ion-grid-column-padding: 4px;
+}
+.ion-grid-column-gap-xs {
+  --ion-grid-column-padding: 8px;
+}
+.ion-grid-column-gap-sm {
+  --ion-grid-column-padding: 12px;
+}
+.ion-grid-column-gap,
+.ion-grid-column-gap-md {
+  --ion-grid-column-padding: 16px;
+}
+.ion-grid-column-gap-lg {
+  --ion-grid-column-padding: 20px;
+}
+.ion-grid-column-gap-xl {
+  --ion-grid-column-padding: 24px;
+}
+.ion-grid-column-gap-xxl {
+  --ion-grid-column-padding: 32px;
+}
+.ion-grid-column-gap-xxxl {
+  --ion-grid-column-padding: 40px;
+}
+
+/** Normal css gap */
+.ion-gap-xxxs {
+  gap: 2px;
+}
+.ion-gap-xxs {
+  gap: 4px;
+}
+.ion-gap-xs {
+  gap: 8px;
+}
+.ion-gap-sm {
+  gap: 12px;
+}
+.ion-gap-column-gap,
+.ion-gap-md {
+  gap: 16px;
+}
+.ion-gap-lg {
+  gap: 20px;
+}
+.ion-gap-xl {
+  gap: 24px;
+}
+.ion-gap-xxl {
+  gap: 32px;
+}
+.ion-gap-xxxl {
+  gap: 40px;
+}

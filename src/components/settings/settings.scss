@@ -1,0 +1,41 @@
+.hidden {
+  height: 0px;
+  -webkit-transition: height 0.5s linear;
+  -moz-transition: height 0.5s linear;
+  -ms-transition: height 0.5s linear;
+  -o-transition: height 0.5s linear;
+  transition: height 0.5s linear;
+}
+
+.hidden.open {
+  height: 68px;
+  -webkit-transition: height 0.5s linear;
+  -moz-transition: height 0.5s linear;
+  -ms-transition: height 0.5s linear;
+  -o-transition: height 0.5s linear;
+  transition: height 0.5s linear;
+}
+
+ion-select::part(placeholder) {
+  background: image('/shared-assets/theme.svg');
+}
+.setting-modal {
+  --ion-background-color: var(--settings-popup-background-color) !important;
+}
+
+ion-modal#update-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --height: fit-content;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+.update-modal-wrapper {
+  padding: 64px 40px;
+}
+.more-info-btn {
+  text-decoration: underline;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}

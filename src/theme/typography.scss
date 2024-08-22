@@ -1,0 +1,160 @@
+/**
+ * Single font for the whole app
+ */
+* {
+  font-family: 'Nunito Sans', serif;
+}
+
+/**
+ * All titles are:
+ * - centered
+ * - with a default weight of 700
+ * - default colour
+ */
+%heading-shared {
+  font-family: 'Nunito Sans', serif;
+  text-align: center;
+  font-weight: 700;
+  color: var(--ion-color-primary-10);
+  text-transform: none;
+}
+
+%text-shared {
+  font-family: 'Nunito Sans', serif;
+  text-align: start;
+  color: var(--ion-color-primary-10);
+}
+
+h1 {
+  @extend %heading-shared;
+  font-weight: 900;
+  font-size: 32px;
+  margin-top: 24px;
+}
+
+h2 {
+  @extend %heading-shared;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  margin-bottom: 4px;
+  margin-top: 0;
+}
+
+h3 {
+  @extend %heading-shared;
+  font-size: 16px;
+  line-height: 20px;
+  margin-bottom: 8px;
+}
+
+h4 {
+  @extend %heading-shared;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+h5 {
+  @extend %heading-shared;
+  font-size: 12px;
+}
+
+h6 {
+  @extend %heading-shared;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  margin: 0;
+}
+
+p {
+  @extend %text-shared;
+  font-size: 0.75rem; // 12px
+  line-height: 16px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+ul {
+  padding-inline-start: 16px;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+ul li {
+  padding-bottom: 4px;
+}
+
+/**
+ * Labels placed next to inputs
+ */
+ion-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ion-text-size-xxxl {
+  font-size: 2rem; // 32px
+}
+
+.ion-text-size-xxl {
+  font-size: 1.5rem; // 24px
+}
+
+.ion-text-size-xl {
+  font-size: 1.25rem; // 20px
+}
+
+.ion-text-size-lg {
+  font-size: 1.125rem; // 18px
+}
+
+.ion-text-size-md {
+  font-size: 1rem; // 16px
+}
+
+.ion-text-size-sm {
+  font-size: 0.875rem; // 14px
+}
+
+.ion-text-size-xs {
+  font-size: 0.75rem; // 12px
+}
+
+.ion-text-size-xxs {
+  font-size: 0.625rem; // 10px
+}
+
+.ion-text-align-center {
+  text-align: center;
+}
+
+.ion-text-align-left {
+  text-align: left;
+}
+
+.ion-text-align-right {
+  text-align: right;
+}
+
+.ion-text-bold {
+  font-weight: 700;
+}
+.ion-text-underline {
+  text-decoration: underline;
+}
+
+.ion-text-color-primary {
+  color: var(--ion-color-primary);
+}
+
+.ion-text-color-primary-10 {
+  color: var(--ion-color-primary-10);
+}
+
+.ion-text-color-medium {
+  color: var(--ion-color-medium);
+}
+
+.ion-text-color-grey {
+  color: var(--ion-color-grey);
+}

@@ -1,0 +1,31 @@
+{
+  "short_name": "AW",
+  "name": "AkashicLink Staging",
+  "description": "Your interface with the Akashic ecosystem",
+  "version": "0.0.33",
+  "releaseDate": "2024-01-30",
+  "icons": {
+    "16": "shared-assets/icons/Icon_128px.png",
+    "48": "shared-assets/icons/Icon_128px.png",
+    "128": "shared-assets/icons/Icon_128px.png"
+  },
+  "manifest_version": 3,
+  "action": {
+    "default_icon": "shared-assets/icons/Icon_128px.png",
+    "default_title": "AkashicLink Staging",
+    "default_popup": "index.html"
+  },
+  "permissions": ["storage", "alarms"],
+  "background": {
+    "service_worker": "serviceWorker.js",
+    "type": "module"
+  },
+  "externally_connectable": {
+    "ids": ["*"],
+    "matches": [
+      "https://*.akashicpay.com/*",
+      "https://*.staging-akashicpay.com/*",
+      "http://localhost:3000/*"
+    ]
+  }
+}

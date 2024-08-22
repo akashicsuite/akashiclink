@@ -1,0 +1,21 @@
+/**
+ * Styling of the selection boxes
+ */
+
+@use 'typography';
+
+ion-select {
+  /** The text in the selection box */
+  &::part(placeholder),
+  &::part(text) {
+    @extend %heading-shared;
+    font-size: 14px;
+    font-family: 'Nunito Sans';
+  }
+
+  /** Dropdown arrow on the right side of the menu */
+  &::part(icon) {
+    color: var(--ion-color-dark);
+    opacity: 1;
+  }
+}

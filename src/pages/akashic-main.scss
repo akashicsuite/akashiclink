@@ -1,0 +1,32 @@
+$image: var(--main-image);
+
+.welcome-img {
+  content: $image;
+  width: 140px;
+}
+
+/** Small version used when space is limited */
+.welcome-img-small {
+  content: $image;
+  width: 120px;
+  margin-top: 14px;
+}
+
+ion-checkbox {
+  --size: 24px;
+  --checkbox-background-checked: #1b00b3;
+}
+
+body.dark {
+  ion-checkbox {
+    --size: 24px;
+    --checkbox-background-checked: var(--ion-color-primary-container);
+    --checkmark-color: var(--ion-color-primary-10);
+  }
+}
+
+ion-checkbox::part(container) {
+  border-radius: 8px;
+  padding: 4px;
+  border: 1px solid #7b757f;
+}

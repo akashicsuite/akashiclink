@@ -1,0 +1,119 @@
+.toggle-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 44px;
+  gap: 10px;
+  overflow: hidden;
+}
+.toggle-container::before,
+.toggle-container::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 10px;
+}
+.toggle-container::before {
+  top: 0;
+}
+.toggle-container::after {
+  bottom: 0;
+}
+.toggle-container .text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 34px;
+  height: 34px;
+  font-weight: 500;
+  color: rgb(53, 53, 53);
+  transition: all 0.3s ease-in-out;
+}
+.toggle-container.loading .text {
+  margin-bottom: 68px !important;
+}
+.toggle-container.active .text {
+  margin-bottom: 136px;
+}
+.toggle-container.loading .switch {
+  pointer-events: none;
+}
+.toggle-container.loading .switch .slider {
+  width: 34px;
+  background-color: #9b999b;
+}
+.toggle-container.loading .switch .slider::before {
+  border: 3px solid #9b999b;
+  border-top: 3px solid #6174f0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.toggle-container.active .switch .slider::before {
+  right: 3px;
+  left: unset;
+}
+.toggle-container.active.loading .switch .slider::before {
+  right: 0px;
+  left: unset;
+}
+
+.switch {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 34px;
+  width: 100%;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.switch .slider {
+  position: absolute;
+  z-index: 10;
+  cursor: pointer;
+  width: 60px;
+  height: 32px;
+  background-color: var(--toggle-track);
+  transition: all 0.3s ease-in-out;
+}
+.switch .slider::before {
+  content: '';
+  position: absolute;
+  height: 26px;
+  width: 26px;
+  left: 3px;
+  bottom: 3px;
+  background-color: rgb(241, 241, 241);
+  transition: 0.3s ease;
+  transition-property: background-color;
+  animation: spin 1s ease infinite;
+}
+.toggle-container.active .switch .slider.round {
+  background-color: var(--ion-color-primary-container);
+}
+.switch .slider.round {
+  border-radius: 28px;
+}
+.slider.round ion-icon {
+  width: 50%;
+  height: 50%;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.switch .slider.round::before {
+  border-radius: 50%;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

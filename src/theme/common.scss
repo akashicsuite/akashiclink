@@ -1,0 +1,32 @@
+/**
+ * - Here we defined all the css common to all components.
+ * - For any component-specific css, defined it in a file with the same name as the component importing it.
+ *
+ * Make sure to identify the components with a custom class and then use specification to apply the style:
+ * - .class1 .class2 (for when class2 is inside a class1 element)
+ * - .class1.class2 (when an element is both class1 and class2)
+ * - +, > and other combinators to target direct children, sibling and adjacent components
+ * - (see https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors/Combinators)
+*/
+
+@use 'typography';
+@use 'layout';
+@use 'ion-popover';
+@use 'ion-button';
+@use 'ion-select';
+@use 'input';
+@use 'ion-input';
+@use 'ion-grid';
+@use 'ion-checkbox';
+
+.w-100 {
+  width: 100%;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.button-transparent::part(native) {
+  background: transparent;
+}

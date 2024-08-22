@@ -1,0 +1,288 @@
+/* Ionic Variables and Theming. For more info, please see:
+http://ionicframework.com/docs/theming/ */
+
+/** Ionic CSS Variables **/
+:root {
+  --ion-font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont,
+    'Helvetica Neue', 'Roboto', sans-serif;
+  --ion-text-color: #0b006b;
+
+  /** primary **/
+  --ion-color-primary: #1b00b3;
+  --ion-color-on-primary: #ffffff;
+  --ion-color-primary-container: #1b00b3;
+  --ion-color-primary-rgb: 34, 36, 40;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #0b006b;
+  --ion-color-primary-tint: #0b006b;
+  --ion-color-primary-10: #0b006b;
+  --ion-color-primary-70: #a2a2ff;
+  --ion-color-primary-dark: #0b006b;
+
+  /** secondary **/
+  --ion-color-secondary: #eddcff;
+  --ion-color-secondary-rgb: 237, 220, 255;
+  --ion-color-secondary-contrast: #0b006b;
+  --ion-color-secondary-contrast-rgb: 41, 0, 85;
+  --ion-color-secondary-shade: #eddcff;
+  --ion-color-secondary-tint: #eddcff;
+
+  /** tertiary **/
+  --ion-color-tertiary: #dfd5ec;
+  --ion-color-tertiary-rgb: 223, 213, 236;
+  --ion-color-tertiary-contrast: #0b006b;
+  --ion-color-tertiary-contrast-rgb: 116, 68, 182;
+  --ion-color-tertiary-shade: #dfd5ec;
+  --ion-color-tertiary-tint: #dfd5ec;
+
+  /** success **/
+  --ion-color-success: #2dd36f;
+  --ion-color-success-rgb: 45, 211, 111;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #28ba62;
+  --ion-color-success-tint: #42d77d;
+
+  /** warning **/
+  --ion-color-warning: #ffc409;
+  --ion-color-warning-rgb: 255, 196, 9;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #e0ac08;
+  --ion-color-warning-tint: #ffca22;
+
+  /** danger **/
+  --ion-color-danger: #eb445a;
+  --ion-color-danger-rgb: 235, 68, 90;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #cf3c4f;
+  --ion-color-danger-tint: #ed576b;
+
+  --ion-color-failed: #ff5449;
+  --ion-color-white: #ffffff;
+
+  /** dark **/
+  --ion-color-dark: #0b006b;
+  --ion-color-dark-rgb: 41, 0, 86;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #0b006b;
+  --ion-color-dark-tint: #0b006b;
+  --ion-color-dark-ontline: #958e99;
+
+  /** medium **/
+  --ion-color-medium: #5b299c;
+  --ion-color-medium-rgb: 91, 41, 156;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #5b299c;
+  --ion-color-medium-tint: #5b299c;
+
+  /** light **/
+  --ion-color-light: #c297ff;
+  --ion-color-light-rgb: 194, 151, 255;
+  --ion-color-light-contrast: #ffffff;
+  --ion-color-light-contrast-rgb: 255, 255, 255;
+  --ion-color-light-shade: #c297ff;
+  --ion-color-light-tint: #c297ff;
+
+  --ion-color-grey: #958e99;
+
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 243, 245, 246;
+  --ion-background-alt: #ffffff;
+
+  /** buttons **/
+  --ion-white-button-text: #0b006b;
+  --ion-white-button-background: #f3f5f6;
+  --ion-disabled-button-background: rgba(31, 31, 31, 0.32);
+  --ion-disabled-button-color: rgba(31, 31, 31, 1);
+
+  /** header-background also used in setting-naming as icon color**/
+  --ion-header-background: #1b1547;
+  --ion-slider: #c297ff;
+
+  /** grid **/
+  --ion-grid-padding: 16px;
+  --ion-grid-column-padding: 8px;
+  --ion-grid-row-padding: 4px;
+
+  /** setting **/
+  --ion-settings-color: #0b006b;
+  --ion-current-selection: #6750a4;
+  --ion-current-selection-opacity: 12%;
+  --ion-select-border: #958e99;
+  --ion-light-text: #b0a9b3;
+  --ion-button-text: #1c1b1c;
+
+  /** settings popup background color **/
+  --settings-popup-background-color: #fff;
+  --settings-popup-background-focused: rgba(103, 80, 164, 0.12);
+
+  /** images for swiper **/
+  --swiper-button-prev-background-image: url('/public/shared-assets/images/arrow-back.svg');
+  --swiper-button-next-background-image: url('/public/shared-assets/images/arrow-forward.svg');
+
+  /** Image for main page **/
+  --main-image: url('/public/shared-assets/images/main/main-img.png');
+
+  /** list item  **/
+  --ion-item-border-color: #e8e0eb;
+
+  /** modal  **/
+  --ion-toolbar-background: #ffffff;
+  --ion-modal-background: #e5e5f6;
+  --ion-modal-nft: #e4e5f6;
+
+  /** custom component  **/
+  --ion-text-header: #0b006b;
+  --toggle-track: #e8e0eb;
+  --nft-background: #1b1547;
+  --chain-icon-background: #0b006b;
+  --activity-dim-text: #b0a9b3;
+  --activity-list-divider: #d9d9d9;
+  --toggle-theme-background: #a2a2ff;
+  --toggle-theme-text: #0b006b;
+}
+
+/** Dark Colors **/
+body.dark {
+  --ion-color-primary: #c2c1ff;
+  --ion-color-on-primary: #1800a7;
+  --ion-color-primary-container: #8382ff;
+  --ion-color-primary-rgb: 244, 245, 248;
+  --ion-color-primary-contrast: #1800a7;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #d7d8da;
+  --ion-color-primary-tint: #f5f6f9;
+  --ion-color-primary-10: #ffffff;
+  --ion-color-primary-70: #a2a2ff;
+  --ion-color-primary-dark: #0b006b;
+
+  --ion-color-secondary: #625b71;
+  --ion-color-secondary-rgb: 80, 200, 255;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #46b0e0;
+  --ion-color-secondary-tint: #62ceff;
+
+  --ion-color-tertiary: #6a64ff;
+  --ion-color-tertiary-rgb: 106, 100, 255;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #5d58e0;
+  --ion-color-tertiary-tint: #7974ff;
+
+  --ion-color-success: #41cc9a;
+  --ion-color-success-rgb: 47, 223, 117;
+  --ion-color-success-contrast: #000000;
+  --ion-color-success-contrast-rgb: 0, 0, 0;
+  --ion-color-success-shade: #29c467;
+  --ion-color-success-tint: #44e283;
+
+  --ion-color-warning: #ffd534;
+  --ion-color-warning-rgb: 255, 213, 52;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #e0bb2e;
+  --ion-color-warning-tint: #ffd948;
+
+  --ion-color-danger: #ff4961;
+  --ion-color-danger-rgb: 255, 73, 97;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #e04055;
+  --ion-color-danger-tint: #ff5b71;
+  --ion-color-dark-ontline: #958e99;
+
+  --ion-color-failed: #ff5449;
+
+  --ion-color-dark: #f4f5f8;
+  --ion-color-dark-rgb: 244, 245, 248;
+  --ion-color-dark-contrast: #000000;
+  --ion-color-dark-contrast-rgb: 0, 0, 0;
+  --ion-color-dark-shade: #d7d8da;
+  --ion-color-dark-tint: #f5f6f9;
+
+  --ion-color-medium: #989aa2;
+  --ion-color-medium-rgb: 152, 154, 162;
+  --ion-color-medium-contrast: #000000;
+  --ion-color-medium-contrast-rgb: 0, 0, 0;
+  --ion-color-medium-shade: #86888f;
+  --ion-color-medium-tint: #a2a4ab;
+
+  --ion-color-light: #222428;
+  --ion-color-light-rgb: 34, 36, 40;
+  --ion-color-light-contrast: #ffffff;
+  --ion-color-light-contrast-rgb: 255, 255, 255;
+  --ion-color-light-shade: #1e2023;
+  --ion-color-light-tint: #383a3e;
+
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+
+  --ion-background-color: #060030;
+  --ion-background-alt: #150f42;
+  --ion-background-color-rgb: 31, 31, 31;
+
+  /** buttons **/
+  --ion-button-text: #e5e2e1;
+  --ion-white-button-text: #eddcff;
+  --ion-white-button-background: #1f1f1f;
+  --ion-disabled-button-background: rgba(227, 227, 227, 0.32);
+  --ion-disabled-button-color: rgba(229, 226, 225, 1);
+
+  /** header-background also used in setting-naming as icon color**/
+  --ion-header-background: #a2a2ff;
+  --ion-slider: #0b006b;
+
+  /** setting **/
+  --ion-settings-color: #ffffff;
+  --ion-current-selection: #625b71;
+  --ion-current-selection-opacity: 100%;
+  --ion-select-border: #958e99;
+  --ion-light-text: #b0a9b3;
+  --ion-dark-text: #ffffff;
+
+  /** settings popup background color **/
+  --settings-popup-background-color: #2c2c2c;
+  --settings-popup-background-focused: #625b71;
+
+  /** images for swiper **/
+  --swiper-button-prev-background-image: url('/public/shared-assets/images/arrow-back-dark.png');
+  --swiper-button-next-background-image: url('/public/shared-assets/images/arrow-forward-dark.png');
+
+  /** Image for main page **/
+  --main-image: url('/public/shared-assets/images/main/main-img-dark.png');
+
+  /** list item  **/
+  --ion-item-border-color: #2f2f2f;
+  --ion-item-background: #060030;
+
+  /** card  **/
+  --ion-card-background: #1c1c1d;
+
+  /** modal  **/
+  --ion-toolbar-background: #2c2c2c;
+  --ion-modal-background: #1f1b4d;
+
+  /** custom component  **/
+  --ion-text-header: #c297ff;
+  --toggle-track: #625b71;
+  --nft-background: #1f1b4d;
+  --chain-icon-background: #c297ff;
+  --activity-dim-text: #958e99;
+  --activity-list-divider: #2f2f2f;
+  --toggle-theme-background: #1b00b3;
+  --toggle-theme-text: #0b006b;
+}
+
+/** iOS Dark Theme */
+.ios body.dark {
+}
+
+/** Material Design Dark Theme */
+.md body.dark {
+}

@@ -1,0 +1,70 @@
+ion-select {
+  border: 1px solid #958e99;
+  border-radius: 8px;
+}
+
+.select-item {
+  width: 214px;
+  --min-height: 40px;
+  --border-radius: 8px;
+  --border-width: 1px;
+  --border-color: #7b757f;
+}
+
+.arrow-btn {
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  --background: transparent;
+  --box-shadow: none;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.arrow-btn-item {
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  margin-right: 0;
+  --background: transparent;
+  --box-shadow: none;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.icon-arrow {
+  font-size: 24px;
+  color: 'var(--ion-color-primary-10)';
+}
+
+.icon-arrow-item {
+  font-size: 18px;
+  color: 'var(--ion-color-primary-10)';
+}
+
+.activity-list {
+  padding: 0 40px;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  background-color: #f3f5f6;
+}
+
+.activity-list-item {
+  --background: F3F5F6;
+  --min-height: 80px;
+}
+
+.address-item {
+  width: 304px;
+  --background: transparent;
+  --box-shadow: none;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.address-copy-btn {
+  color: var(--ion-color-primary-10);
+  --background: none;
+  --box-shadow: none;
+}

@@ -1,0 +1,348 @@
+/**
+ * Rounded container styling
+ */
+ion-card {
+  margin-left: 30%;
+  margin-right: 30%;
+}
+
+/**
+ * Dark backdrop on top of which to place "pending" or "loading" content
+ * - Remember to give the content that should appear on top of this
+ * backdrop a high zIndex
+ */
+ion-backdrop {
+  opacity: 0.95;
+}
+
+ion-content {
+  --offset-bottom: auto !important;
+  --overflow: hidden;
+  overflow: auto;
+}
+
+/**  Hides the scrollbar */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/** Container stacking it's children vertically with spacings */
+.vertical {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/** Container which centers content vertically */
+.vertical-center {
+  margin-top: auto;
+  margin-bottom: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/** Container with items centered vertically and horizontally */
+.ion-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ion-display-flex {
+  display: flex;
+}
+
+.ion-flex-1 {
+  flex: 1;
+}
+
+.ion-flex-direction-column {
+  flex-direction: column;
+}
+
+/** Prevent hovering over certain icons */
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/** Some theme magic */
+.ion-page {
+  background: var(--ion-background-color);
+}
+ion-modal > .ion-page {
+  background: inherit;
+}
+
+/** Force move the box to approximately the middle of the screen by:
+ * - Adding a margin that occpies approximately half of screen
+ * - Translating by the height of the box
+ */
+.force-center {
+  margin-top: 40vh;
+  max-width: 70%;
+  transform: translateY(-100%);
+  --webkit-transform: translateY(-100%);
+}
+
+ion-header {
+  background: var(--ion-header-background);
+  padding: 0 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  min-height: 64px;
+  margin-top: var(--ion-safe-area-top, 0);
+}
+
+ion-footer > * {
+  padding-bottom: var(--ion-safe-area-bottom, 0);
+}
+
+/*  margin & padding */
+.ion-margin-0 {
+  margin: 0;
+}
+
+.ion-margin-auto {
+  margin: auto;
+}
+
+.ion-margin-top-auto {
+  margin-top: auto;
+}
+
+.ion-margin-top-xl {
+  margin-top: 32px;
+}
+
+.ion-margin-top-lg {
+  margin-top: 24px;
+}
+
+.ion-margin-top-md {
+  margin-top: 16px;
+}
+
+.ion-margin-top-sm {
+  margin-top: 12px;
+}
+
+.ion-margin-top-xs {
+  margin-top: 8px;
+}
+
+.ion-margin-top-xxs {
+  margin-top: 4px;
+}
+
+.ion-margin-top-0 {
+  margin-top: 0;
+}
+
+.ion-margin-bottom-xl {
+  margin-bottom: 32px;
+}
+
+.ion-margin-bottom-lg {
+  margin-bottom: 24px;
+}
+
+.ion-margin-bottom-md {
+  margin-bottom: 16px;
+}
+
+.ion-margin-bottom-sm {
+  margin-bottom: 12px;
+}
+
+.ion-margin-bottom-xs {
+  margin-bottom: 8px;
+}
+
+.ion-margin-bottom-xxs {
+  margin-bottom: 4px;
+}
+
+.ion-margin-bottom-0 {
+  margin-bottom: 0;
+}
+
+.ion-margin-left-xl {
+  margin-left: 32px;
+}
+
+.ion-margin-left-lg {
+  margin-left: 24px;
+}
+
+.ion-margin-left-md {
+  margin-left: 16px;
+}
+
+.ion-margin-left-sm {
+  margin-left: 12px;
+}
+
+.ion-margin-left-xs {
+  margin-left: 8px;
+}
+
+.ion-margin-left-xxs {
+  margin-left: 4px;
+}
+
+.ion-margin-left-0 {
+  margin-left: 0;
+}
+
+.ion-margin-right-xl {
+  margin-right: 32px;
+}
+
+.ion-margin-right-lg {
+  margin-right: 24px;
+}
+
+.ion-margin-right-md {
+  margin-right: 16px;
+}
+
+.ion-margin-right-sm {
+  margin-right: 12px;
+}
+
+.ion-margin-right-xs {
+  margin-right: 8px;
+}
+
+.ion-margin-right-xxs {
+  margin-right: 4px;
+}
+
+.ion-margin-right-0 {
+  margin-right: 0;
+}
+
+.ion-padding-0 {
+  padding: 0;
+}
+
+.ion-padding-top-xl {
+  padding-top: 32px;
+}
+
+.ion-padding-top-lg {
+  padding-top: 24px;
+}
+
+.ion-padding-top-md {
+  padding-top: 16px;
+}
+
+.ion-padding-top-sm {
+  padding-top: 12px;
+}
+
+.ion-padding-top-xs {
+  padding-top: 8px;
+}
+
+.ion-padding-top-xxs {
+  padding-top: 4px;
+}
+
+.ion-padding-top-0 {
+  padding-top: 0;
+}
+
+.ion-padding-bottom-xl {
+  padding-bottom: 32px;
+}
+
+.ion-padding-bottom-lg {
+  padding-bottom: 24px;
+}
+
+.ion-padding-bottom-md {
+  padding-bottom: 16px;
+}
+
+.ion-padding-bottom-sm {
+  padding-bottom: 12px;
+}
+
+.ion-padding-bottom-xs {
+  padding-bottom: 8px;
+}
+
+.ion-padding-bottom-xxs {
+  padding-bottom: 4px;
+}
+
+.ion-padding-bottom-0 {
+  padding-bottom: 0;
+}
+
+.ion-padding-left-xl {
+  padding-left: 32px;
+}
+
+.ion-padding-left-lg {
+  padding-left: 24px;
+}
+
+.ion-padding-left-md {
+  padding-left: 16px;
+}
+
+.ion-padding-left-sm {
+  padding-left: 12px;
+}
+
+.ion-padding-left-xs {
+  padding-left: 8px;
+}
+
+.ion-padding-left-xxs {
+  padding-left: 4px;
+}
+
+.ion-padding-left-0 {
+  padding-left: 0;
+}
+
+.ion-padding-right-xl {
+  padding-right: 32px;
+}
+
+.ion-padding-right-lg {
+  padding-right: 24px;
+}
+
+.ion-padding-right-md {
+  padding-right: 16px;
+}
+
+.ion-padding-right-sm {
+  padding-right: 12px;
+}
+
+.ion-padding-right-xs {
+  padding-right: 8px;
+}
+
+.ion-padding-right-xxs {
+  padding-right: 4px;
+}
+
+.ion-padding-right-0 {
+  padding-right: 0;
+}

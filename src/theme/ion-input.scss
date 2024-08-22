@@ -1,0 +1,11 @@
+ion-input {
+  /** Padding of text inside boxes */
+  input {
+    padding-inline-start: 16px !important;
+    padding-inline-end: 16px !important;
+  }
+
+  &::part(label) {
+    font-size: 0.75rem;
+  }
+}

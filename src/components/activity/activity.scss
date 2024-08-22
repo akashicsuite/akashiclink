@@ -1,0 +1,21 @@
+/** Styling of detailed transfer overview */
+.transfer-detail {
+  /** Small borderless copy icon */
+  .copy-button {
+    width: 20px;
+    height: 20px;
+
+    margin: 0;
+    margin-left: 5px;
+    --padding-start: 0;
+    --padding-end: 0;
+
+    --background: transparent;
+    color: var(--ion-color-primary-dark);
+    font-size: 20px;
+  }
+}
+
+.icon-dark {
+  color: var(--ion-color-primary-dark) !important;
+}
