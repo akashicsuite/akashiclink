@@ -7,7 +7,6 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import { closeOutline } from 'ionicons/icons';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { LocalAccount } from '../../utils/hooks/useLocalAccounts';
@@ -54,8 +53,9 @@ export const DeleteAccountModal = ({
       isOpen={isOpen}
       onDidDismiss={onCancel}
       className="custom-alert delete-modal"
+      style={{ padding: '0 30px' }}
     >
-      <IonToolbar>
+      <IonToolbar className="custom-toolbar-background">
         <IonButtons slot="end">
           <IonButton onClick={onCancel}>
             <IonIcon

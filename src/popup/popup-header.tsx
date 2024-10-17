@@ -1,4 +1,5 @@
 import { IonHeader, IonImg } from '@ionic/react';
+import React from 'react';
 
 import { useAppSelector } from '../redux/app/hooks';
 import { selectTheme } from '../redux/slices/preferenceSlice';
@@ -9,8 +10,8 @@ export function PopupHeader() {
 
   const logoName =
     storedTheme === themeType.DARK
-      ? 'wallet-logo-light.svg'
-      : 'wallet-logo-dark.svg';
+      ? 'wallet-logo-dark.svg'
+      : 'wallet-logo-light.svg';
 
   return (
     <IonHeader

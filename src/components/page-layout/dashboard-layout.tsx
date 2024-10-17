@@ -4,8 +4,7 @@ import { type ReactNode, useEffect } from 'react';
 
 import { LAST_HISTORY_ENTRIES } from '../../constants';
 import { history } from '../../routing/history';
-import { useOwner } from '../../utils/hooks/useOwner';
-import { Spinner } from '../common/loader/spinner';
+import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
 import { Header } from '../layout/header';
 import { AccountNameBar } from '../layout/toolbar/account-name-bar';
 import { Toolbar } from '../layout/toolbar/toolbar';
@@ -25,7 +24,7 @@ export function DashboardLayout({
   showSwitchAccountBar?: boolean;
   showAddress?: boolean;
 }) {
-  const { isLoading, authenticated } = useOwner();
+  const { authenticated } = useAccountStorage();
 
   /** If user auth has expired, redirect to login page */
   useEffect(() => {
@@ -42,12 +41,8 @@ export function DashboardLayout({
       }
     };
 
-    if (!isLoading) {
-      updateLastLocation();
-    }
-  }, [isLoading, authenticated, history]);
-
-  if (isLoading) return <Spinner />;
+    updateLastLocation();
+  }, [authenticated, history]);
 
   return (
     <IonPage>

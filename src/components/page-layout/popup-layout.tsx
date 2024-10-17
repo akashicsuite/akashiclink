@@ -9,7 +9,6 @@ import { AccountListItem } from '../manage-account/account-list-item';
 
 const StyledLayout = styled.div({
   ['& > .content']: {
-    padding: '0 24px',
     overflow: 'scroll',
   },
   ['& > .footer']: {
@@ -44,13 +43,13 @@ export function PopupLayout({
               <AccountListItem
                 lines={'none'}
                 account={activeAccount}
-                isLightText
+                forceLightMode
               />
             )}
           </IonHeader>
         )}
         {!showIdentity && <PopupHeader />}
-        <div className={`h-100 ${className ?? ''}`}>
+        <div className={`h-100 content ${className ?? ''}`}>
           <IonGrid
             className={'h-100 ion-display-flex ion-flex-direction-column'}
           >

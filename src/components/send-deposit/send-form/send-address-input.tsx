@@ -80,10 +80,11 @@ export const SendAddressInput = ({
     }
 
     try {
-      const { l2Address, acnsAlias, isBp } = await OwnersAPI.lookForL2Address({
-        to: userInput,
-        coinSymbol: chain,
-      });
+      const { l2Address, acnsAlias, isBp, ledgerId } =
+        await OwnersAPI.lookForL2Address({
+          to: userInput,
+          coinSymbol: chain,
+        });
 
       // Not allow sending BP by alias
       if (userInput === acnsAlias && isBp) {
@@ -102,6 +103,7 @@ export const SendAddressInput = ({
             initiatedToNonL2: userInput,
             isL2: true,
           }),
+          initiatedToL1LedgerId: ledgerId,
         });
         return;
       } else if (userInput.match(L2Regex)) {
@@ -125,6 +127,7 @@ export const SendAddressInput = ({
           return;
         } else {
           onAddressValidated({
+            acnsAlias,
             convertedToAddress: l2Address,
             userInputToAddress: userInput,
             userInputToAddressType: 'alias',

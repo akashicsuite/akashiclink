@@ -1,48 +1,17 @@
-import type { AppInfo } from '@capacitor/app';
-import { App } from '@capacitor/app';
-import { datadogRum } from '@datadog/browser-rum';
 import { IonCol, IonImg, IonRow } from '@ionic/react';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MainGrid } from '../../components/layout/main-grid';
 import { DashboardLayout } from '../../components/page-layout/dashboard-layout';
+import { useCurrentAppInfo } from '../../utils/hooks/useCurrentAppInfo';
 
 export function SettingsVersion() {
   const { t } = useTranslation();
-
-  const [version, setVersion] = useState<string>();
-  const [appInfo, setAppInfo] = useState<AppInfo>();
-
-  useEffect(() => {
-    const xhr = new XMLHttpRequest();
-    xhr.overrideMimeType('application/json');
-    xhr.open('GET', '/manifest.json', true);
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        try {
-          const manifestData = JSON.parse(xhr.responseText);
-          setVersion(manifestData.version);
-        } catch (error) {
-          datadogRum.addError(error);
-        }
-      }
-    };
-    xhr.send(null);
-  }, []);
-
-  useEffect(() => {
-    const getAppInfo = async () => {
-      const appInfo = await App.getInfo();
-      setAppInfo(appInfo);
-    };
-
-    getAppInfo();
-  }, []);
+  const info = useCurrentAppInfo();
 
   return (
     <DashboardLayout showSwitchAccountBar>
-      <MainGrid style={{ padding: '32px 32px' }}>
+      <MainGrid className="ion-padding-top-xl ion-padding-bottom-xl ion-padding-left-xl ion-padding-right-xl">
         <IonRow>
           <IonCol size={'12'}>
             <h2>{t('AboutUs')}</h2>
@@ -61,9 +30,7 @@ export function SettingsVersion() {
             />
           </IonCol>
           <IonCol size={'12'} class="ion-center">
-            <b>{`${appInfo?.name ?? 'AkashicLink'} v${
-              appInfo?.version ?? version ?? '-'
-            }`}</b>
+            <b>{`${info?.name ?? 'AkashicLink'} v${info?.version ?? '-'}`}</b>
           </IonCol>
         </IonRow>
       </MainGrid>

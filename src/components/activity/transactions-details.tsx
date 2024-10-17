@@ -86,9 +86,9 @@ const WithdrawDetails = ({
     : currentTransfer?.currency?.chain;
 
   const feeCurrencyDisplayName =
-    currentTransfer?.currency?.token && isL2
+    currentTransfer?.currency?.token && (isL2 || currentTransfer.feeIsDelegated)
       ? currentTransfer?.currency?.token +
-        ` (${currentTransfer.currency.chain})`
+        (isL2 ? ` (${currentTransfer.currency.chain})` : '')
       : currentTransfer?.currency?.chain;
 
   return (
@@ -101,9 +101,15 @@ const WithdrawDetails = ({
         valueBold
       />
       <ListLabelValueItem
-        label={t(isL2 ? 'L2Fee' : 'GasFee')}
-        value={`${
+        label={t(
           isL2
+            ? 'L2Fee'
+            : currentTransfer.feeIsDelegated
+            ? 'DelegatedGasFee'
+            : 'GasFee'
+        )}
+        value={`${
+          isL2 || currentTransfer.feeIsDelegated
             ? internalFee.toFixed(precision)
             : (!gasFeeIsAccurate ? '≈' : '') + totalFee.toFixed(precision)
         } ${feeCurrencyDisplayName}${gasFeeIsEstimate ? '*' : ''}`}
@@ -116,7 +122,7 @@ const WithdrawDetails = ({
           precision
         )} ${currencyDisplayName}`}
         remark={
-          isL2 || !currentTransfer.tokenSymbol
+          isL2 || !currentTransfer.tokenSymbol || currentTransfer.feeIsDelegated
             ? undefined
             : `+${totalFee.toFixed(precision)} ${
                 currentTransfer.currency?.chain

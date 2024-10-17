@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
 import { IonIcon } from '@ionic/react';
 import { caretDownOutline } from 'ionicons/icons';
+import { useRef, useState } from 'react';
 
-import { urls } from '../../../constants/urls';
-import { historyGo } from '../../../routing/history';
+import { ManageAccountsModal } from '../../../pages/manage-accounts/manage-accounts-modal';
 import { useAccountStorage } from '../../../utils/hooks/useLocalAccounts';
 
 export const ChainDiv = styled.div({
@@ -24,9 +24,11 @@ export const ChainDiv = styled.div({
 
 export const AccountNameBar = () => {
   const { localAccounts, activeAccount } = useAccountStorage();
+  const [showModal, setShowModal] = useState(false);
+  const modal = useRef<HTMLIonModalElement>(null);
 
   const handleOnClick = () => {
-    historyGo(urls.manageAccounts);
+    setShowModal(true);
   };
 
   const displayName =
@@ -37,11 +39,18 @@ export const AccountNameBar = () => {
     'Account';
 
   return (
-    <ChainDiv onClick={handleOnClick}>
-      <span className={'ion-margin-right-xxs ion-text-size-xs'}>
-        {displayName}
-      </span>
-      <IonIcon icon={caretDownOutline}></IonIcon>
-    </ChainDiv>
+    <>
+      <ChainDiv onClick={handleOnClick}>
+        <span className={'ion-margin-right-xxs ion-text-size-xs'}>
+          {displayName}
+        </span>
+        <IonIcon icon={caretDownOutline}></IonIcon>
+      </ChainDiv>
+      <ManageAccountsModal
+        modal={modal}
+        isOpen={showModal}
+        setIsOpen={setShowModal}
+      />
+    </>
   );
 };

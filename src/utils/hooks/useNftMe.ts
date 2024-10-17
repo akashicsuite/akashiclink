@@ -6,13 +6,15 @@ import fetcher from '../ownerFetcher';
 import { useAccountStorage } from './useLocalAccounts';
 
 export const useNftMe = () => {
-  const { activeAccount } = useAccountStorage();
+  const { activeAccount, cacheOtk } = useAccountStorage();
   const {
     data,
     mutate: mutateNftMe,
     ...response
   } = useSWR<INft[], Error>(
-    activeAccount?.identity ? `/nft/owner/${activeAccount?.identity}` : null,
+    activeAccount?.identity && cacheOtk
+      ? `/nft/owner/${activeAccount?.identity}`
+      : null,
     fetcher,
     {
       refreshInterval: REFRESH_INTERVAL,

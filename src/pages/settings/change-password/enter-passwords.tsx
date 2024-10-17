@@ -133,7 +133,7 @@ export function ChangePassword() {
         ]}
       />
       <DashboardLayout showSwitchAccountBar>
-        <MainGrid style={{ padding: '0px 24px' }}>
+        <MainGrid className="ion-padding-top-0 ion-padding-bottom-0 ion-padding-left-lg ion-padding-right-lg">
           <IonRow className={'ion-grid-row-gap-lg'}>
             <IonCol size="12">
               <h2 className={'ion-margin-top-0 ion-margin-bottom-xs'}>

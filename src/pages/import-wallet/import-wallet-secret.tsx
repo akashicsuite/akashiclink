@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  AlertBox,
   errorAlertShell,
   formAlertResetState,
 } from '../../components/common/alert/alert';
@@ -25,20 +26,16 @@ import { useIosScrollPasswordKeyboardIntoView } from '../../utils/hooks/useIosSc
 import { validateSecretPhrase } from '../../utils/otk-generation';
 import { unpackRequestErrorMessage } from '../../utils/unpack-request-error-message';
 
-const StyledSpan = styled.span({
-  fontSize: '12px',
-  textAlign: 'center',
-  color: 'var(--ion-color-primary-10)',
-});
 const StyledDiv = styled.div`
-  padding: 4px 8px;
+  padding: 8px;
   display: flex;
   align-items: center;
   gap: 4px;
   border: 2px solid var(--ion-color-primary-70);
   border-radius: 8px;
   width: 100%;
-  text-align: center;
+  text-align: left;
+  color: var(--ion-color-primary-10);
 `;
 export const ImportWalletSecret = () => {
   useIosScrollPasswordKeyboardIntoView();
@@ -105,7 +102,7 @@ export const ImportWalletSecret = () => {
 
   return (
     <PublicLayout>
-      <MainGrid className={'ion-grid-row-gap-lg ion-no-padding'}>
+      <MainGrid className={'ion-grid-row-gap-xs ion-no-padding'}>
         <IonRow>
           <IonCol size="12">
             <IonText>
@@ -115,7 +112,7 @@ export const ImportWalletSecret = () => {
               <p className={'ion-text-align-center'}>
                 {t('AkashicWalletCannotRecoverYourPassword')}{' '}
                 <a
-                  href="https://akashic-1.gitbook.io/akashicwallet/"
+                  href="https://akashic-1.gitbook.io/akashiclink"
                   target={'_blank'}
                   style={{
                     textDecoration: 'none',
@@ -127,55 +124,54 @@ export const ImportWalletSecret = () => {
               </p>
             </IonText>
           </IonCol>
-        </IonRow>
-        <IonRow
-          className="ion-padding-bottom"
-          style={{ justifyContent: 'center' }}
-        >
-          <StyledSpan style={{ fontWeight: '700' }}>
-            {t('TypeSecretPhrase')}
-          </StyledSpan>
+          <IonCol size="12">
+            <IonText>
+              <p
+                className={
+                  'ion-text-size-xs ion-text-align-center ion-text-bold'
+                }
+              >
+                {t('TypeSecretPhrase')}
+              </p>
+            </IonText>
+          </IonCol>
         </IonRow>
         <IonRow>
-          <SecretWords
-            inputVisibility={true}
-            initialWords={importWalletForm.passPhrase ?? new Array(12).fill('')}
-            disableInput={false}
-            onChange={onSecretWordsChange}
-          />
+          <IonCol size="12">
+            <SecretWords
+              inputVisibility={true}
+              initialWords={
+                importWalletForm.passPhrase ?? new Array(12).fill('')
+              }
+              disableInput={false}
+              onChange={onSecretWordsChange}
+            />
+          </IonCol>
         </IonRow>
         <IonRow>
           <IonCol size="12">
             <StyledDiv color="var(--ion-color-primary-10)">
               <IonIcon
+                className={'ion-text-size-xxl'}
                 src="shared-assets/images/alert.svg"
-                style={{ fontSize: '14px' }}
               />
               <IonText>
-                <h5 className="ion-no-margin ion-text-size-xxs">
+                <h5
+                  style={{ textAlign: 'left' }}
+                  className="ion-no-margin ion-text-size-xs"
+                >
                   {t('PasteYourSecretPhrase')}
                 </h5>
               </IonText>
             </StyledDiv>
           </IonCol>
-        </IonRow>
-        {alert.visible && (
-          <IonRow>
+          {alert.visible && (
             <IonCol size="12">
-              <StyledDiv
-                style={{
-                  justifyContent: 'center',
-                  border: '1px solid #DE3730',
-                  display: 'flex',
-                  color: 'var(--ion-color-danger)',
-                }}
-              >
-                {t(alert.message)}
-              </StyledDiv>
+              <AlertBox state={alert} />
             </IonCol>
-          </IonRow>
-        )}
-        <IonRow className="ion-grid-column-gap-lg">
+          )}
+        </IonRow>
+        <IonRow className={'ion-grid-row-gap-xxs'}>
           <IonCol size="6">
             <PrimaryButton
               expand="block"

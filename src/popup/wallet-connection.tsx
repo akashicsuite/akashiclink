@@ -2,14 +2,16 @@ import { CoinSymbol } from '@helium-pay/backend';
 import { IonCol, IonRow } from '@ionic/react';
 import { getInternalError, getSdkError } from '@walletconnect/utils';
 import { type Web3WalletTypes } from '@walletconnect/web3wallet';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { sepolia } from 'viem/chains';
+import { mainnet, sepolia } from 'viem/chains';
 
 import { BorderedBox } from '../components/common/box/border-box';
-import { PrimaryButton } from '../components/common/buttons';
+import { OutlineButton, PrimaryButton } from '../components/common/buttons';
 import { AccountListItem } from '../components/manage-account/account-list-item';
 import { PopupLayout } from '../components/page-layout/popup-layout';
+import { useAppSelector } from '../redux/app/hooks';
+import { selectTheme } from '../redux/slices/preferenceSlice';
 import {
   closePopup,
   ETH_METHOD,
@@ -19,16 +21,25 @@ import {
 } from '../utils/chrome';
 import { useAccountStorage } from '../utils/hooks/useLocalAccounts';
 import { useOwnerKeys } from '../utils/hooks/useOwnerKeys';
+import { useSetGlobalLanguage } from '../utils/hooks/useSetGlobalLanguage';
+import { useSignAuthorizeActionMessage } from '../utils/hooks/useSignAuthorizeActionMessage';
 import {
   buildApproveSessionNamespace,
   useWeb3Wallet,
 } from '../utils/web3wallet';
 import { ConnectionBackButton } from './connection-back-button';
 
-const chain = sepolia;
+const chain =
+  process.env.REACT_APP_ENABLE_TESTNET_CURRENCIES === 'true'
+    ? sepolia
+    : mainnet;
 
 export function WalletConnection() {
   const { t } = useTranslation();
+
+  // retrieve user AL setting
+  const storedTheme = useAppSelector(selectTheme);
+  const [globalLanguage] = useSetGlobalLanguage();
 
   const searchParams = new URLSearchParams(window.location.search);
   const uri = searchParams.get('uri') ?? '';
@@ -37,6 +48,8 @@ export function WalletConnection() {
 
   const { activeAccount } = useAccountStorage();
   const { keys: addresses } = useOwnerKeys(activeAccount?.identity ?? '');
+
+  const signAuthorizeActionMessage = useSignAuthorizeActionMessage();
 
   const activeAccountL1Address =
     addresses?.find(
@@ -54,10 +67,19 @@ export function WalletConnection() {
   const [sessionRequest, setSessionRequest] = useState<
     Web3WalletTypes.SessionRequest | undefined
   >();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const approve = async () => {
+    setIsProcessing(true);
+
     try {
-      if (!sessionProposalId || !sessionProposal) return;
+      if (!sessionProposalId || !sessionProposal) {
+        throw new Error(EXTENSION_ERROR.WC_SESSION_NOT_FOUND);
+      }
+
+      if (!activeAccountL1Address) {
+        throw new Error(EXTENSION_ERROR.COULD_NOT_READ_ADDRESS);
+      }
 
       const approvedNamespaces = buildApproveSessionNamespace({
         sessionProposal,
@@ -73,12 +95,19 @@ export function WalletConnection() {
       console.warn('Failed to connect', e);
       responseToSite({
         method: ETH_METHOD.REQUEST_ACCOUNTS,
-        error: EXTENSION_ERROR.WC_SESSION_NOT_FOUND,
+        error:
+          activeAccountL1Address === ''
+            ? EXTENSION_ERROR.COULD_NOT_READ_ADDRESS
+            : EXTENSION_ERROR.WC_SESSION_NOT_FOUND,
       });
+      window.removeEventListener('beforeunload', onPopupClosed);
+      await closePopup();
     }
   };
 
   const reject = async () => {
+    setIsProcessing(true);
+
     sessionProposalId &&
       (await web3wallet?.rejectSession({
         id: sessionProposalId,
@@ -105,12 +134,26 @@ export function WalletConnection() {
         await closePopup();
       }
 
+      const payloadToSign = {
+        identity: activeAccount?.identity ?? '',
+        expires: Date.now() + 60 * 1000,
+      };
+
+      const walletPreference = {
+        theme: storedTheme,
+        language: globalLanguage.replace('-', '='), // use replace for backward compatible with "-"
+      };
+
+      const signedMsg = await signAuthorizeActionMessage(payloadToSign);
+
       await web3wallet?.respondSessionRequest({
         topic,
         response: {
           id,
           jsonrpc: '2.0',
-          result: `${activeAccountL1Address}-${activeAccount?.identity}`,
+          result: `${signedMsg}-${JSON.stringify(
+            payloadToSign
+          )}-${JSON.stringify(walletPreference)}`,
         },
       });
 
@@ -133,6 +176,7 @@ export function WalletConnection() {
 
   // Do NOT remove useCallback for removeEventListener to work
   const onPopupClosed = useCallback(() => {
+    // TODO: explore chrome.windows.onRemoved.addListener
     responseToSite({
       method: ETH_METHOD.REQUEST_ACCOUNTS,
       event: EXTENSION_EVENT.USER_CLOSED_POPUP,
@@ -144,9 +188,12 @@ export function WalletConnection() {
   };
 
   const onClickRejectConnect = async () => {
-    await reject();
-    window.removeEventListener('beforeunload', onPopupClosed);
-    await closePopup();
+    try {
+      await reject();
+    } finally {
+      window.removeEventListener('beforeunload', onPopupClosed);
+      await closePopup();
+    }
   };
 
   useEffect(() => {
@@ -157,16 +204,25 @@ export function WalletConnection() {
     const receivePairProposal = async () => {
       const activeSessions = web3wallet?.getActiveSessions();
 
+      // Clean up old sessions
       if (activeSessions && Object.values(activeSessions).length > 0) {
-        const currentSession = Object.values(activeSessions)[0];
-        await web3wallet?.disconnectSession({
-          topic: currentSession?.topic as string,
-          reason: getInternalError('RESTORE_WILL_OVERRIDE'),
-        });
+        await Promise.all(
+          Object.values(activeSessions).map((session) =>
+            web3wallet?.disconnectSession({
+              topic: session?.topic as string,
+              reason: getInternalError('RESTORE_WILL_OVERRIDE'),
+            })
+          )
+        );
       }
 
       await web3wallet?.pair({ uri });
     };
+
+    responseToSite({
+      method: ETH_METHOD.REQUEST_ACCOUNTS,
+      event: EXTENSION_EVENT.POPUP_READY,
+    });
 
     web3wallet.on('session_proposal', onSessionProposal);
     web3wallet.on('session_request', onSessionRequest);
@@ -215,19 +271,19 @@ export function WalletConnection() {
         <IonCol size={'12'}>
           <IonRow>
             <IonCol size={'6'}>
-              <PrimaryButton
+              <OutlineButton
                 expand="block"
                 onClick={onClickRejectConnect}
-                disabled={!sessionProposalId}
+                disabled={!sessionProposalId || isProcessing}
               >
                 {t('Deny')}
-              </PrimaryButton>
+              </OutlineButton>
             </IonCol>
             <IonCol size={'6'}>
               <PrimaryButton
                 expand="block"
                 onClick={onClickApproveConnect}
-                disabled={!sessionProposalId}
+                isLoading={!sessionProposalId || isProcessing}
               >
                 {t('Confirm')}
               </PrimaryButton>

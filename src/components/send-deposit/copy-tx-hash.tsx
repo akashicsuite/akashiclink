@@ -81,7 +81,7 @@ export const ListCopyTxHashItem = ({
             slot="icon-only"
             className="copy-icon"
             src={`/shared-assets/images/copy-icon-${
-              suffix === 'AS' ? 'light' : 'dark'
+              suffix === 'AS' ? 'gray' : 'white'
             }.svg`}
           />
         </div>

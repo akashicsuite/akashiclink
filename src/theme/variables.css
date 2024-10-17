@@ -88,7 +88,7 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-light-shade: #c297ff;
   --ion-color-light-tint: #c297ff;
 
-  --ion-color-grey: #958e99;
+  --ion-color-grey: #7b757f;
 
   --ion-background-color: #ffffff;
   --ion-background-color-rgb: 243, 245, 246;
@@ -139,12 +139,15 @@ http://ionicframework.com/docs/theming/ */
   /** custom component  **/
   --ion-text-header: #0b006b;
   --toggle-track: #e8e0eb;
-  --nft-background: #1b1547;
+  --nft-header-background: #1b1547;
+  --nft-background: #eaebf6;
   --chain-icon-background: #0b006b;
   --activity-dim-text: #b0a9b3;
   --activity-list-divider: #d9d9d9;
   --toggle-theme-background: #a2a2ff;
   --toggle-theme-text: #0b006b;
+  --ion-initial-icon-color: #1b00b3;
+  --ion-popup-initial-icon-color: #1b00b3;
 }
 
 /** Dark Colors **/
@@ -271,12 +274,15 @@ body.dark {
   /** custom component  **/
   --ion-text-header: #c297ff;
   --toggle-track: #625b71;
-  --nft-background: #1f1b4d;
-  --chain-icon-background: #c297ff;
+  --nft-header-background: #201b4d;
+  --nft-background: #1b1547;
+  --chain-icon-background: #a2a2ff;
   --activity-dim-text: #958e99;
   --activity-list-divider: #2f2f2f;
   --toggle-theme-background: #1b00b3;
   --toggle-theme-text: #0b006b;
+  --ion-initial-icon-color: #a2a2ff;
+  --ion-popup-initial-icon-color: #0b006b;
 }
 
 /** iOS Dark Theme */

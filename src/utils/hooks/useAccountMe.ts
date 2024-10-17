@@ -6,10 +6,10 @@ import fetcher from '../ownerFetcher';
 import { useAccountStorage } from './useLocalAccounts';
 
 export const useAccountMe = () => {
-  const { activeAccount } = useAccountStorage();
+  const { activeAccount, cacheOtk } = useAccountStorage();
   return useSWR<IOwnerDetailsResponse>(
-    activeAccount?.identity
-      ? `/public-api/owner/details?address=${activeAccount?.identity}`
+    activeAccount?.identity && cacheOtk
+      ? `/owner/details?address=${activeAccount?.identity}`
       : null,
     fetcher,
     { refreshInterval: REFRESH_INTERVAL }

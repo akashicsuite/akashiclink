@@ -13,8 +13,8 @@ export function Toolbar({ showRefresh = false }: { showRefresh?: boolean }) {
 
   return (
     <div
+      className="ion-padding-top-sm ion-padding-bottom-sm  ion-padding-left-lg ion-padding-right-lg"
       style={{
-        padding: '12px 24px',
         height: 'auto',
         display: 'flex',
         gap: '8px',

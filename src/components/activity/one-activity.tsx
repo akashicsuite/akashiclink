@@ -6,7 +6,7 @@ import {
 } from '@helium-pay/backend';
 import { IonImg } from '@ionic/react';
 import Big from 'big.js';
-import type { CSSProperties } from 'react';
+import { type CSSProperties, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SUPPORTED_CURRENCIES_FOR_EXTENSION } from '../../constants/currencies';
@@ -161,6 +161,8 @@ export function OneActivity({
 
   const gasFee = transfer.feesPaid ?? transfer.feesEstimate;
 
+  const isDelegated = !!transfer.feeIsDelegated;
+
   // Use separate precision for gas and amount so they both show with the
   // minimum necessary (or 2)
   const gasPrecision = getPrecision('0', gasFee ?? '0');
@@ -174,6 +176,27 @@ export function OneActivity({
     ? transfer?.currency?.token + (isL2 ? ` (${transfer.currency.chain})` : '')
     : transfer?.currency?.chain;
 
+  let feeText = `${t('GasFee')}: ${!gasFeeIsAccurate ? '≈' : ''}${Big(
+    Big(gasFee ?? '0').toFixed(gasPrecision)
+  )} ${transfer?.currency?.chain}`;
+
+  if (isDelegated) {
+    feeText = `${t('DelegatedGasFee')}: ${Big(
+      transfer.internalFee?.withdraw ?? '0'
+    ).toFixed(
+      getPrecision(transfer.amount, transfer.internalFee?.withdraw ?? '0')
+    )} ${currencyDisplayName}`;
+  }
+
+  const [nftUrl, setNftUrl] = useState('');
+
+  useEffect(() => {
+    async function getNft() {
+      const nftUrl = await getNftImage(transfer.nft?.ledgerId ?? '', '30');
+      setNftUrl(nftUrl);
+    }
+    getNft();
+  }, []);
   /**
    * Style the icon displaying the chain information:
    * - L2 transactions need to display the full AkashicChain text and so need less padding
@@ -235,7 +258,7 @@ export function OneActivity({
                 }),
               }}
             >
-              {formatDate(new Date(transfer.date))}
+              {formatDate(new Date(transfer.initiatedAt))}
             </Time>
           </TransactionStatusWrapper>
         </IconWrapper>
@@ -252,9 +275,7 @@ export function OneActivity({
               </NftItem>
             </NftName>
             <NftImage>
-              <IonImg
-                src={getNftImage(transfer.nft?.ledgerId ?? '', '30')}
-              ></IonImg>
+              <IonImg src={nftUrl}></IonImg>
             </NftImage>
           </Nft>
         ) : (
@@ -286,9 +307,9 @@ export function OneActivity({
                     ? 'var(--ion-color-primary-10)'
                     : 'var(--ion-light-text)',
                 }}
-              >{`${t('GasFee')}: ${!gasFeeIsAccurate ? '≈' : ''}${Big(
-                Big(gasFee ?? '0').toFixed(gasPrecision)
-              )} ${transfer?.currency?.chain}`}</GasFee>
+              >
+                {feeText}
+              </GasFee>
             )}
           </AmountWrapper>
         )}

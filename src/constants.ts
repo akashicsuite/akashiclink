@@ -1,7 +1,7 @@
 export const LAST_HISTORY_ENTRIES = 'lastHistoryEntries';
 
 // How often, in ms, nfts, balances, and transfers are automatically polled from backend
-export const REFRESH_INTERVAL = 5 * 1000; // 5 seconds
+export const REFRESH_INTERVAL = 10 * 1000; // 10 seconds
 
 // How often a user may press the refresh-button to manually refresh nfts, balances, and transfers.
 // Prevents spamming the backend if user tries to keep pressing the button

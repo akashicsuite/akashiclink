@@ -26,15 +26,14 @@ export const CreateOrImportForm = () => {
             onIonChange={() => {
               setChecked(!checked);
             }}
-            className="ion-text-size-xs"
+            className="ion-text-size-xs ion-margin-right-xxs"
             labelPlacement={'end'}
-            style={{ marginRight: '4px' }}
           >
             {`${t('IAgreeToTermsOfUse')}`}
           </IonCheckbox>
           <a
             rel="noreferrer"
-            href="https://akashic-1.gitbook.io/akashicwallet/terms-of-use"
+            href="https://akashic-1.gitbook.io/akashiclink/terms-of-use-and-privacy-policy-1"
             target={'_blank'}
             style={{
               color: 'var(--ion-color-primary)',

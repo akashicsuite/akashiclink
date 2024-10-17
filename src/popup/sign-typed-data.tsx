@@ -1,12 +1,16 @@
-import type { ICallbackUrls } from '@helium-pay/backend';
+import {
+  type CoinSymbol,
+  type CurrencySymbol,
+  L2Regex,
+} from '@helium-pay/backend';
 import { IonCol, IonRow, IonSpinner } from '@ionic/react';
 import { getSdkError } from '@walletconnect/utils';
 import { type Web3WalletTypes } from '@walletconnect/web3wallet';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BorderedBox } from '../components/common/box/border-box';
-import { PrimaryButton } from '../components/common/buttons';
+import { OutlineButton, PrimaryButton } from '../components/common/buttons';
 import { List } from '../components/common/list/list';
 import { ListVerticalLabelValueItem } from '../components/common/list/list-vertical-label-value-item';
 import { PopupLayout } from '../components/page-layout/popup-layout';
@@ -18,12 +22,13 @@ import {
   responseToSite,
   TYPED_DATA_PRIMARY_TYPE,
 } from '../utils/chrome';
-import type { BecomeBpToSign } from '../utils/hooks/useSignBecomeBpMessage';
-import { useSignBecomeBpMessage } from '../utils/hooks/useSignBecomeBpMessage';
-import type { RetryCallbackToSign } from '../utils/hooks/useSignRetryCallback';
-import { useSignRetryCallback } from '../utils/hooks/useSignRetryCallback';
-import type { SetCallbackUrlsToSign } from '../utils/hooks/useSignSetupCallbackUrl';
-import { useSignSetupCallbackUrl } from '../utils/hooks/useSignSetupCallbackUrl';
+import {
+  useSendL1Transaction,
+  useSendL2Transaction,
+} from '../utils/hooks/nitr0gen';
+import { useGenerateSecondaryOtk } from '../utils/hooks/useGenerateSecondaryOtk';
+import { useSignAuthorizeActionMessage } from '../utils/hooks/useSignAuthorizeActionMessage';
+import { useVerifyTxnAndSign } from '../utils/hooks/useVerifyTxnAndSign';
 import { useWeb3Wallet } from '../utils/web3wallet';
 
 export function SignTypedData() {
@@ -33,19 +38,28 @@ export function SignTypedData() {
 
   const web3wallet = useWeb3Wallet();
 
+  const [isProcessingRequest, setIsProcessingRequest] = useState(false);
+
   const [requestContent, setRequestContent] = useState({
     id: 0,
     method: '',
     topic: '',
     primaryType: '',
     message: {} as Record<string, string>,
-    toSign: {} as Record<string, unknown>,
+    toSign: {} as { identity: string; expires: string } & Record<
+      string,
+      string | Record<string, string>
+    >,
+    secondaryOtk: {} as { oldPubKeyToRemove?: string },
     response: {},
   });
 
-  const signBecomeBpMessage = useSignBecomeBpMessage();
-  const signSetupCallbackUrl = useSignSetupCallbackUrl();
-  const signRetryCallback = useSignRetryCallback();
+  const signAuthorizeActionMessage = useSignAuthorizeActionMessage();
+  const generateSecondaryOtk = useGenerateSecondaryOtk();
+
+  const verifyTxnAndSign = useVerifyTxnAndSign();
+  const { trigger: triggerSendL2Transaction } = useSendL2Transaction();
+  const { trigger: triggerSendL1Transaction } = useSendL1Transaction();
 
   const onSessionRequest = useCallback(
     async (event: Web3WalletTypes.SessionRequest) => {
@@ -55,7 +69,7 @@ export function SignTypedData() {
       if (request.method === ETH_METHOD.SIGN_TYPED_DATA) {
         const typedData = JSON.parse(request.params[1]);
 
-        const { toSign, ...message } = typedData.message;
+        const { toSign, secondaryOtk, ...message } = typedData.message;
 
         setRequestContent({
           id,
@@ -64,6 +78,7 @@ export function SignTypedData() {
           primaryType: typedData.primaryType,
           topic,
           toSign: toSign,
+          secondaryOtk,
           response: {},
         });
       }
@@ -75,42 +90,66 @@ export function SignTypedData() {
     await closePopup();
   }, []);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const acceptSessionRequest = async () => {
-    const { topic, id, primaryType, toSign } = requestContent;
+    const { topic, id, primaryType, toSign, secondaryOtk } = requestContent;
 
     try {
       let signedMsg = '';
 
       switch (primaryType) {
-        case TYPED_DATA_PRIMARY_TYPE.BECOME_BP:
-          signedMsg = await signBecomeBpMessage({
+        case TYPED_DATA_PRIMARY_TYPE.AUTHORIZE_ACTION:
+          signedMsg = await signAuthorizeActionMessage({
+            ...toSign,
             identity: toSign.identity,
             expires: Number(toSign.expires),
-          } as BecomeBpToSign);
+          });
           break;
-        case TYPED_DATA_PRIMARY_TYPE.RETRY_CALLBACK:
-          signedMsg = await signRetryCallback({
-            ...toSign,
-            expires: Number(toSign.expires),
-          } as RetryCallbackToSign);
+        case TYPED_DATA_PRIMARY_TYPE.GENERATE_SECONDARY_OTK:
+          signedMsg = await generateSecondaryOtk(secondaryOtk);
           break;
-        case TYPED_DATA_PRIMARY_TYPE.SETUP_CALLBACK_URL: {
-          const callbackUrls: ICallbackUrls = {};
-          if (toSign.deposit) {
-            callbackUrls.deposit = toSign.deposit as string;
-          }
-          if (toSign.payout) {
-            callbackUrls.payout = toSign.payout as string;
-          }
-          if (toSign.pendingDeposit) {
-            callbackUrls.pendingDeposit = toSign.pendingDeposit as string;
+        case TYPED_DATA_PRIMARY_TYPE.PAYOUT: {
+          // TODO: Fix all this casting
+          const res = await verifyTxnAndSign(
+            {
+              userInputToAddress: toSign.addressInput as string,
+              convertedToAddress: toSign.convertedToAddress as string,
+              acnsAlias: toSign.acnsAlias as string,
+            },
+            toSign.amount as string,
+            toSign.chain as CoinSymbol,
+            toSign.token as CurrencySymbol | undefined
+          );
+
+          if (typeof res === 'string') {
+            throw new Error(res);
           }
 
-          signedMsg = await signSetupCallbackUrl({
-            identity: toSign.identity,
-            expires: Number(toSign.expires),
-            callbackUrls,
-          } as SetCallbackUrlsToSign);
+          const didUserInputL2Address = L2Regex.exec(
+            toSign.addressInput as string
+          );
+
+          const { txn, signedTxn: signedTx } = res;
+
+          const response =
+            toSign.isL2 === 'true'
+              ? await triggerSendL2Transaction({
+                  ...txn,
+                  signedTx,
+                  initiatedToNonL2: !didUserInputL2Address
+                    ? (toSign.addressInput as string)
+                    : undefined,
+                })
+              : await triggerSendL1Transaction({
+                  ...txn,
+                  signedTx,
+                });
+
+          if (!response.isSuccess) {
+            throw new Error(response.reason);
+          }
+
+          signedMsg = `0x${response.txHash}`;
           break;
         }
         default:
@@ -126,14 +165,21 @@ export function SignTypedData() {
         },
       });
     } catch (e) {
-      await web3wallet?.respondSessionRequest({
-        topic,
-        response: {
-          id,
-          jsonrpc: '2.0',
-          error: getSdkError('INVALID_METHOD'),
-        },
-      });
+      try {
+        await web3wallet?.respondSessionRequest({
+          topic,
+          response: {
+            id,
+            jsonrpc: '2.0',
+            error: getSdkError('INVALID_METHOD'),
+          },
+        });
+      } finally {
+        responseToSite({
+          method: ETH_METHOD.SIGN_TYPED_DATA,
+          error: EXTENSION_ERROR.UNKNOWN,
+        });
+      }
     }
   };
   const rejectSessionRequest = async () => {
@@ -159,8 +205,10 @@ export function SignTypedData() {
   }, []);
 
   const onClickSign = async () => {
+    setIsProcessingRequest(true);
     window.removeEventListener('beforeunload', onPopupClosed);
     await acceptSessionRequest();
+    setIsProcessingRequest(false);
     await closePopup();
   };
 
@@ -221,33 +269,77 @@ export function SignTypedData() {
             {t('OnlySignThisMessageIfYouFullyUnderstand')}
           </p>
         </IonCol>
-        <IonCol size={'12'}>
-          {isWaitingRequestContent && <IonSpinner name="circular"></IonSpinner>}
+        <IonCol
+          size={'12'}
+          className={'ion-justify-content-center ion-align-items-center'}
+        >
+          {isWaitingRequestContent && (
+            <IonSpinner
+              className={'w-100 ion-margin-top-xl'}
+              color="secondary"
+              name="circular"
+            />
+          )}
           <List lines={'none'}>
-            {Object.entries(requestContent?.message).map(([key, value]) => (
-              <ListVerticalLabelValueItem
-                key={key}
-                label={t(`Popup.${key}`)}
-                value={value ?? '-'}
-              />
-            ))}
+            {/* // TODO: prepare array of display to do render */}
+            {Object.entries(
+              requestContent?.message?.toDisplay ??
+                requestContent?.message ??
+                {}
+            ).map(([key, value]) => {
+              if (Array.isArray(value)) {
+                return value.map((v) =>
+                  Object.entries(v).map(([key, value]) => {
+                    if (value) {
+                      return (
+                        <ListVerticalLabelValueItem
+                          key={key}
+                          label={t(`Popup.${key}`)}
+                          value={(value as string) ?? '-'}
+                        />
+                      );
+                    }
+                  })
+                );
+              } else if (typeof value === 'object') {
+                return Object.entries(value).map(([key, value]) => {
+                  if (value) {
+                    return (
+                      <ListVerticalLabelValueItem
+                        key={key}
+                        label={t(`Popup.${key}`)}
+                        value={(value as string) ?? '-'}
+                      />
+                    );
+                  }
+                });
+              } else if (value !== '') {
+                return (
+                  <ListVerticalLabelValueItem
+                    key={key}
+                    label={t(`Popup.${key}`)}
+                    value={value ?? '-'}
+                  />
+                );
+              }
+            })}
           </List>
         </IonCol>
       </IonRow>
       <IonRow className={'ion-margin-top-auto'}>
         <IonCol size={'6'}>
-          <PrimaryButton
+          <OutlineButton
             expand="block"
-            disabled={isWaitingRequestContent}
+            disabled={isWaitingRequestContent || isProcessingRequest}
             onClick={onClickReject}
           >
             {t('Deny')}
-          </PrimaryButton>
+          </OutlineButton>
         </IonCol>
         <IonCol size={'6'}>
           <PrimaryButton
             expand="block"
-            disabled={isWaitingRequestContent}
+            isLoading={isWaitingRequestContent || isProcessingRequest}
             onClick={onClickSign}
           >
             {t('Confirm')}

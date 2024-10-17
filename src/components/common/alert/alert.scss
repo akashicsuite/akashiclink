@@ -7,6 +7,11 @@ ion-modal {
   --background: var(--ion-modal-background);
 }
 
+.custom-toolbar-background {
+  --background: var(--ion-modal-background);
+  padding-block-end: 50px;
+}
+
 .alert-box {
   width: 100%;
   border-radius: 8px;

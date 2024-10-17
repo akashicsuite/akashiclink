@@ -22,7 +22,6 @@ import { ImportWalletPassword } from '../pages/import-wallet/import-wallet-passw
 import { ImportWalletSecret } from '../pages/import-wallet/import-wallet-secret';
 import { ImportWalletSelectMethod } from '../pages/import-wallet/import-wallet-select-method';
 import { ImportWalletSuccessful } from '../pages/import-wallet/import-wallet-successful';
-import { ChangePasswordAfterImport } from '../pages/import-wallet/recovery/change-password-after-import';
 import { ManageAccounts } from '../pages/manage-accounts/manage-accounts';
 import { Nft } from '../pages/nft/nft';
 import { NftTransfer } from '../pages/nft/nft-transfer';
@@ -155,10 +154,6 @@ export function NavigationTree() {
         urls.importWalletSuccessful
       )}
       {AkashicTab.registerPage(ImportWalletKeypair, urls.importWalletKeypair)}
-      {AkashicTab.registerPage(
-        ChangePasswordAfterImport,
-        urls.changePasswordAfterImport
-      )}
       {/* US² tree */}
       {/* {Us2Tab.registerPage(Us2Main)} */}
       {/* Default redirect */}

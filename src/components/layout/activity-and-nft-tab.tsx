@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { IonSpinner } from '@ionic/react';
 import { t } from 'i18next';
 import type { Dispatch, SetStateAction } from 'react';
 import { useState } from 'react';
@@ -9,7 +10,7 @@ import { urls } from '../../constants/urls';
 import type { LocationState } from '../../routing/history';
 import { akashicPayPath } from '../../routing/navigation-tabs';
 import { formatMergeAndSortNftAndCryptoTransfers } from '../../utils/formatTransfers';
-import { useMyTransfers } from '../../utils/hooks/useMyTransfers';
+import { useMyTransfersInfinite } from '../../utils/hooks/useMyTransfersInfinite';
 import { useNftTransfersMe } from '../../utils/hooks/useNftTransfersMe';
 import { OneActivity } from '../activity/one-activity';
 import { TabButton } from '../common/buttons';
@@ -49,7 +50,7 @@ const NoDataWrapper = styled.div({
   position: 'relative',
 });
 
-export const ActivityAndNftTabComponent = ({
+export const ActivityAndNftTabs = ({
   setNftTab,
   nftTab,
   fromNfts = false,
@@ -91,35 +92,46 @@ export const ActivityAndNftTabComponent = ({
 };
 
 export function ActivityAndNftTab() {
-  const itemDisplayIndex = 3;
+  const itemDisplayLimit = 3;
   const history = useHistory<LocationState>();
-  const [nftTab, setNftTab] = useState(false);
-  const { transfers } = useMyTransfers();
-  const { transfers: nftTransfers } = useNftTransfersMe();
-  const walletFormatTransfers = formatMergeAndSortNftAndCryptoTransfers(
+  const [isNftTab, setIsNftTab] = useState(false);
+  const { transfers, isLoading } = useMyTransfersInfinite();
+  const { transfers: nftTransfers, isLoading: isLoadingNft } =
+    useNftTransfersMe();
+
+  const formattedTransfers = formatMergeAndSortNftAndCryptoTransfers(
     transfers,
     nftTransfers
   );
+
+  const isActivityTabReady = !isNftTab && !isLoading && !isLoadingNft;
+
   return (
     <>
-      <ActivityAndNftTabComponent
-        nftTab={nftTab}
-        setNftTab={setNftTab}
+      <ActivityAndNftTabs
+        nftTab={isNftTab}
+        setNftTab={setIsNftTab}
         fromNfts={false}
       />
-      <div
-        className="vertical"
-        style={{ padding: '0px 16px', paddingTop: '24px' }}
-      >
-        {!nftTab &&
-          walletFormatTransfers
-            .slice(0, itemDisplayIndex - 1)
+      <div className="vertical ion-padding-top-lg ion-padding-bottom-0 ion-padding-left-md ion-padding-right-md">
+        {!isActivityTabReady && (
+          <div
+            className={
+              'ion-display-flex ion-justify-content-center w-100 ion-margin-top-xl'
+            }
+          >
+            <IonSpinner color="primary" name="circular" />
+          </div>
+        )}
+        {isActivityTabReady &&
+          formattedTransfers
+            .slice(0, itemDisplayLimit - 1)
             .map((transfer, index) => {
               return (
                 <OneActivity
                   key={transfer.id}
                   transfer={transfer}
-                  divider={index + 1 !== itemDisplayIndex - 1}
+                  divider={index + 1 !== itemDisplayLimit - 1}
                   showDetail={true}
                   onClick={() => {
                     history.push({
@@ -134,15 +146,15 @@ export function ActivityAndNftTab() {
                 />
               );
             })}
-        {walletFormatTransfers.length >= itemDisplayIndex && !nftTab && (
+        {isActivityTabReady && formattedTransfers.length >= itemDisplayLimit && (
           <SeeMore
-            style={{ marginTop: '8px' }}
+            className="ion-margin-top-xs"
             to={akashicPayPath(urls.activity)}
           >
             {t('SeeMore')}
           </SeeMore>
         )}
-        {!walletFormatTransfers.length && (
+        {isActivityTabReady && formattedTransfers.length === 0 && (
           <NoDataWrapper>
             <NoDataDiv>{t('NoActivity')}</NoDataDiv>
           </NoDataWrapper>

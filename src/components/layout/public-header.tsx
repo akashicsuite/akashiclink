@@ -10,8 +10,8 @@ export function PublicHeader() {
   const storedTheme = useAppSelector(selectTheme);
   const logoName =
     storedTheme === themeType.DARK
-      ? 'wallet-logo-dark.svg'
-      : 'wallet-logo-light.svg';
+      ? 'wallet-logo-dark-public-header.svg'
+      : 'wallet-logo-light-public-header.svg';
 
   return (
     <IonHeader

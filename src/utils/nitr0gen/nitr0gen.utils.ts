@@ -94,7 +94,7 @@ export async function chooseBestNodes(port: PortType) {
 
   const isProd = process.env.REACT_APP_ENV === 'prod';
 
-  const nodeKey = await Promise.race(
+  const nodeKey = await Promise.any(
     Object.entries(isProd ? ProductionNFTNodes : TestNFTNodes).map(
       async ([key, endpoint]) => {
         await axios.get(endpoint);

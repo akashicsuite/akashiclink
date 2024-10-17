@@ -10,7 +10,7 @@ export const useFetchAndRemapAASToAddress = () => {
     const nfts = await mutateNftMe();
     const nft = nfts?.find((nft) => !!nft?.acns?.value);
     nft && nft.acns
-      ? addAasToAccountByIdentity(nft.acns.name, identity)
+      ? addAasToAccountByIdentity(nft.acns.name, identity, nft.ledgerId)
       : removeAasFromAccountByIdentity(identity);
   };
 };

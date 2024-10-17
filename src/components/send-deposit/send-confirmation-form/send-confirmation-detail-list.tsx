@@ -1,7 +1,4 @@
-import {
-  type ITransactionVerifyResponse,
-  NetworkDictionary,
-} from '@helium-pay/backend';
+import { NetworkDictionary } from '@helium-pay/backend';
 import { IonItem, IonText } from '@ionic/react';
 import Big from 'big.js';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +7,7 @@ import { useAppSelector } from '../../../redux/app/hooks';
 import { selectFocusCurrencyDetail } from '../../../redux/slices/preferenceSlice';
 import { getPrecision } from '../../../utils/formatAmount';
 import { useFocusCurrencySymbolsAndBalances } from '../../../utils/hooks/useAggregatedBalances';
-import { displayLongText } from '../../../utils/long-text';
+import type { ITransactionForSigning } from '../../../utils/nitr0gen/nitr0gen.interface';
 import { L2Icon } from '../../common/chain-icon/l2-icon';
 import { NetworkIcon } from '../../common/chain-icon/network-icon';
 import { Divider } from '../../common/divider';
@@ -25,13 +22,15 @@ import type {
 } from '../send-form/types';
 
 export const SendConfirmationDetailList = ({
-  txns,
+  txn,
   txnFinal,
   validatedAddressPair,
+  delegatedFee,
 }: {
-  txns: ITransactionVerifyResponse[];
+  txn: ITransactionForSigning;
   txnFinal?: SendConfirmationTxnFinal;
   validatedAddressPair: ValidatedAddressPair;
+  delegatedFee?: string;
   // eslint-disable-next-line sonarjs/cognitive-complexity
 }) => {
   const { t } = useTranslation();
@@ -42,21 +41,11 @@ export const SendConfirmationDetailList = ({
   const isL2 = validatedAddressPair.isL2;
 
   // Calculate total Amount
-  const totalAmount =
-    txns?.reduce((accm, { amount }) => {
-      return accm.add(amount);
-    }, Big(0)) ?? Big(0);
   const totalFee = txnFinal?.feesEstimate
     ? Big(txnFinal?.feesEstimate)
-    : txns?.reduce(
-        (accm, { feesEstimate }) => accm.add(feesEstimate ?? '0'),
-        Big(0)
-      ) ?? Big(0);
-  const internalFee = txns?.reduce(
-    (accm, { internalFee }) => accm.add(internalFee?.withdraw ?? '0'),
-    Big(0)
-  );
-  const totalAmountWithFee = totalAmount
+    : Big(txn.feesEstimate ?? 0);
+  const internalFee = Big(txn.internalFee?.withdraw ?? 0);
+  const totalAmountWithFee = Big(txn.amount)
     .add(internalFee)
     .add(isCurrencyTypeToken ? Big(0) : totalFee);
 
@@ -67,7 +56,7 @@ export const SendConfirmationDetailList = ({
       ? internalFee.toString()
       : '0';
 
-  const precision = getPrecision(totalAmount.toString(), feeForPrecision);
+  const precision = getPrecision(txn.amount, feeForPrecision);
 
   const getUrl = (
     type: 'account' | 'transaction',
@@ -91,11 +80,11 @@ export const SendConfirmationDetailList = ({
     ? currencySymbol + (isL2 ? ` (${nativeCoinSymbol})` : '')
     : nativeCoinSymbol;
 
-  const alias = validatedAddressPair?.acnsAlias ?? '-';
+  const alias = validatedAddressPair.acnsAlias ?? '-';
 
   const feeCurrencyDisplayName =
-    isCurrencyTypeToken && isL2
-      ? currencySymbol + ` (${nativeCoinSymbol})`
+    isCurrencyTypeToken && (isL2 || !!delegatedFee)
+      ? currencySymbol + (isL2 ? ` (${nativeCoinSymbol})` : '')
       : nativeCoinSymbol;
 
   return (
@@ -114,24 +103,24 @@ export const SendConfirmationDetailList = ({
         <div className="ion-margin-bottom-sm">
           <ListVerticalLabelValueItem
             label={t('InputAddress')}
-            value={validatedAddressPair?.userInputToAddress}
+            value={validatedAddressPair.userInputToAddress}
           />
         </div>
       }
       {!txnFinal && (
         <ListVerticalLabelValueItem
           label={t('SendTo')}
-          value={validatedAddressPair?.convertedToAddress}
+          value={validatedAddressPair.convertedToAddress}
         />
       )}
       {txnFinal?.txHash && (
         <>
           <IonItem>
             <FromToAddressBlock
-              fromAddress={txns?.[0]?.fromAddress}
-              toAddress={txns?.[0]?.toAddress}
-              fromAddressUrl={getUrl('account', !!isL2, txns?.[0]?.fromAddress)}
-              toAddressUrl={getUrl('account', !!isL2, txns?.[0]?.toAddress)}
+              fromAddress={txn.fromAddress}
+              toAddress={txn.toAddress}
+              fromAddressUrl={getUrl('account', !!isL2, txn.fromAddress)}
+              toAddressUrl={getUrl('account', !!isL2, txn.toAddress)}
             />
           </IonItem>
           <IonItem>
@@ -147,25 +136,37 @@ export const SendConfirmationDetailList = ({
       </IonItem>
       <ListLabelValueItem
         label={t('Amount')}
-        value={`${totalAmount.toFixed(precision)} ${currencyDisplayName}`}
+        value={`${Big(txn.amount).toFixed(precision)} ${currencyDisplayName}`}
         valueSize={'md'}
         valueBold
       />
-      <ListLabelValueItem
-        label={t(isL2 ? 'L2Fee' : 'GasFee')}
-        value={`${
-          isL2 ? internalFee.toFixed(precision) : totalFee.toFixed(precision)
-        } ${feeCurrencyDisplayName}`}
-        valueSize={'md'}
-        valueBold
-      />
+      {isL2 && (
+        <ListLabelValueItem
+          label={t('L2Fee')}
+          value={`${internalFee.toFixed(precision)} ${feeCurrencyDisplayName}`}
+          valueSize={'md'}
+          valueBold
+        />
+      )}
+      {!isL2 && (
+        <ListLabelValueItem
+          label={t(delegatedFee ? 'DelegatedGasFee' : 'GasFee')}
+          value={`${
+            delegatedFee
+              ? Big(delegatedFee).toFixed(precision)
+              : totalFee.toFixed(precision)
+          } ${feeCurrencyDisplayName}`}
+          valueSize={'md'}
+          valueBold
+        />
+      )}
       <ListLabelValueItem
         label={t('Total')}
         value={`${totalAmountWithFee.toFixed(
           precision
         )} ${currencyDisplayName}`}
         remark={
-          isL2 || !isCurrencyTypeToken
+          isL2 || !isCurrencyTypeToken || delegatedFee
             ? undefined
             : `+${totalFee.toFixed(precision)} ${nativeCoinSymbol}`
         }
@@ -179,11 +180,7 @@ export const SendConfirmationDetailList = ({
             className={'ion-margin-vertical'}
           />
         </IonItem>
-        <ListLabelValueItem
-          label={t('AkashicAlias')}
-          value={displayLongText(alias)}
-          labelBold
-        />
+        <ListLabelValueItem label={t('AkashicAlias')} value={alias} labelBold />
       </>
     </List>
   );

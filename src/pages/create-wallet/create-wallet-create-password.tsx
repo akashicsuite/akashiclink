@@ -19,14 +19,14 @@ import {
   historyResetStackAndRedirect,
 } from '../../routing/history';
 import { useIosScrollPasswordKeyboardIntoView } from '../../utils/hooks/useIosScrollPasswordKeyboardIntoView';
-import { useOwner } from '../../utils/hooks/useOwner';
+import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
 
 export function CreateWalletPassword() {
   useIosScrollPasswordKeyboardIntoView();
   const createWalletForm = useAppSelector(selectCreateWalletForm);
   const dispatch = useAppDispatch();
   const [alert, setAlert] = useState(formAlertResetState);
-  const { authenticated } = useOwner();
+  const { authenticated } = useAccountStorage();
 
   /** Tracking user input */
   const validatePassword = (value: string) =>

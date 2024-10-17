@@ -28,13 +28,6 @@ export const NftWrapper = styled.div({
   gap: '24px',
   width: '100%',
   position: 'relative',
-  background: `linear-gradient(
-    to bottom,
-    var(--nft-background) 0%,
-    var(--nft-background) 40%,
-    var(--ion-background-color) 40%,
-    var(--ion-background-color) 100%
-  )`,
 });
 
 export const NftContainer = styled.div({
@@ -69,7 +62,12 @@ export function Nft() {
     <NftLayout>
       <div
         style={{
-          backgroundColor: 'var(--nft-background)',
+          backgroundColor: 'var(--nft-header-background)',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '160px',
         }}
       />
 
@@ -77,19 +75,22 @@ export function Nft() {
       <NftWrapper>
         <IonGrid fixed={true}>
           <IonRow>
-            <IonCol size="10" offset="1">
-              <NftContainer>
-                <OneNft
-                  nft={currentNft}
-                  isBig={true}
-                  isAASDarkStyle={!isDarkMode}
-                />
-              </NftContainer>
-            </IonCol>
+            <NftContainer>
+              <OneNft
+                nft={currentNft}
+                isBig={true}
+                isAASDarkStyle={!isDarkMode}
+                nftImgWrapper="nft-wrapper-one"
+              />
+            </NftContainer>
           </IonRow>
           <IonRow className="ion-margin-top-xs ion-margin-bottom-xxs">
             <IonCol size="10" offset="1">
-              <PrimaryButton expand="block" onClick={transferNft}>
+              <PrimaryButton
+                style={{ width: '254px' }}
+                expand="block"
+                onClick={transferNft}
+              >
                 {t('Transfer')}
               </PrimaryButton>
             </IonCol>

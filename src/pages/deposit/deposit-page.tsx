@@ -60,11 +60,7 @@ export function DepositPage() {
 
   return (
     <LayoutWithActivityTab showRefresh={false} loading={isAddressesLoading}>
-      <IonGrid
-        style={{
-          padding: '8px 16px',
-        }}
-      >
+      <IonGrid className="ion-padding-top-xs ion-padding-bottom-xs ion-padding-left-md ion-padding-right-md">
         <IonRow class="ion-justify-content-center ion-grid-row-gap-xxs">
           <IonCol class="ion-center" size="12">
             <CoinWrapper>

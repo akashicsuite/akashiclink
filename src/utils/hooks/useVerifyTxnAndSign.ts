@@ -1,37 +1,56 @@
 import { datadogRum } from '@datadog/browser-rum';
+import type {
+  CoinSymbol,
+  CurrencySymbol,
+  IBaseAcTransaction,
+} from '@helium-pay/backend';
 import {
-  type ITransactionProposal,
-  type ITransactionVerifyResponse,
+  type IWithdrawalProposal,
   keyError,
   L2Regex,
   TransactionLayer,
 } from '@helium-pay/backend';
 
 import type { ValidatedAddressPair } from '../../components/send-deposit/send-form/types';
-import { useAppSelector } from '../../redux/app/hooks';
-import { selectCacheOtk } from '../../redux/slices/accountSlice';
-import { selectFocusCurrencyDetail } from '../../redux/slices/preferenceSlice';
 import { OwnersAPI } from '../api';
 import {
-  convertFromDecimals,
+  convertFromSmallestUnit,
   convertObjectCurrencies,
-  convertToFromDecimals,
+  convertToSmallestUnit,
 } from '../currency';
 import { calculateInternalWithdrawalFee } from '../internal-fee';
+import type {
+  ITransactionForSigning,
+  L2TxDetail,
+} from '../nitr0gen/nitr0gen.interface';
 import { Nitr0genApi, signTxBody } from '../nitr0gen/nitr0gen-api';
 import { unpackRequestErrorMessage } from '../unpack-request-error-message';
 import { useAccountMe } from './useAccountMe';
 import { useExchangeRates } from './useExchangeRates';
 import { useAccountStorage } from './useLocalAccounts';
 
+export interface UseVerifyAndSignResponse {
+  /** The signed txn sent to the chain. NOTE: the monetary amounts are in the
+   * smallest, indivisible units, which is not typical for client code. */
+  signedTxn: IBaseAcTransaction;
+  /** The txn with extra contextual data, useful for caching */
+  txn: ITransactionForSigning;
+  /** The delegated fee, if any. In UI units (in contrast to the txn) */
+  delegatedFee?: string;
+}
+
 export const useVerifyTxnAndSign = () => {
-  const { chain, token } = useAppSelector(selectFocusCurrencyDetail);
-  const cacheOtk = useAppSelector(selectCacheOtk);
   const { activeAccount } = useAccountStorage();
   const { exchangeRates } = useExchangeRates();
   const { data: account } = useAccountMe();
+  const { cacheOtk } = useAccountStorage();
 
-  return async (validatedAddressPair: ValidatedAddressPair, amount: string) => {
+  return async (
+    validatedAddressPair: ValidatedAddressPair,
+    amount: string,
+    coinSymbol: CoinSymbol,
+    tokenSymbol?: CurrencySymbol
+  ): Promise<string | UseVerifyAndSignResponse> => {
     const isL2 = L2Regex.exec(validatedAddressPair?.convertedToAddress);
     const nitr0genApi = new Nitr0genApi();
 
@@ -40,78 +59,79 @@ export const useVerifyTxnAndSign = () => {
         return 'GenericFailureMsg';
       }
 
-      let txns: ITransactionVerifyResponse[];
-
       if (isL2) {
-        // AC needs smallest units, so we convert
-        const transactionData: ITransactionProposal = {
+        const l2TransactionData: L2TxDetail = {
           initiatedToNonL2: !L2Regex.exec(
             validatedAddressPair.userInputToAddress
           )
             ? validatedAddressPair.userInputToAddress
             : undefined,
           toAddress: validatedAddressPair.convertedToAddress,
-          amount: convertToFromDecimals(amount, chain, 'to', token),
-          coinSymbol: chain,
-          tokenSymbol: token,
+          initiatedToL1LedgerId: validatedAddressPair.initiatedToL1LedgerId,
+          // Backend accepts "normal" units, so we don't convert
+          amount,
+          coinSymbol,
+          tokenSymbol,
         };
-        if (activeAccount.identity === transactionData.toAddress)
+        if (activeAccount.identity === l2TransactionData.toAddress)
           throw new Error(keyError.noSelfSend);
 
         const txBody = await nitr0genApi.L2Transaction(
           cacheOtk,
-          transactionData
+          // AC needs smallest units, so we convert
+          convertObjectCurrencies(l2TransactionData, convertToSmallestUnit)
         );
-        // Convert back to "normal" units for displaying to user
-        txns = [
-          {
-            ...convertObjectCurrencies(transactionData, convertFromDecimals),
-            internalFee: {
-              withdraw: calculateInternalWithdrawalFee(
-                exchangeRates,
-                chain,
-                token
-              ),
-            },
-            layer: TransactionLayer.L2,
-            fromAddress: activeAccount.identity,
-            txToSign: txBody,
+
+        const txn: ITransactionForSigning = {
+          ...l2TransactionData,
+          identity: activeAccount.identity,
+          internalFee: {
+            withdraw: calculateInternalWithdrawalFee(
+              exchangeRates,
+              coinSymbol,
+              tokenSymbol
+            ),
           },
-        ];
+          layer: TransactionLayer.L2,
+          fromAddress: activeAccount.identity,
+          txToSign: txBody,
+        };
 
         return {
-          txns,
-          signedTxns: [txBody],
+          txn,
+          signedTxn: txBody,
         };
-      } else {
+      }
+
+      const transactionData: IWithdrawalProposal = {
+        identity: activeAccount.identity,
+        toAddress: validatedAddressPair.convertedToAddress,
         // Backend accepts "normal" units, so we don't convert
-        const transactionData: ITransactionProposal = {
-          toAddress: validatedAddressPair.convertedToAddress,
-          amount,
-          coinSymbol: chain,
-          tokenSymbol: token,
-        };
+        amount,
+        coinSymbol,
+        tokenSymbol,
+      };
 
-        txns = await OwnersAPI.verifyTransactionUsingClientSideOtk(
-          transactionData
-        );
-      }
-
-      // reject the request if /verify returns multiple transfers
-      // for L2: multiple transactions from the same Nitr0gen identity can always be combined into a single one
-      if ((!isL2 && txns.length > 1) || txns.length === 0) {
-        return 'GenericFailureMsg';
-      }
-
-      // sign txns and move to final confirmation
-      // Okay to assert since we have filtered out on the line before
-      const signedTxns = await Promise.all(
-        txns
-          .filter((res) => !!res.txToSign)
-          .map((res) => signTxBody(res.txToSign!, cacheOtk))
+      const { preparedTxn, fromAddress, delegatedFee } =
+        await OwnersAPI.prepareL1Txn(transactionData);
+      const signedTxn = await signTxBody(preparedTxn, cacheOtk);
+      const uiFeesEstimate = convertFromSmallestUnit(
+        preparedTxn.$tx.metadata?.feesEstimate ?? '0',
+        coinSymbol
       );
+      const txn: ITransactionForSigning = {
+        identity: activeAccount.identity,
+        fromAddress,
+        toAddress: validatedAddressPair.convertedToAddress,
+        amount,
+        coinSymbol,
+        tokenSymbol,
+        feesEstimate: uiFeesEstimate,
+        layer: TransactionLayer.L1,
+        txToSign: signedTxn,
+      };
 
-      return { txns, signedTxns };
+      return { txn, signedTxn, delegatedFee };
     } catch (error) {
       datadogRum.addError(error);
       return unpackRequestErrorMessage(error);

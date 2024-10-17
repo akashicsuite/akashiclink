@@ -9,7 +9,7 @@ import { akashicPayPath } from '../../routing/navigation-tabs';
 import { List } from '../common/list/list';
 
 const StyledIonItem = styled(IonItem)`
-  --background: var(--ion-background-color);
+  --background: transparent;
 `;
 
 export const AccountManagementList = ({
@@ -22,7 +22,7 @@ export const AccountManagementList = ({
   const { t } = useTranslation();
 
   return (
-    <List>
+    <List style={{ backgroundColor: 'transparent' }}>
       <StyledIonItem detail={false} button onClick={onClickRemove}>
         <IonIcon
           style={{ fontSize: 18 }}
@@ -65,6 +65,7 @@ export const AccountManagementList = ({
         routerLink={akashicPayPath(urls.createWalletPassword)}
         routerOptions={{ unmount: true }}
       >
+        <IonIcon style={{ fontSize: 20 }} color={'primary'} icon={addOutline} />
         <IonText
           color={'primary'}
           className={
@@ -73,7 +74,6 @@ export const AccountManagementList = ({
         >
           {t('CreateWallet')}
         </IonText>
-        <IonIcon style={{ fontSize: 18 }} color={'primary'} icon={addOutline} />
       </StyledIonItem>
     </List>
   );

@@ -31,6 +31,7 @@ import {
   historyReplace,
   historyResetStackAndRedirect,
 } from '../../routing/history';
+import { EXTENSION_EVENT, responseToSite } from '../../utils/chrome';
 import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
 import { createAccountWithKeys } from './akashic-chain-interaction';
 
@@ -109,6 +110,10 @@ export function CreateWalletSecretConfirm({ isPopup = false }) {
 
       if (isPopup) {
         dispatch(onClear());
+      } else {
+        await responseToSite({
+          event: EXTENSION_EVENT.USER_LOCKED_WALLET,
+        });
       }
 
       historyResetStackAndRedirect(urls.createWalletSuccessful);
@@ -131,7 +136,7 @@ export function CreateWalletSecretConfirm({ isPopup = false }) {
       {isCreatingAccount && (
         <Spinner header={'CreatingYourWallet'} warning={'DoNotClose'} />
       )}
-      <MainGrid style={{ padding: 0 }}>
+      <MainGrid className="ion-padding-0">
         <IonRow className={'ion-grid-column-gap-0'}>
           <IonCol size="12" style={{ textAlign: 'center' }}>
             <h2

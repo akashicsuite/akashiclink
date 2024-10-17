@@ -20,7 +20,11 @@ export const SendForm = () => {
   };
 
   return (
-    <IonGrid style={{ padding: '4px 16px' }}>
+    <IonGrid
+      className={
+        'ion-padding-top-xxs ion-padding-bottom-xxs ion-padding-left-md ion-padding-right-md'
+      }
+    >
       <SendAddressInput
         validatedAddressPair={validatedAddressPair}
         onAddressValidated={onAddressValidated}

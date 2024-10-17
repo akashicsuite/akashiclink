@@ -17,12 +17,14 @@ export const SendDetailBox = ({
   validatedAddressPair,
   amount,
   fee,
+  isFeeDelegated = false,
   currencySymbol,
 }: {
   validatedAddressPair: ValidatedAddressPair;
   amount: string;
   fee: string;
   currencySymbol: string;
+  isFeeDelegated: boolean;
 }) => {
   const { t } = useTranslation();
   const { chain } = useAppSelector(selectFocusCurrencyDetail);
@@ -70,7 +72,9 @@ export const SendDetailBox = ({
             labelBold
           />
           <ListLabelValueItem
-            label={t(isL2 ? 'Fee' : 'GasFee')}
+            label={t(
+              isL2 ? 'Fee' : isFeeDelegated ? 'DelegatedGasFee' : 'GasFee'
+            )}
             value={
               isL2
                 ? `${Big(fee).toFixed(precision)} ${currencySymbol}`

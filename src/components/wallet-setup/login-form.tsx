@@ -4,15 +4,9 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { historyResetStackAndRedirect } from '../../routing/history';
-import { OwnersAPI } from '../../utils/api';
-import { useAccountMe } from '../../utils/hooks/useAccountMe';
 import { useFetchAndRemapAASToAddress } from '../../utils/hooks/useFetchAndRemapAASToAddress';
 import { useIosScrollPasswordKeyboardIntoView } from '../../utils/hooks/useIosScrollPasswordKeyboardIntoView';
 import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
-import { useMyTransfers } from '../../utils/hooks/useMyTransfers';
-import { useNftTransfersMe } from '../../utils/hooks/useNftTransfersMe';
-import { useOwner } from '../../utils/hooks/useOwner';
-import { signAuthenticationData } from '../../utils/otk-generation';
 import { unpackRequestErrorMessage } from '../../utils/unpack-request-error-message';
 import { AccountSelection } from '../account-selection/account-selection';
 import {
@@ -42,10 +36,6 @@ export function LoginForm({ isPopup = false }) {
     setActiveAccount,
   } = useAccountStorage();
   const [password, setPassword] = useState<string>('');
-  const { mutateOwner } = useOwner();
-  const { mutateMyTransfers } = useMyTransfers();
-  const { mutateNftTransfersMe } = useNftTransfersMe();
-  const { mutate: mutateAccountMe } = useAccountMe();
   const fetchAndRemapAASToAddress = useFetchAndRemapAASToAddress();
 
   addPrefixToAccounts();
@@ -72,15 +62,7 @@ export function LoginForm({ isPopup = false }) {
         activeAccount.identity,
         password
       );
-      if (localSelectedOtk) {
-        await OwnersAPI.loginV1({
-          identity: localSelectedOtk.identity,
-          signedAuth: signAuthenticationData(
-            localSelectedOtk.key.prv.pkcs8pem,
-            localSelectedOtk.identity
-          ),
-        });
-      } else {
+      if (!localSelectedOtk) {
         throw new Error(
           `localSelectedOtk not found may due to old account not migrated, ${activeAccount.identity}`
         );
@@ -90,10 +72,6 @@ export function LoginForm({ isPopup = false }) {
         id: activeAccount.username,
       });
       // Set the login account
-      await mutateOwner();
-      await mutateMyTransfers();
-      await mutateNftTransfersMe();
-      await mutateAccountMe();
       await fetchAndRemapAASToAddress(activeAccount.identity);
 
       setPassword('');

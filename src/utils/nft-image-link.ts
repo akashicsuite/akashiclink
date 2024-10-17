@@ -1,3 +1,5 @@
+import { chooseBestNodes, PortType } from './nitr0gen/nitr0gen.utils';
+
 /**
  *
  * @param identity ledgerId of nft
@@ -5,10 +7,11 @@
  * @param width size of picture in px?
  * @returns
  */
-export function getNftImage(
+export async function getNftImage(
   identity: string,
   width = '300',
   quality = '100'
-): string {
-  return `https://nft.akashicchain.com/cdn-cgi/image/width=${width},quality=${quality}/nft/image/${identity}`;
+): Promise<string> {
+  const NITR0_URL = await chooseBestNodes(PortType.NFT);
+  return `${NITR0_URL}cdn-cgi/image/width=${width},quality=${quality}/nft/image/${identity}`;
 }

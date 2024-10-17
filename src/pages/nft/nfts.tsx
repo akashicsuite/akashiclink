@@ -22,8 +22,6 @@ export const NoNtfWrapper = styled(IonCol)({
 });
 
 const StyledNftWrapper = styled.div({
-  height: '408px',
-  width: '328px',
   margin: '16px 8px',
   ['&:last-child']: {
     marginBottom: '40px',
@@ -79,7 +77,7 @@ export function Nfts() {
         <IonGrid>
           <IonRow className="ion-justify-content-center">
             <IonCol className="ion-center">
-              <div>
+              <div style={{ marginTop: '50%' }}>
                 <AlertIcon />
                 <NoNtfText>{t('DoNotOwnNfts')}</NoNtfText>
               </div>
@@ -106,6 +104,7 @@ export function Nfts() {
               nft={nft}
               select={() => selectNft(nft)}
               isAASDarkStyle={!isDarkMode}
+              nftImgWrapper="nft-wrapper-list"
             />
           )}
         ></Virtuoso>

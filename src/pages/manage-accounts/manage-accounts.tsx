@@ -5,25 +5,21 @@ import { useTranslation } from 'react-i18next';
 import { SquareWhiteButton } from '../../components/common/buttons';
 import { MainGrid } from '../../components/layout/main-grid';
 import { AccountList } from '../../components/manage-account/account-list';
-import { DashboardLayout } from '../../components/page-layout/dashboard-layout';
 import { PublicLayout } from '../../components/page-layout/public-layout';
 import { urls } from '../../constants/urls';
 import { historyGoBackOrReplace } from '../../routing/history';
-import { useOwner } from '../../utils/hooks/useOwner';
+import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
 
 export function ManageAccounts() {
-  const { authenticated } = useOwner();
-
+  const { authenticated } = useAccountStorage();
   const { t } = useTranslation();
 
   const onClickBackButton = () => {
     historyGoBackOrReplace(authenticated ? urls.dashboard : urls.akashicPay);
   };
 
-  const Layout = authenticated ? DashboardLayout : PublicLayout;
-
   return (
-    <Layout>
+    <PublicLayout>
       <MainGrid
         className={'vertical'}
         style={{
@@ -63,6 +59,6 @@ export function ManageAccounts() {
           </IonCol>
         </IonRow>
       </MainGrid>
-    </Layout>
+    </PublicLayout>
   );
 }

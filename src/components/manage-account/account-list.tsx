@@ -10,15 +10,17 @@ import { AccountManagementList } from './account-management-list';
 import { DeleteAccountModal } from './delete-account-modal';
 
 const StyledList = styled(IonList)({
-  backgroundColor: 'var(--ion-background)',
+  backgroundColor: 'transparent',
   marginBottom: 16,
-  overflow: 'scroll',
-  ['ion-item::part(native)']: {
-    '--padding-start': 0,
-    '--inner-padding-end': 0,
-  },
+  paddingBottom: 8,
+  overflowY: 'scroll',
 });
-export const AccountList = () => {
+
+interface AccountListProps {
+  style?: React.CSSProperties;
+  height?: string;
+}
+export const AccountList: React.FC<AccountListProps> = ({ height, style }) => {
   const { localAccounts, activeAccount, setActiveAccount } =
     useAccountStorage();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -47,9 +49,12 @@ export const AccountList = () => {
     <>
       <StyledList
         style={{
-          height: `calc(100vh - ${
-            isMobile ? '368px - var(--ion-safe-area-bottom)' : '320px'
-          })`,
+          height: height
+            ? height
+            : `calc(100vh - ${
+                isMobile ? '320px - var(--ion-safe-area-bottom)' : '280px'
+              })`,
+          ...style,
         }}
         lines={'full'}
       >

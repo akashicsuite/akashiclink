@@ -1,17 +1,8 @@
 import { Preferences } from '@capacitor/preferences';
-import type {
-  IBaseTransactionWithDbIndex,
-  IL1ClientSideOtkTransactionBase,
-  ITerriTransaction,
-  ITransactionProposalClientSideOtk,
-  ITransactionVerifyResponse,
-} from '@helium-pay/backend';
+import type { ITransactionProposalClientSideOtk } from '@helium-pay/backend';
 import { createMemoryHistory } from 'history';
 
-import type {
-  SendConfirmationTxnFinal,
-  ValidatedAddressPair,
-} from '../components/send-deposit/send-form/types';
+import type { SendConfirmationTxnsDetail } from '../components/send-deposit/send-form/types';
 import { LAST_HISTORY_ENTRIES } from '../constants';
 import type { Url } from '../constants/urls';
 import { urls } from '../constants/urls';
@@ -29,19 +20,10 @@ export interface LocationState {
     transaction?: TransferResultType;
     errorMsg?: string;
   };
-  sendConfirm?: {
-    txns: ITransactionVerifyResponse[];
-    signedTxns: (IBaseTransactionWithDbIndex | ITerriTransaction)[];
-    validatedAddressPair: ValidatedAddressPair;
-    amount: string;
-    txnFinal?: SendConfirmationTxnFinal;
-  };
+  sendConfirm?: SendConfirmationTxnsDetail;
   sendResult?: {
     fromAddress: string;
-    transaction?: (
-      | IL1ClientSideOtkTransactionBase
-      | ITransactionProposalClientSideOtk
-    )[];
+    transaction?: ITransactionProposalClientSideOtk[];
     errorMsg?: string;
     currencyDisplayName?: string;
   };

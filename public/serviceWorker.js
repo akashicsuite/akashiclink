@@ -1,5 +1,14 @@
 let webPort;
-let lastPopupId;
+
+const REQUEST_TYPE = {
+  WEB_REQUEST: 'webPageRequest',
+  CLOSE_POPUP: 'closePopup',
+};
+
+const WALLET_METHOD = {
+  UNLOCK_WALLET: 'UNLOCK_WALLET',
+  LOCK_WALLET: 'LOCK_WALLET'
+}
 
 const ETH_METHOD = {
   PERSONAL_SIGN: 'personal_sign',
@@ -19,30 +28,62 @@ const appendQuery = (query, request, list) => {
   });
 };
 
+const closeAllPopup = async () => {
+  try {
+    const context = await chrome.runtime.getContexts({
+      contextTypes: ['TAB'],
+    });
+
+    context.forEach((ctx) => {
+      chrome.windows.remove(ctx.windowId);
+    });
+  } catch (e) {
+    console.warn(e);
+  }
+};
+
 // ---- Upon receive single message within extension
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   // forward message to AP
-  if (sender.id === chrome.runtime.id) {
+  if (webPort && sender.id === chrome.runtime.id) {
     webPort.postMessage(request);
   }
 });
 
 // ---- Upon receive single message outside extension
-// chrome.runtime.onMessageExternal.addListener(function (
-//   request,
-//   sender,
-//   sendResponse
-// ) {
-// });
+chrome.runtime.onMessageExternal.addListener(async function (
+  request,
+  sender,
+  sendResponse
+) {
+  if (request.type === REQUEST_TYPE.WEB_REQUEST && request.method === WALLET_METHOD.LOCK_WALLET) {
+    const query = new URLSearchParams();
+    appendQuery(query, request, SHARED_PARAMS);
+
+    await chrome.windows.create({
+      state: 'minimized',
+      type: 'popup',
+      url: `chrome-extension://${
+        chrome.runtime.id
+      }/index.html?${query.toString()}`,
+    });
+    return;
+  }
+
+});
 
 // ---- Upon receive external connection request
 chrome.runtime.onConnectExternal.addListener(function (port) {
   webPort = port;
 
   port.onMessage.addListener(async (request, sender, sendResponse) => {
-    if (request.type !== 'webPageRequest') {
-      //TODO: handle other types
-      port.postMessage({ received: request });
+    if (request.type === REQUEST_TYPE.CLOSE_POPUP) {
+      await closeAllPopup();
+      return;
+    }
+
+    if (request.type !== REQUEST_TYPE.WEB_REQUEST) {
+      port.postMessage({received: request});
       return;
     }
 
@@ -60,57 +101,67 @@ chrome.runtime.onConnectExternal.addListener(function (port) {
       appendQuery(query, request, SIGN_TYPED_DATA_PARAMS);
     }
 
-    // Do not create a new window but focus on the existing one if there is one
-    try {
-      await chrome.windows.update(lastPopupId, {
-        focused: true,
+    const activeWindow = await chrome.runtime.getContexts({
+      contextTypes: ['TAB'],
+    });
+    if (activeWindow.length > 0) {
+      // TODO: how to use await chrome.tabs.update without trigger popup closed?
+      // Do not create a new window but focus on the existing one if there is one
+      await chrome.windows.update(activeWindow?.[0].windowId, {
+        drawAttention: true,
       });
-
-    } catch (e) {
-
-      const newWindow = await chrome.windows.create({
-        focused: true,
-        height: 720,
-        width: 360,
-        type: 'popup',
-        url: `chrome-extension://${
-          chrome.runtime.id
-        }/index.html?${query.toString()}`,
-      });
-
-      lastPopupId = newWindow.id;
+      return
     }
 
+    await chrome.windows.create({
+      focused: true,
+      height: 720,
+      width: 360,
+      type: 'popup',
+      url: `chrome-extension://${
+        chrome.runtime.id
+      }/index.html?${query.toString()}`,
+    });
+
+  });
+
+  port.onDisconnect.addListener(async (request, sender, sendResponse) => {
+    try {
+      await closeAllPopup();
+    } catch (e) {
+      console.error(e);
+    }
   });
 });
 
 // ---- Handle Auto lock event
-const ALARM_NAME = "autoLockAlarm"
-const AUTOLOCKBY_KEY = "autoLockBy"
+const ALARM_NAME = 'autoLockAlarm';
+const AUTOLOCKBY_KEY = 'autoLockBy';
 
 const informSiteAutoLock = async (alarm) => {
-  const { autoLockBy } = await chrome.storage.local.get(AUTOLOCKBY_KEY);
+  const { autoLockBy } = await chrome.storage.session.get(AUTOLOCKBY_KEY);
+
   if (webPort && Date.now() >= autoLockBy) {
     webPort.postMessage({
-      event: 'WALLET_AUTO_LOCKED'
+      event: 'WALLET_AUTO_LOCKED',
     });
   }
-}
+};
 
 const checkAlarmState = async (alarm) => {
-  const { autoLockBy } = await chrome.storage.local.get(AUTOLOCKBY_KEY);
+  const { autoLockBy } = await chrome.storage.session.get(AUTOLOCKBY_KEY);
 
   if (autoLockBy) {
     const alarm = await chrome.alarms.get(ALARM_NAME);
     if (alarm) {
       await chrome.alarms.clear(ALARM_NAME);
     }
-    await chrome.alarms.create(ALARM_NAME, { when: autoLockBy });
+    await chrome.alarms.create(ALARM_NAME, {when: autoLockBy});
   }
 
   chrome.alarms.onAlarm.addListener(informSiteAutoLock);
-}
+};
 
 checkAlarmState();
 
-chrome.storage.onChanged.addListener(checkAlarmState)
+chrome.storage.onChanged.addListener(checkAlarmState);

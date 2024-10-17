@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { urls } from '../../../constants/urls';
+import { useAppSelector } from '../../../redux/app/hooks';
+import { selectFocusCurrencyDetail } from '../../../redux/slices/preferenceSlice';
 import { history, historyGoBackOrReplace } from '../../../routing/history';
 import { akashicPayPath } from '../../../routing/navigation-tabs';
 import { useFocusCurrencySymbolsAndBalances } from '../../../utils/hooks/useAggregatedBalances';
@@ -31,6 +33,7 @@ export const SendFormActionButtons: FC<SendFormActionButtonsProps> = ({
 }) => {
   const { t } = useTranslation();
   const { nativeCoinSymbol } = useFocusCurrencySymbolsAndBalances();
+  const { chain, token } = useAppSelector(selectFocusCurrencyDetail);
 
   const [alert, setAlert] = useState(formAlertResetState);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +44,12 @@ export const SendFormActionButtons: FC<SendFormActionButtonsProps> = ({
     try {
       setIsLoading(true);
 
-      const res = await verifyTxnAndSign(validatedAddressPair, amount);
+      const res = await verifyTxnAndSign(
+        validatedAddressPair,
+        amount,
+        chain,
+        token
+      );
       if (typeof res === 'string') {
         setAlert(
           errorAlertShell(res, {
@@ -57,8 +65,9 @@ export const SendFormActionButtons: FC<SendFormActionButtonsProps> = ({
         pathname: akashicPayPath(urls.sendConfirm),
         state: {
           sendConfirm: {
-            txns: res.txns,
-            signedTxns: res.signedTxns,
+            txn: res.txn,
+            signedTxn: res.signedTxn,
+            delegatedFee: res.delegatedFee,
             validatedAddressPair,
             amount,
           },

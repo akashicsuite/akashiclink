@@ -8,6 +8,8 @@ type ListProps = JSX.IonList & {
   bordered?: boolean;
   compact?: boolean;
   children: ReactNode;
+  style?: React.CSSProperties;
+  className?: string;
 };
 
 const StyledList = styled(IonList)<{ bordered: boolean; compact: boolean }>(

@@ -174,6 +174,8 @@ export function AlertBox({
       style={{
         ...(state.visible && {
           border: `1px solid ${style?.color || color}`,
+          justifyContent: 'left',
+          padding: '0 5%',
         }),
       }}
     >

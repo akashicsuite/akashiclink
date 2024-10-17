@@ -66,9 +66,8 @@ export const LanguageDropdown = () => {
       >
         <IonList
           lines="none"
-          style={{
-            padding: 0,
-          }}
+          className="ion-padding-0"
+          style={{ backgroundColor: 'var(--ion-modal-background)' }}
         >
           {LANGUAGE_LIST.map((item) => (
             <IonItem
@@ -78,7 +77,7 @@ export const LanguageDropdown = () => {
               detail={false}
               onClick={(_) => setGlobalLanguage(item.locale)}
             >
-              {item.title.toUpperCase()}
+              {item.title}
             </IonItem>
           ))}
         </IonList>

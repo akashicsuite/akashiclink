@@ -86,16 +86,9 @@ export const SendAmountInputAndDetail = ({
     }
 
     // if L1, balance must be larger than amount,
-    // and native coin balance must be larger than 0 (pay gas fee)
+    // if native coin balance is zero/not enough to pay gas fee, gas fee will be delegated
     if (userInputAmount.gt(Big(currencyBalance ?? 0))) {
       setAlert(errorAlertShell('SavingsExceeded'));
-    }
-    if (Big(nativeCoinBalance).lte(0)) {
-      setAlert(
-        errorAlertShell('showNativeCoinNeededMsg', {
-          coinSymbol: nativeCoinSymbol,
-        })
-      );
     }
 
     // TODO: balance must be larger than amount + fee estimated
@@ -170,6 +163,10 @@ export const SendAmountInputAndDetail = ({
           validatedAddressPair={validatedAddressPair}
           amount={amount}
           fee={calculateL2Fee()}
+          isFeeDelegated={
+            // TODO: perform a more accute checking to see if nativeCoinBalance is enough to pay gas fee
+            !isL2 && isCurrencyTypeToken && Big(nativeCoinBalance).eq(0)
+          }
           currencySymbol={networkCurrencyCombinedDisplayName}
         />
       )}

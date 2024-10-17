@@ -11,7 +11,7 @@ import { useAppDispatch } from '../../redux/app/hooks';
 import { onClear } from '../../redux/slices/importWalletSlice';
 import { historyResetStackAndRedirect } from '../../routing/history';
 import { useFetchAndRemapAASToAddress } from '../../utils/hooks/useFetchAndRemapAASToAddress';
-import { useOwner } from '../../utils/hooks/useOwner';
+import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
 
 export const StyledSpan = styled.span({
   fontSize: '12px',
@@ -23,14 +23,13 @@ export const StyledSpan = styled.span({
 export const ImportWalletSuccessful = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { mutateOwner, owner } = useOwner();
   const fetchAndRemapAASToAddress = useFetchAndRemapAASToAddress();
+  const { activeAccount } = useAccountStorage();
 
   const handleOnConfirm = async () => {
     dispatch(onClear());
-    await mutateOwner();
-    if (owner?.ownerIdentity) {
-      await fetchAndRemapAASToAddress(owner.ownerIdentity);
+    if (activeAccount?.identity) {
+      await fetchAndRemapAASToAddress(activeAccount?.identity);
     }
     // migration flow is finished, completely reset router history
     historyResetStackAndRedirect();

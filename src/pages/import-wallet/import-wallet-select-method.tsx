@@ -14,12 +14,12 @@ import { PublicLayout } from '../../components/page-layout/public-layout';
 import { urls } from '../../constants/urls';
 import { historyGoBackOrReplace } from '../../routing/history';
 import { akashicPayPath } from '../../routing/navigation-tabs';
-import { useOwner } from '../../utils/hooks/useOwner';
+import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
 
 export const ImportWalletSelectMethod = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { authenticated } = useOwner();
+  const { authenticated } = useAccountStorage();
 
   const onBackButton = () => {
     historyGoBackOrReplace(authenticated ? urls.dashboard : urls.akashicPay);

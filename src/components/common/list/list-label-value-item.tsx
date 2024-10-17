@@ -23,9 +23,9 @@ export const ListLabelValueItem: FC<ListLabelValueRowProps> = ({
 }) => {
   return (
     <IonItem className={'ion-align-items-start'}>
-      <IonLabel>
+      <IonLabel style={{ textWrap: 'nowrap' }}>
         <span
-          className={`ion-text-color-primary-10 ion-text-size-${labelSize}  ${
+          className={`ion-text-color-primary-10 ion-text-size-${labelSize} ion-padding-right-sm ion-nowrap ion-text-nowrap ion-flex-1 ${
             labelBold ? 'ion-text-bold' : ''
           }`}
         >
@@ -33,9 +33,12 @@ export const ListLabelValueItem: FC<ListLabelValueRowProps> = ({
         </span>
       </IonLabel>
       <IonNote
-        className={`ion-text-size-${valueSize} ion-flex-direction-column ion-display-flex ion-no-margin ${
+        className={`ion-text-size-${valueSize} ion-flex-direction-column ion-display-flex ion-align-items-end ${
           valueBold ? 'ion-text-bold' : ''
-        }`}
+        } ion-no-margin ion-text-align-right`}
+        style={{
+          width: '62%',
+        }}
         slot={'end'}
       >
         <span className={'ion-text-color-primary-10'}>{value}</span>

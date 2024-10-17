@@ -1,18 +1,18 @@
 import { IonIcon } from '@ionic/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { REFRESH_BUTTON_DISABLED_TIME } from '../../../constants';
 import { useAppSelector } from '../../../redux/app/hooks';
 import { selectTheme } from '../../../redux/slices/preferenceSlice';
 import { themeType } from '../../../theme/const';
 import { useAccountMe } from '../../../utils/hooks/useAccountMe';
-import { useMyTransfers } from '../../../utils/hooks/useMyTransfers';
+import { useMyTransfersInfinite } from '../../../utils/hooks/useMyTransfersInfinite';
 import { useNftMe } from '../../../utils/hooks/useNftMe';
 import { useNftTransfersMe } from '../../../utils/hooks/useNftTransfersMe';
 import { SquareWhiteButton } from '../../common/buttons';
 
 export const RefreshDataButton = () => {
-  const { mutateMyTransfers } = useMyTransfers();
+  const { mutateMyTransfers } = useMyTransfersInfinite();
   const { mutateNftTransfersMe } = useNftTransfersMe();
   const { mutate: mutateAccountMe } = useAccountMe();
   const { mutateNftMe } = useNftMe();

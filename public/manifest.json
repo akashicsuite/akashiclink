@@ -5,13 +5,14 @@
   "version": "0.0.33",
   "releaseDate": "2024-01-30",
   "icons": {
-    "16": "shared-assets/icons/Icon_128px.png",
-    "48": "shared-assets/icons/Icon_128px.png",
-    "128": "shared-assets/icons/Icon_128px.png"
+    "16": "shared-assets/icons/extension-icon/Icon16.png",
+    "32": "shared-assets/icons/extension-icon/Icon32.png",
+    "48": "shared-assets/icons/extension-icon/Icon48.png",
+    "128": "shared-assets/icons/extension-icon/Icon128.png"
   },
   "manifest_version": 3,
   "action": {
-    "default_icon": "shared-assets/icons/Icon_128px.png",
+    "default_icon": "shared-assets/icons/extension-icon/Icon128.png",
     "default_title": "AkashicLink Staging",
     "default_popup": "index.html"
   },
@@ -25,7 +26,8 @@
     "matches": [
       "https://*.akashicpay.com/*",
       "https://*.staging-akashicpay.com/*",
-      "http://localhost:3000/*"
+      "http://localhost:3000/*",
+      "http://localhost:3001/*"
     ]
   }
 }

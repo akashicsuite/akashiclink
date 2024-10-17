@@ -1,0 +1,21 @@
+/* classes for the width of the different screens where we use one-nft component.
+doing like this and passing a class to avoid chaining ternary operators or more verbose styling logic */
+.nft-wrapper-list {
+  width: 309px;
+  min-height: 366px;
+}
+
+.nft-wrapper-one {
+  width: 254px;
+  min-height: 302px;
+}
+
+.nft-wrapper-transfer {
+  width: 197px;
+  min-height: 232px;
+}
+
+.nft-wrapper-txn-details {
+  width: 194px;
+  min-height: 232px;
+}

@@ -3,6 +3,9 @@ import { TransactionStatus } from '@helium-pay/backend';
 import { IonImg } from '@ionic/react';
 import { useTranslation } from 'react-i18next';
 
+import { useAppSelector } from '../../redux/app/hooks';
+import { selectTheme } from '../../redux/slices/preferenceSlice';
+import { themeType } from '../../theme/const';
 import type { ITransactionRecordForExtension } from '../../utils/formatTransfers';
 import { List } from '../common/list/list';
 import { ListVerticalLabelValueItem } from '../common/list/list-vertical-label-value-item';
@@ -27,6 +30,7 @@ export function BaseDetails({
   currentTransfer: ITransactionRecordForExtension;
 }) {
   const { t } = useTranslation();
+  const storedTheme = useAppSelector(selectTheme);
   const statusString = (status: string | undefined) => {
     switch (status) {
       case 'Any':
@@ -44,23 +48,24 @@ export function BaseDetails({
 
   return (
     <div
-      className="transfer-detail"
+      className="transfer-detail ion-margin-top-lg"
       style={{
         display: 'flex',
         gap: '16px',
         flexDirection: 'column',
-        marginTop: '24px',
       }}
     >
       <DetailColumn>
-        <h4 className="ion-margin-0">{t('Status')}</h4>
+        <h4 className="ion-margin-0 ion-text-size-xs">{t('Status')}</h4>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <h4 className="ion-no-margin">
+          <h4 className="ion-no-margin ion-text-size-xs">
             {statusString(currentTransfer.status)}
           </h4>
           <IonImg
-            src={`/shared-assets/images/${currentTransfer.status?.toLocaleLowerCase()}.png`}
-            style={{ width: '16px', height: '16px' }}
+            src={`/shared-assets/images/${currentTransfer.status}-${
+              storedTheme === themeType.DARK ? 'dark' : 'white'
+            }.svg`}
+            style={{ width: '20px', height: '20px' }}
           />
         </div>
       </DetailColumn>

@@ -1,6 +1,6 @@
 import type {
-  IBaseTransactionWithDbIndex,
-  ITerriTransaction,
+  IBaseAcTransaction,
+  ITerriAcTransaction,
 } from '@helium-pay/backend';
 import { otherError } from '@helium-pay/backend';
 import { IonAlert, IonCol, IonRow } from '@ionic/react';
@@ -17,8 +17,10 @@ import {
   historyReplace,
   historyResetStackAndRedirect,
 } from '../../../routing/history';
-import { OwnersAPI } from '../../../utils/api';
-import { useSendL2Transaction } from '../../../utils/hooks/nitr0gen';
+import {
+  useSendL1Transaction,
+  useSendL2Transaction,
+} from '../../../utils/hooks/nitr0gen';
 import { useInterval } from '../../../utils/hooks/useInterval';
 import { useVerifyTxnAndSign } from '../../../utils/hooks/useVerifyTxnAndSign';
 import { unpackRequestErrorMessage } from '../../../utils/unpack-request-error-message';
@@ -50,6 +52,7 @@ export const SendConfirmationFormActionButtons = ({
   const { t } = useTranslation();
   const history = useHistory<LocationState>();
   const { trigger: triggerSendL2Transaction } = useSendL2Transaction();
+  const { trigger: triggerSendL1Transaction } = useSendL1Transaction();
 
   const [forceAlert, setForceAlert] = useState(formAlertResetState);
   const [formAlert, setFormAlert] = useState(formAlertResetState);
@@ -77,7 +80,9 @@ export const SendConfirmationFormActionButtons = ({
 
         const res = await verifyTxnAndSign(
           txnsDetail.validatedAddressPair,
-          txnsDetail.amount
+          txnsDetail.amount,
+          txnsDetail.txn.coinSymbol,
+          txnsDetail.txn.tokenSymbol
         );
 
         if (typeof res === 'string') {
@@ -87,8 +92,9 @@ export const SendConfirmationFormActionButtons = ({
 
         setTxnsDetail({
           ...txnsDetail,
-          txns: res.txns,
-          signedTxns: res.signedTxns,
+          txn: res.txn,
+          signedTxn: res.signedTxn,
+          delegatedFee: res.delegatedFee,
         });
       } catch (e) {
         setFormAlert(errorAlertShell(unpackRequestErrorMessage(e)));
@@ -103,50 +109,43 @@ export const SendConfirmationFormActionButtons = ({
     try {
       setFormAlert(formAlertResetState);
 
-      if (
-        !txnsDetail.txns ||
-        !txnsDetail.txns[0] ||
-        !txnsDetail?.signedTxns?.[0]
-      ) {
+      if (!txnsDetail.txn || !txnsDetail.signedTxn) {
         setFormAlert(errorAlertShell('GenericFailureMsg'));
         return;
       }
       setIsLoading(true);
 
-      const { txToSign: _, ...txn } = txnsDetail.txns[0];
-      const signedTxn = txnsDetail?.signedTxns[0];
+      const { txToSign: _, ...txn } = txnsDetail.txn;
+      const signedTxn = txnsDetail.signedTxn;
 
       const response = isL2
         ? await triggerSendL2Transaction({
             ...txn,
-            signedTx: signedTxn as IBaseTransactionWithDbIndex,
+            signedTx: signedTxn as IBaseAcTransaction,
             initiatedToNonL2:
               txnsDetail.validatedAddressPair.initiatedToNonL2 ?? '',
           })
-        : await OwnersAPI.sendL1TransactionUsingClientSideOtk([
-            {
-              ...txn,
-              signedTx: signedTxn as ITerriTransaction,
-            },
-          ]);
+        : await triggerSendL1Transaction({
+            ...txn,
+            signedTx: signedTxn as ITerriAcTransaction,
+          });
 
-      const res = Array.isArray(response) ? response[0] : response;
-
-      if (!res.isSuccess) {
-        throw new Error(res.reason);
+      if (!response.isSuccess) {
+        throw new Error(response.reason);
       }
 
       setTxnFinal({
-        txHash: res.txHash,
-        feesEstimate: res.feesEstimate,
+        txHash: response.txHash,
+        feesEstimate: response.feesEstimate,
+        delegatedFee: txnsDetail.delegatedFee,
       });
       if (history.location.state.sendConfirm) {
         historyReplace(urls.sendConfirm, {
           sendConfirm: {
             ...history.location.state.sendConfirm,
             txnFinal: {
-              txHash: res.txHash,
-              feesEstimate: res.feesEstimate,
+              txHash: response.txHash,
+              feesEstimate: response.feesEstimate,
             },
           },
         });

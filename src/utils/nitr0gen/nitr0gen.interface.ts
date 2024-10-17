@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { CoinSymbol, CurrencySymbol } from '@helium-pay/backend';
-
-import type { ITronTransaction } from './tron.interface';
+import type {
+  CoinSymbol,
+  CurrencySymbol,
+  IBaseAcTransaction,
+  IInternalFee,
+  ITerriAcTransaction,
+  ITransactionBase,
+  TransactionLayer,
+} from '@helium-pay/backend';
 
 /** ********* Internal Arguments/Responses ********* **/
 
@@ -11,22 +17,18 @@ export interface L2TxDetail {
   tokenSymbol?: CurrencySymbol;
   amount: string;
   initiatedToNonL2?: string;
+  /** LedgerId of L1 wallet if that was input but result was an L2. Helps effectivize some
+   * fee-proceedings for specific L2s on AC */
+  initiatedToL1LedgerId?: string;
 }
 
 export interface L1TxDetail {
   amount: string;
-  hex?: ITronTransaction;
   nonce?: number;
 }
 
 export interface IOnboardedIdentity {
   ledgerId: string;
-}
-
-export interface ICreatedKey {
-  ledgerId: string;
-  address: string;
-  hashes: string[];
 }
 
 /** ********* AC Responses ********* **/
@@ -59,56 +61,34 @@ export interface IKeyCreationResponse {
 
 /** ********* L1 Stuff ********* **/
 
-/**
- * Nitr0gen Contract for signing ethereum coin and token transfers
- */
-export interface Nitr0EthereumTrxSignature {
-  to: string;
-  from: string;
-  amount: string;
-  nonce: number;
-  chainId: number;
-  gas: string;
-  contractAddress?: string;
+export interface ITransactionSuccessResponse {
+  isSuccess: true;
+  txHash: string;
+  // Should probably not be optional. But fuck me this code is a mess.
+  feesEstimate?: string;
 }
-
-/**
- * Nitr0gen contract for signing tron coin and token transfers
- */
-export interface Nitr0TronTrxSignature {
-  to: string;
-  amount: unknown;
-  hex: ITronTransaction;
+export interface ITransactionFailureResponse {
+  isSuccess: false;
+  reason: string;
 }
+/**
+ * Describes response object returned by the backend when a transaction is sent
+ * to the blockchain and the transaction's promise is resolved/rejected
+ */
+export type ITransactionSettledResponse =
+  | ITransactionSuccessResponse
+  | ITransactionFailureResponse;
 
 /**
- * Nitr0gen contract for signing btc transfers
+ * Describes a transaction proposal with anticipated gas fee that still needs to:
+ * - Be signed
+ * - Be sent to AC
  */
-export interface Nitr0BtcSignature {
-  inputs: {
-    address: string;
-    txid: string;
-    outputIndex: number;
-    satoshis: number;
-    script: null;
-    scriptPubKey: null;
-  }[];
-  outputs: {
-    address: string;
-    satoshis: number;
-  }[];
-  fees: number;
-  to: string;
-  amount: string;
-}
-
-export type TransactionSignature =
-  | Nitr0EthereumTrxSignature
-  | Nitr0TronTrxSignature
-  | Nitr0BtcSignature;
-
-export interface INewNitr0genKey {
-  ledgerId: string;
-  address: string;
-  hashes: string[];
+export interface ITransactionForSigning extends ITransactionBase {
+  readonly internalFee?: IInternalFee;
+  readonly txToSign: IBaseAcTransaction | ITerriAcTransaction;
+  readonly layer: TransactionLayer;
+  // Presumably mandatory if layer-1... :/
+  readonly feesEstimate?: string;
+  readonly fromLedgerId?: string;
 }

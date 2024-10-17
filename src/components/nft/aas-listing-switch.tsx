@@ -9,8 +9,6 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../redux/app/hooks';
-import { selectCacheOtk } from '../../redux/slices/accountSlice';
 import { useUpdateAcns } from '../../utils/hooks/nitr0gen';
 import { useFetchAndRemapAASToAddress } from '../../utils/hooks/useFetchAndRemapAASToAddress';
 import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
@@ -67,9 +65,10 @@ const verifyUpdateAcns = (
   nfts: INft[],
   newValue?: string
 ) => {
+  // Show generic error
   if (newValue && ownerIdentity !== newValue)
     throw new Error(userConst.acnsOwnershipError);
-
+  // Show generic error
   if (acns.ownerIdentity !== ownerIdentity) {
     throw new Error(nftErrors.ownerIdentityShouldBeSame);
   }
@@ -88,8 +87,7 @@ export const AasListingSwitch = ({
   aas: IAcns;
   setAlert: React.Dispatch<React.SetStateAction<FormAlertState>>;
 }) => {
-  const cacheOtk = useAppSelector(selectCacheOtk);
-  const { activeAccount } = useAccountStorage();
+  const { activeAccount, cacheOtk } = useAccountStorage();
   const { nfts, mutateNftMe } = useNftMe();
   const { t } = useTranslation();
   const [isListed, setIsListed] = useState<boolean>(!!aas.value);
@@ -124,7 +122,7 @@ export const AasListingSwitch = ({
 
         const signedTx = await signTxBody(txToSign, signerOtk);
 
-        await triggerUpdateAcns({ signedTx, name: aas.name });
+        await triggerUpdateAcns(signedTx);
 
         await fetchAndRemapAASToAddress(activeAccount.identity);
       }
@@ -136,10 +134,10 @@ export const AasListingSwitch = ({
         : error instanceof Error // From time-link-restriction
         ? error.message
         : '';
-
+      const timeUnits = ['hours', 'minutes', 'seconds'];
       if (errorMsg === nftErrors.onlyOneAASLinkingAllowed) {
         setAlert(errorAlertShell('OnlyOneAAS'));
-      } else {
+      } else if (timeUnits.includes(errorMsg.split(' ')[1])) {
         setAlert(
           errorAlertShell('AASLinkingFailed', {
             name,
@@ -147,6 +145,8 @@ export const AasListingSwitch = ({
             timeUnit: t(errorMsg.split(' ')[1]),
           })
         );
+      } else {
+        setAlert(errorAlertShell('GenericFailureMsg'));
       }
     } finally {
       setIsLoading(false);

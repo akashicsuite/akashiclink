@@ -74,8 +74,7 @@ export function SettingItem({
       >
         {iconUrl && (
           <IonIcon
-            style={{ marginLeft: '8px' }}
-            className="ion-no-margin"
+            className="ion-no-margin ion-margin-left-xxs"
             slot="start"
             size="24px"
             src={iconUrl}

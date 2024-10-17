@@ -73,10 +73,9 @@ export function AccountSelection({
       }}
     >
       <IonSelect
-        className="account-selections-options"
+        className="account-selections-options ion-padding-bottom-0 ion-padding-top-0 ion-padding-left-md ion-padding-right-xs"
         style={{
           flexGrow: 1,
-          padding: '0px 8px 0px 16px',
           height: size === 'lg' ? 40 : 32,
           minHeight: size === 'lg' ? 40 : 32,
           minWidth: '0',

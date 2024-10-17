@@ -1,13 +1,17 @@
 import { TransactionHandler } from '@activeledger/sdk';
 import type { IKeyExtended } from '@activeledger/sdk-bip39';
+import { App } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import { datadogRum } from '@datadog/browser-rum';
 import type {
+  CoinSymbol,
   CurrencySymbol,
-  IBaseTransactionWithDbIndex,
-  ITerriTransaction,
+  IBaseAcTransaction,
+  ITerriAcTransaction,
 } from '@helium-pay/backend';
 import {
-  CoinSymbol,
+  EthLikeSymbol,
+  isCoinSymbol,
   keyError,
   NetworkDictionary,
   otherError,
@@ -15,16 +19,12 @@ import {
 import axios from 'axios';
 
 import { convertToFromASPrefix } from '../convert-as-prefix';
-import { EthereumChainMetadata, EthereumHelper } from './ethereum.service';
+import { getManifestJson } from '../hooks/useCurrentAppInfo';
 import type {
   ActiveLedgerResponse,
   IKeyCreationResponse,
   IOnboardedIdentity,
-  L1TxDetail,
   L2TxDetail,
-  Nitr0EthereumTrxSignature,
-  Nitr0TronTrxSignature,
-  TransactionSignature,
 } from './nitr0gen.interface';
 import {
   BadGatewayException,
@@ -34,33 +34,34 @@ import {
   NotFoundException,
   PortType,
 } from './nitr0gen.utils';
-import { TronHelper } from './tron.service';
 
 // Used to index nitr0gen responses when getting info for native coin
 export const nitr0genNativeCoin = '#native';
 
 enum ProductionContracts {
-  Namespace = 'notabox.keys',
-  Create = 'c278818b9f10d5f18381a711827e344d583f7ecf446cdfb4b92016b308838a72@3.0.6', // Only supports trx, eth, bnb + testnets
-  CryptoTransfer = 'a48df2fd31400a9b69d9b8bdb699618faed2999ca08c559695a4b74597d3e895@3.0.5',
-  DiffConsensus = 'a9711259f9c0322c6eb1cca4c0baf1b460266be79c5c0f78cf1602a8476e0744@3.0.1',
-  Onboard = 'df9e4e242c58cc6a03ca1679f007c7a04cad72c97fdb74bdfe9a4e1688077a79@1.5.0',
-  NFTNamespace = 'candypig',
-  NFTTransfer = '52e8ec2faef459da41fc4ed669644b4f07639bfdd871081763517e92973d3623@1.0.5',
-  // Prod-contract has a 72 hr time restriction on re-linking AAS. The other
-  // contract is equivalent but has only 60s for easy testing
-  NFTAcnsRecord = '29a20530ecc5f835ceb55bb1f27a329f5ac8126f53630ce79535675af0f2f184@1.0.2',
-  NFTAcnsRecordTesting = 'c7030a072163854c0c3890318694f8fa8f271ba2675554370d2029ad054cfe18@1.0.1',
+  Namespace = 'akashicchain',
+  Create = '50e1372f0d3805dac4a51299bb0e99960862d7d01f247e85725d99011682b8ac@1.0.0', // Only supports trx, eth, bnb + testnets
+  CreateSecondaryOtk = '178106a54eec05c747a9704ea32e39fd6fa656322c92bb3ec3ba37899f25c27f@1.0.0',
+  CryptoTransfer = '2bae6ea681826c0307ee047ef68eb0cf53487a257c498de7d081d66de119d666@1.1.1',
+  DiffConsensus = '94479927cbe0860a3f51cbd36230faef7d1b69974323a83c8abcc78e3d0e8dd9@1.0.0',
+  Onboard = 'a456ddc07da6d46a6897d24de188e767b87a9d9f2f3c617d858aaf819e0e5bce@1.0.0',
+  NFTNamespace = 'akashicnft',
+  NFTTransfer = 'e7ba6aa2aea7ae33f6bce49a07e6f8a2e6a5983e66b44f236e76cf689513c20a@1.0.0',
+  NFTAcnsRecord = '6b1acfbfba1f54571036fd579f509f4c60ac1e363c111f70815bea33957cf64a@1.0.0',
+  NFTAcnsRecordTesting = 'DNE',
 }
 
 enum TestNetContracts {
   Namespace = 'akashic',
   Create = 'c4f1186c58f49db2fdba401a1b36832902325d11a2e69ac6ef800836274c6894@5.1.4',
-  CryptoTransfer = 'd1903e29ea83413ecc759d129f7a21e4f8039ac5650360cf83d993343b5ffaa6@5.1.21',
+  CreateSecondaryOtk = '5160b43ea831f05faace12e01a82ebec8a4eb036ddfd429559c7d37fe32c4ffb@1.1.1',
+  CryptoTransfer = 'd1903e29ea83413ecc759d129f7a21e4f8039ac5650360cf83d993343b5ffaa6@5.8.3',
   DiffConsensus = '76869d5f632c283324b0cb7c8e16ba14eec2cf5d6d7b3f4521cc9b6a12818623@3.0.3',
-  Onboard = 'b089a212ac22f57e2bef7d8a7f25702ebda98173939be2eba1ac0c2523d77383@5.0.3',
+  Onboard = 'b089a212ac22f57e2bef7d8a7f25702ebda98173939be2eba1ac0c2523d77383@5.0.4',
   NFTNamespace = 'candypig',
   NFTTransfer = '9c6ce3ed0c1e669471cd72ad9a81ea6ad13b6c3ba18b3ca05281fa721903f0e0@1.0.8',
+  // The "Testing" contract has a 60s cooldown on Alias-linking (vs 72hrs for
+  // real contract)
   NFTAcnsRecord = '4efd09f16b5c50ac95aeddcd36852d52eca0cf59e46dda39607e872b298dbefb@1.0.5',
   NFTAcnsRecordTesting = '48192d7629e1b42772b9a4b87974e24c7d7c7225346e7dc9cbe74acb311a29db@1.0.2',
 }
@@ -68,30 +69,36 @@ enum TestNetContracts {
 const Nitr0gen =
   process.env.REACT_APP_ENV === 'prod' ? ProductionContracts : TestNetContracts;
 
-export async function signTxBody<T extends IBaseTransactionWithDbIndex>(
+export async function signTxBody<T extends IBaseAcTransaction>(
   txBody: T,
   otk: IKeyExtended
 ): Promise<T> {
   const txHandler = new TransactionHandler();
-  if (process.env.REACT_APP_ENV !== 'prod') {
-    if (!process.env.REACT_APP_REDIS_DB_INDEX) {
-      throw new Error(
-        'You must specify the variable `REACT_APP_REDIS_DB_INDEX` in your AW .env file or you will clobber staging!'
-      );
-    }
-    txBody.$tx._dbIndex = parseInt(process.env.REACT_APP_REDIS_DB_INDEX);
+  if (!process.env.REACT_APP_REDIS_DB_INDEX) {
+    throw new Error(
+      'You must specify the variable `REACT_APP_REDIS_DB_INDEX` in your AW .env file or you will clobber staging!'
+    );
   }
+  // For payouts, the backend should already have set it. Hence the `??=`
+  txBody.$tx._dbIndex ??= parseInt(process.env.REACT_APP_REDIS_DB_INDEX);
+
+  addExpireToTxBody(txBody);
 
   return await txHandler.signTransaction(txBody, otk);
+}
+
+/** Modifies the tx in-place and also returns the modified tx */
+function addExpireToTxBody<T extends IBaseAcTransaction>(txBody: T): T {
+  // 1 Min expiry, should be plenty
+  txBody.$tx.$expire = new Date(Date.now() + 60 * 1000).toISOString();
+
+  return txBody;
 }
 
 /**
  * Class implements basic interactions with the Nitr0gen network
  */
 export class Nitr0genApi {
-  private ethereum = new EthereumHelper();
-  private tron = new TronHelper();
-
   public async onboardOtk(otk: IKeyExtended): Promise<IOnboardedIdentity> {
     const tx = await this.onboardOtkTransaction(otk);
     const response = await this.post<ActiveLedgerResponse>(tx);
@@ -168,8 +175,21 @@ export class Nitr0genApi {
     try {
       const requestFunction = method === 'post' ? axios.post : axios.get;
 
+      let version;
+      try {
+        const appInfo = await App.getInfo();
+        version = appInfo.version;
+      } catch (e) {
+        const manifestData = await getManifestJson();
+        version = manifestData.version;
+      }
+      const headers = {
+        'Ap-Version': version,
+        'Ap-Client': Capacitor.getPlatform(),
+      };
+
       const response = await requestFunction(NITR0_URL, tx, {
-        ...(method === 'get' ? { timeout } : {}),
+        ...(method === 'get' ? { timeout, headers } : { headers }),
       });
 
       // Prefix "AS" to umids so that "L2-hashes" have the prefix
@@ -198,6 +218,7 @@ export class Nitr0genApi {
 
   /**
    * Helper method to get from Nitr0gen Gateway
+   * @param path
    * @param timeout time in milliseconds
    * @param port port type
    */
@@ -214,8 +235,8 @@ export class Nitr0genApi {
    */
   public async onboardOtkTransaction(
     otk: IKeyExtended
-  ): Promise<IBaseTransactionWithDbIndex> {
-    const txBody: IBaseTransactionWithDbIndex = {
+  ): Promise<IBaseAcTransaction> {
+    const txBody: IBaseAcTransaction = {
       $tx: {
         $namespace: Nitr0gen.Namespace,
         $contract: Nitr0gen.Onboard,
@@ -234,6 +255,31 @@ export class Nitr0genApi {
     return await signTxBody(txBody, otk);
   }
 
+  public async secondaryOtkTransaction(
+    otk: IKeyExtended,
+    newPubKey: string,
+    oldPubKeyToRemove?: string
+  ) {
+    const txBody: IBaseAcTransaction = {
+      $tx: {
+        $namespace: Nitr0gen.Namespace,
+        $contract: Nitr0gen.CreateSecondaryOtk,
+        $i: {
+          owner: {
+            $stream: otk.identity,
+            add: {
+              type: 'secp256k1',
+              public: newPubKey,
+            },
+            remove: oldPubKeyToRemove,
+          },
+        },
+      },
+      $sigs: {},
+    };
+    return await signTxBody(txBody, otk);
+  }
+
   /**
    * Transaction to create a key for the requested coinSymbol
    *
@@ -243,9 +289,9 @@ export class Nitr0genApi {
     otk: IKeyExtended,
     coinSymbol: string,
     network: string
-  ): Promise<IBaseTransactionWithDbIndex> {
+  ): Promise<IBaseAcTransaction> {
     // Build Transaction
-    const txBody: IBaseTransactionWithDbIndex = {
+    const txBody: IBaseAcTransaction = {
       $tx: {
         $namespace: Nitr0gen.Namespace,
         $contract: Nitr0gen.Create,
@@ -272,9 +318,9 @@ export class Nitr0genApi {
   async differentialConsensusTransaction(
     otk: IKeyExtended,
     key: IKeyCreationResponse
-  ): Promise<IBaseTransactionWithDbIndex> {
+  ): Promise<IBaseAcTransaction> {
     // Build Transaction
-    const txBody: IBaseTransactionWithDbIndex = {
+    const txBody: IBaseAcTransaction = {
       $tx: {
         $namespace: Nitr0gen.Namespace,
         $contract: Nitr0gen.DiffConsensus,
@@ -299,38 +345,31 @@ export class Nitr0genApi {
   }
 
   /**
-   * L1 transaction from Nitr0gen where wallet has funds registered to L2
+   * Builds and signs an L1 withdrawal transaction from a wallet that has funds
+   * registered in AC.
+   * Only to be used if the backend is down and the user needs to withdraw.
    * If a non-root owner is sending L1, need a ledgerId of a key on the same
-   * network owned as root by the sender
-   *
+   * network owned as root by the sender.
    */
-  async L2ToL1SignTransaction(
+  async l1WithdrawalTransaction(
     otk: IKeyExtended,
     keyLedgerId: string,
     network: CoinSymbol,
     amount: string,
-    transaction: TransactionSignature,
-    token?: CurrencySymbol
-  ): Promise<IBaseTransactionWithDbIndex> {
-    // Build Transaction
-    const txDetail: L1TxDetail = {
-      amount,
-    };
+    toAddress: string,
+    feesEstimate: string,
+    token?: CurrencySymbol,
+    ethGasPrice?: string
+  ): Promise<IBaseAcTransaction> {
+    const contractAddress = NetworkDictionary[network].tokens.find(
+      (t) => t.symbol === token
+    )?.contract;
 
-    // Used by Tron transactions
-    if ('hex' in transaction) {
-      txDetail['hex'] = transaction.hex;
-    }
+    const $o = isCoinSymbol(network, EthLikeSymbol)
+      ? { [keyLedgerId]: {} }
+      : undefined;
 
-    // Used by ETH/BNB transactions
-    if ('nonce' in transaction) {
-      txDetail['nonce'] = transaction.nonce;
-    }
-    const $o: { [keyLedgerId: string]: L1TxDetail } = {};
-
-    $o[keyLedgerId] = txDetail;
-
-    const txBody: IBaseTransactionWithDbIndex = {
+    const txBody: IBaseAcTransaction = {
       $tx: {
         $namespace: Nitr0gen.Namespace,
         $contract: Nitr0gen.CryptoTransfer,
@@ -341,10 +380,16 @@ export class Nitr0genApi {
             network,
             token: token ?? nitr0genNativeCoin,
             amount,
-            signtx: transaction,
+            to: toAddress,
+            contractAddress,
+            gas: ethGasPrice,
           },
         },
         $o,
+        $r: {
+          wallet: keyLedgerId,
+        },
+        metadata: { feesEstimate },
       },
       $sigs: {},
     };
@@ -361,7 +406,7 @@ export class Nitr0genApi {
   async L2Transaction(
     otk: IKeyExtended,
     details: L2TxDetail
-  ): Promise<IBaseTransactionWithDbIndex> {
+  ): Promise<IBaseAcTransaction> {
     const $i = {
       owner: {
         $stream: otk.identity,
@@ -371,14 +416,17 @@ export class Nitr0genApi {
       },
     };
 
-    const txBody: IBaseTransactionWithDbIndex = {
+    const txBody: IBaseAcTransaction = {
       $tx: {
         $namespace: Nitr0gen.Namespace,
         $contract: Nitr0gen.CryptoTransfer,
         $entry: 'transfer',
         $i,
         $o: {
-          to: { $stream: details.toAddress },
+          to: {
+            $stream: details.toAddress,
+            wallet: details.initiatedToL1LedgerId,
+          },
         },
         metadata: {
           initiatedToNonL2: details.initiatedToNonL2,
@@ -386,6 +434,7 @@ export class Nitr0genApi {
       },
       $sigs: {},
     };
+
     // Sign Transaction
     return await signTxBody(txBody, otk);
   }
@@ -399,8 +448,8 @@ export class Nitr0genApi {
     recordType: string,
     recordKey: string,
     value?: string
-  ): Promise<IBaseTransactionWithDbIndex> {
-    const txBody: IBaseTransactionWithDbIndex = {
+  ): Promise<IBaseAcTransaction> {
+    const txBody: IBaseAcTransaction = {
       $sigs: {},
       $tx: {
         $namespace: Nitr0gen.NFTNamespace,
@@ -429,7 +478,7 @@ export class Nitr0genApi {
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
   public async sendSignedTx<ResponseT = any>(
-    signedTx: IBaseTransactionWithDbIndex | ITerriTransaction
+    signedTx: IBaseAcTransaction | ITerriAcTransaction
   ): Promise<ActiveLedgerResponse<ResponseT>> {
     return await this.post<ActiveLedgerResponse<ResponseT>>(signedTx);
   }
@@ -441,9 +490,9 @@ export class Nitr0genApi {
     otk: IKeyExtended,
     acnsStreamId: string,
     newOwnerIdentity: string
-  ): Promise<IBaseTransactionWithDbIndex> {
+  ): Promise<IBaseAcTransaction> {
     // Build Transaction
-    const txBody: IBaseTransactionWithDbIndex = {
+    const txBody: IBaseAcTransaction = {
       $tx: {
         $namespace: Nitr0gen.NFTNamespace,
         $contract: Nitr0gen.NFTTransfer,
@@ -466,56 +515,6 @@ export class Nitr0genApi {
       ...otk,
       identity: acnsStreamId,
     });
-  }
-
-  /**
-   * Constructs an L1 transaction
-   * Use if backend is down to create an L1-transaction directly
-   */
-  public async constructL1TransactionObject(
-    coinSymbol: CoinSymbol,
-    amount: string,
-    toAddress: string,
-    fromAddress: string,
-    tokenContract?: string
-  ): Promise<Nitr0TronTrxSignature | Nitr0EthereumTrxSignature> {
-    switch (coinSymbol) {
-      case CoinSymbol.Ethereum_Mainnet:
-      case CoinSymbol.Ethereum_Sepolia:
-      case CoinSymbol.Binance_Smart_Chain_Mainnet:
-      case CoinSymbol.Binance_Smart_Chain_Testnet:
-        return {
-          to: toAddress,
-          from: fromAddress,
-          nonce: await this.ethereum.getTransactionCount(
-            fromAddress,
-            coinSymbol
-          ),
-          gas:
-            '0x' +
-            (await this.ethereum.getGasFee(coinSymbol))['medium'].toString(16), // gas price
-          chainId: EthereumChainMetadata[coinSymbol].chainId,
-          // ERC20 token or ETH transfer, amounts in hexadecimal
-          amount: '0x' + BigInt(amount).toString(16),
-          contractAddress: tokenContract,
-        };
-      case CoinSymbol.Tron:
-      case CoinSymbol.Tron_Nile:
-      case CoinSymbol.Tron_Shasta:
-        return {
-          to: toAddress,
-          amount,
-          hex: await this.tron.createTransaction(
-            toAddress,
-            fromAddress,
-            amount,
-            coinSymbol,
-            tokenContract
-          ),
-        };
-      default:
-        throw new Error(otherError.unsupportedCoinError);
-    }
   }
 
   /**

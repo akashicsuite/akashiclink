@@ -67,7 +67,7 @@ const IconBackground = styled.div((props: { backgroundColor: string }) => ({
   position: 'relative',
 }));
 
-const ActivityContainer = styled.div({
+export const ActivityContainer = styled.div({
   position: 'relative',
   margin: '0 auto',
   padding: '4px 24px',
@@ -91,53 +91,48 @@ export const ActivityDetails = () => {
 
   return (
     <DashboardLayout showSwitchAccountBar showAddress showRefresh>
-      <ActivityContainer>
-        {transfer.nft ? (
-          <NftDetail currentTransfer={transfer} />
-        ) : (
-          <>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-end',
-              }}
-            >
-              <div>
-                <h2>{t('TransactionDetails')}</h2>
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '4px',
-                    alignItems: 'center',
-                  }}
-                >
-                  <IconBackground backgroundColor={chain.background}>
-                    <IonImg
-                      alt=""
-                      src={`/shared-assets/icons/${chain.icon}`}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                      }}
-                    />
-                  </IconBackground>
-                  <span
-                    className="ion-text-size-xs"
-                    style={{ color: '#958E99' }}
-                  >
-                    {chainName}
-                  </span>
-                </div>
+      {transfer.nft ? (
+        <NftDetail currentTransfer={transfer} />
+      ) : (
+        <ActivityContainer>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+            }}
+          >
+            <div>
+              <h2>{t('TransactionDetails')}</h2>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '4px',
+                  alignItems: 'center',
+                }}
+              >
+                <IconBackground backgroundColor={chain.background}>
+                  <IonImg
+                    alt=""
+                    src={`/shared-assets/icons/${chain.icon}`}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                    }}
+                  />
+                </IconBackground>
+                <span className="ion-text-size-xs" style={{ color: '#958E99' }}>
+                  {chainName}
+                </span>
               </div>
             </div>
-            <TransactionDetails currentTransfer={transfer} />
-          </>
-        )}
-      </ActivityContainer>
+          </div>
+          <TransactionDetails currentTransfer={transfer} />
+        </ActivityContainer>
+      )}
     </DashboardLayout>
   );
 };

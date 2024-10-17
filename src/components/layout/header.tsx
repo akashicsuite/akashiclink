@@ -11,8 +11,8 @@ export function Header() {
 
   const logoName =
     storedTheme === themeType.DARK
-      ? 'wallet-logo-light.svg'
-      : 'wallet-logo-dark.svg';
+      ? 'wallet-logo-dark.svg'
+      : 'wallet-logo-light.svg';
 
   return (
     <IonHeader

@@ -1,5 +1,3 @@
-import './activity.scss';
-
 import styled from '@emotion/styled';
 import { IonSpinner } from '@ionic/react';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +6,7 @@ import type { GridComponents } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
 import { OneActivity } from '../../components/activity/one-activity';
+import { WhiteButton } from '../../components/common/buttons';
 import { Divider } from '../../components/common/divider';
 import { AlertIcon } from '../../components/common/icons/alert-icon';
 import { DashboardLayout } from '../../components/page-layout/dashboard-layout';
@@ -18,7 +17,7 @@ import type { LocationState } from '../../routing/history';
 import { akashicPayPath } from '../../routing/navigation-tabs';
 import { themeType } from '../../theme/const';
 import { formatMergeAndSortNftAndCryptoTransfers } from '../../utils/formatTransfers';
-import { useMyTransfers } from '../../utils/hooks/useMyTransfers';
+import { useMyTransfersInfinite } from '../../utils/hooks/useMyTransfersInfinite';
 import { useNftTransfersMe } from '../../utils/hooks/useNftTransfersMe';
 
 const ListContainer = styled.div({
@@ -56,84 +55,74 @@ export const TableHeads = styled.div({
   justifyContent: 'space-between',
 });
 
+const ListFooter: GridComponents['Footer'] = ({
+  context: { loadMore, loading },
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className={'ion-display-flex ion-justify-content-center'}>
+      <WhiteButton
+        expand="block"
+        size={'small'}
+        disabled={loading}
+        onClick={loadMore}
+        style={{
+          minWidth: 200,
+        }}
+      >
+        {loading ? t('Loading') : t('LoadMore')}
+      </WhiteButton>
+    </div>
+  );
+};
+
 export function Activity() {
   const { t } = useTranslation();
   const history = useHistory<LocationState>();
   const storedTheme = useAppSelector(selectTheme);
-  const { transfers, isLoading } = useMyTransfers();
+  const {
+    transfers,
+    transactionCount,
+    isLoading,
+    isLoadingMore,
+    setSize,
+    size,
+  } = useMyTransfersInfinite();
   const { transfers: nftTransfers, isLoading: isLoadingNft } =
     useNftTransfersMe();
-  const walletFormatTransfers = formatMergeAndSortNftAndCryptoTransfers(
+
+  const formattedTransfers = formatMergeAndSortNftAndCryptoTransfers(
     transfers,
     nftTransfers
   );
+
+  const loadMore = () => {
+    setSize(size + 1);
+  };
+
+  const isDataLoaded = !isLoading && !isLoadingNft;
+
   return (
     <DashboardLayout showSwitchAccountBar showAddress showRefresh>
       <TableWrapper>
         <TableHeads>
-          <div
-            style={{
-              display: 'flex',
-              gap: '16px',
-              marginLeft: '8px',
-            }}
-          >
+          <div className="ion-margin-left-xs ion-display-flex ion-gap-lg">
             <ColumnWrapper>{t('State')}</ColumnWrapper>
             <ColumnWrapper>{t('TransactionType')}</ColumnWrapper>
           </div>
-          <ColumnWrapper style={{ marginRight: '8px' }}>
+          <ColumnWrapper className="ion-margin-right-xs">
             {t('Amount/NFT')}
           </ColumnWrapper>
         </TableHeads>
         <Divider
+          className="ion-margin-right-xs ion-margin-left-xs ion-margin-top-xs"
           borderColor={storedTheme === themeType.DARK ? '#2F2F2F' : '#D9D9D9'}
           height={'1px'}
           borderWidth={'0.5px'}
-          style={{
-            marginTop: '8px',
-            marginLeft: '8px',
-            marginRight: '8px',
-          }}
         />
       </TableWrapper>
-
-      {!isLoading && !isLoadingNft ? (
-        walletFormatTransfers.length ? (
-          <Virtuoso
-            style={{
-              margin: '8px 0px',
-              minHeight: 'calc(100vh - 200px - var(--ion-safe-area-bottom)',
-            }}
-            data={walletFormatTransfers}
-            components={{
-              List: ListContainer,
-            }}
-            itemContent={(index, transfer) => (
-              <OneActivity
-                transfer={transfer}
-                onClick={() => {
-                  history.push({
-                    pathname: akashicPayPath(urls.activityDetails),
-                    state: {
-                      activityDetails: {
-                        currentTransfer: transfer,
-                      },
-                    },
-                  });
-                }}
-                showDetail={true}
-                hasHoverEffect={true}
-                divider={index !== walletFormatTransfers.length - 1}
-              />
-            )}
-          />
-        ) : (
-          <NoActivityWrapper>
-            <AlertIcon />
-            <NoActivityText>{t('NoActivity')}</NoActivityText>
-          </NoActivityWrapper>
-        )
-      ) : (
+      {!isDataLoaded && (
         <IonSpinner
           color="primary"
           name="circular"
@@ -144,7 +133,48 @@ export function Activity() {
             transform: 'translateX(-50%)',
             '--webkit-transform': 'translateX(-50%)',
           }}
-        ></IonSpinner>
+        />
+      )}
+      {isDataLoaded && formattedTransfers.length === 0 && (
+        <NoActivityWrapper>
+          <AlertIcon />
+          <NoActivityText>{t('NoActivity')}</NoActivityText>
+        </NoActivityWrapper>
+      )}
+      {isDataLoaded && formattedTransfers.length !== 0 && (
+        <Virtuoso
+          style={{
+            margin: '8px 0px',
+            minHeight: 'calc(100vh - 200px - var(--ion-safe-area-bottom)',
+          }}
+          data={formattedTransfers}
+          context={{ loading: isLoadingMore, loadMore }}
+          components={{
+            List: ListContainer,
+            Footer:
+              transactionCount && transfers.length < transactionCount
+                ? ListFooter
+                : undefined,
+          }}
+          itemContent={(index, transfer) => (
+            <OneActivity
+              transfer={transfer}
+              onClick={() => {
+                history.push({
+                  pathname: akashicPayPath(urls.activityDetails),
+                  state: {
+                    activityDetails: {
+                      currentTransfer: transfer,
+                    },
+                  },
+                });
+              }}
+              showDetail
+              hasHoverEffect
+              divider={index !== formattedTransfers.length - 1}
+            />
+          )}
+        />
       )}
     </DashboardLayout>
   );

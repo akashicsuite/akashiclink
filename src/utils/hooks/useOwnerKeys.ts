@@ -5,7 +5,7 @@ import fetcher from '../ownerFetcher';
 
 export const useOwnerKeys = (address: string) => {
   const { data, ...response } = useSWR<IOwnerOldestKeysResponse[], Error>(
-    `/public-api/owner/keys?address=${address}`,
+    `/owner/keys?address=${address}`,
     fetcher
   );
   return { keys: data ?? [], ...response };

@@ -14,7 +14,7 @@ import fetcher from '../ownerFetcher';
 
 export const useExchangeRates = () => {
   const { data, ...response } = useSWR<IExchangeRate[], Error>(
-    `/public-api/owner/exchange-rates`,
+    `/owner/exchange-rates`,
     fetcher
   );
   return {

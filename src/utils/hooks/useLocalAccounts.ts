@@ -5,9 +5,10 @@ import crypto from 'crypto';
 import { useAppDispatch, useAppSelector } from '../../redux/app/hooks';
 import {
   selectActiveAccount,
+  selectCacheOtk,
   selectLocalAccounts,
   setActiveAccount as setActiveAccountState,
-  setCacheOtk,
+  setCacheOtk as setCacheOtkState,
   setLocalAccounts,
 } from '../../redux/slices/accountSlice';
 import type { FullOtk } from '../otk-generation';
@@ -26,6 +27,7 @@ export interface LocalAccount {
   username?: string;
   aasName?: string;
   accountName?: string;
+  ledgerId?: string;
 }
 
 /**
@@ -59,6 +61,8 @@ export const useAccountStorage = () => {
     )
   );
 
+  const cacheOtk = useAppSelector(selectCacheOtk);
+
   const [legacyActiveAccount, _s, removeLegacyActiveAccount] =
     useLocalStorage<LocalAccount | null>('session-account', null);
 
@@ -89,16 +93,17 @@ export const useAccountStorage = () => {
 
   const addAasToAccountByIdentity = async (
     aasName: string,
-    identity: string
+    identity: string,
+    ledgerId: string
   ) => {
     const updatedAccounts = localAccounts.map((l) => {
       if (l.identity === identity) {
-        return { ...l, aasName };
+        return { ...l, aasName, ledgerId };
       }
       return l;
     });
     if (activeAccount && activeAccount.identity === identity) {
-      dispatch(setActiveAccountState({ ...activeAccount, aasName }));
+      dispatch(setActiveAccountState({ ...activeAccount, aasName, ledgerId }));
     }
     dispatch(setLocalAccounts(updatedAccounts));
   };
@@ -106,13 +111,19 @@ export const useAccountStorage = () => {
   const removeAasFromAccountByIdentity = async (identity: string) => {
     const updatedAccounts = localAccounts.map((l) => {
       if (l.identity === identity) {
-        const { aasName: _, ...rest } = l;
+        const { aasName: _, ledgerId: _a, ...rest } = l;
         return rest;
       }
       return l;
     });
     if (activeAccount && activeAccount.identity === identity) {
-      dispatch(setActiveAccountState({ ...activeAccount, aasName: undefined }));
+      dispatch(
+        setActiveAccountState({
+          ...activeAccount,
+          aasName: undefined,
+          ledgerId: undefined,
+        })
+      );
     }
     dispatch(setLocalAccounts(updatedAccounts));
   };
@@ -167,7 +178,7 @@ export const useAccountStorage = () => {
   ): Promise<FullOtk | undefined> => {
     const otk = await getLocalOtk(identity, password);
     if (otk) {
-      dispatch(setCacheOtk(otk));
+      dispatch(setCacheOtkState(otk));
       return otk;
     } else {
       return undefined;
@@ -185,7 +196,7 @@ export const useAccountStorage = () => {
 
   const addLocalOtkAndCache = async (otk: FullOtk, password: string) => {
     await addLocalOtk(otk, password);
-    dispatch(setCacheOtk(otk));
+    dispatch(setCacheOtkState(otk));
   };
 
   const changeOtkPassword = async (
@@ -202,7 +213,7 @@ export const useAccountStorage = () => {
   const removeLocalOtk = async (identity: string) => {
     await SecureStorage.removeItem(identity);
 
-    dispatch(setCacheOtk(null));
+    dispatch(setCacheOtkState(null));
   };
 
   // key min length is 32 byte
@@ -225,6 +236,10 @@ export const useAccountStorage = () => {
     dispatch(setActiveAccountState(account));
   };
 
+  const setCacheOtk = (otk: FullOtk | null) => {
+    dispatch(setCacheOtkState(otk));
+  };
+
   return {
     localAccounts: localAccountsWithName,
     addLocalAccount,
@@ -240,5 +255,8 @@ export const useAccountStorage = () => {
     getLocalOtk,
     addAasToAccountByIdentity,
     removeAasFromAccountByIdentity,
+    cacheOtk,
+    authenticated: !!cacheOtk,
+    setCacheOtk,
   };
 };

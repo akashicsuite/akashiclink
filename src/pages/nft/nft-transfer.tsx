@@ -1,12 +1,8 @@
 import { datadogRum } from '@datadog/browser-rum';
 import styled from '@emotion/styled';
-import {
-  type INft,
-  type IVerifyNftResponse,
-  L2Regex,
-  nftErrors,
-} from '@helium-pay/backend';
-import { IonCol, IonImg, IonRow, IonSpinner, isPlatform } from '@ionic/react';
+import type { IBaseAcTransaction } from '@helium-pay/backend';
+import { type INft, L2Regex, nftErrors } from '@helium-pay/backend';
+import { IonCol, IonImg, IonRow, IonSpinner } from '@ionic/react';
 import { debounce } from 'lodash';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +24,6 @@ import { NftLayout } from '../../components/page-layout/nft-layout';
 import { errorMsgs } from '../../constants/error-messages';
 import { urls } from '../../constants/urls';
 import { useAppSelector } from '../../redux/app/hooks';
-import { selectCacheOtk } from '../../redux/slices/accountSlice';
 import { selectTheme } from '../../redux/slices/preferenceSlice';
 import {
   type LocationState,
@@ -47,13 +42,18 @@ import { unpackRequestErrorMessage } from '../../utils/unpack-request-error-mess
 import { NftWrapper } from './nft';
 import { NoNtfText, NoNtfWrapper } from './nfts';
 
+const StyledNftWrapper = styled.div({
+  margin: 'auto',
+  padding: 0,
+  marginBottom: 2,
+});
+
 const SendWrapper = styled.div({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   padding: 0,
   width: '270px',
-  height: '90px',
 });
 
 const AddressWrapper = styled.div({
@@ -83,7 +83,7 @@ const AddressBox = styled.div({
   border: '1px solid #958e99',
 });
 export const NftContainer = styled.div`
-  width: 180px;
+  width: 232px;
   position: relative;
   margin: 0 auto;
 `;
@@ -94,6 +94,12 @@ enum SearchResult {
   NoInput = 'NoInput',
   IsSelfAddress = 'isSelfAddress',
   SendBpByAlias = 'SendBpByAlias',
+}
+
+interface IVerifyNftResponse {
+  nftOwnerIdentity: string;
+  nftAcnsStreamId: string;
+  txToSign: IBaseAcTransaction;
 }
 
 const verifyNftTransaction = async (
@@ -129,7 +135,6 @@ const verifyNftTransaction = async (
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function NftTransfer() {
   const { t } = useTranslation();
-  const isMobile = isPlatform('mobile');
   const { nfts, isLoading, mutateNftMe } = useNftMe();
   const history = useHistory<LocationState>();
   const state = history.location.state?.nft;
@@ -140,12 +145,11 @@ export function NftTransfer() {
   const [searchedResultType, setSearchedResultType] = useState(
     SearchResult.NoInput
   );
-  const { activeAccount } = useAccountStorage();
+  const { activeAccount, cacheOtk } = useAccountStorage();
   const { trigger: triggerNftTransfer } = useNftTransfer();
 
   const [alert, setAlert] = useState(formAlertResetState);
   const [loading, setLoading] = useState(false);
-  const cacheOtk = useAppSelector(selectCacheOtk);
   const storedTheme = useAppSelector(selectTheme);
   const isDarkMode = storedTheme === themeType.DARK;
 
@@ -207,11 +211,7 @@ export function NftTransfer() {
       };
       const signedTx = await signTxBody(verifiedNft.txToSign, signerOtk);
 
-      const response = await triggerNftTransfer({
-        signedTx,
-        nftName: currentNft.name,
-        toAddress: toAddress,
-      });
+      const response = await triggerNftTransfer(signedTx);
 
       const result = {
         sender: activeAccount?.identity,
@@ -248,6 +248,16 @@ export function NftTransfer() {
         </NoNtfWrapper>
       )}
       <NftLayout>
+        <div
+          style={{
+            backgroundColor: 'var(--nft-header-background)',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '160px',
+          }}
+        />
         {isLoading ? (
           <NoNtfWrapper>
             <IonSpinner name="circular"></IonSpinner>
@@ -258,19 +268,25 @@ export function NftTransfer() {
             <NoNtfText>{t('DoNotOwnNfts')}</NoNtfText>
           </NoNtfWrapper>
         ) : (
-          <NftWrapper>
+          <NftWrapper
+            style={{
+              gap: '1rem',
+            }}
+          >
             <IonRow className="w-100">
-              <NftContainer>
+              <StyledNftWrapper>
                 <OneNft
                   nft={currentNft}
-                  isBig={false}
+                  isBig={true}
                   isAASDarkStyle={!isDarkMode}
+                  nftImgWrapper="nft-wrapper-transfer"
+                  screen="transfer"
                 />
-              </NftContainer>
+              </StyledNftWrapper>
             </IonRow>
             <IonRow>
               <IonCol class="ion-center">
-                <SendWrapper style={{ gap: isMobile ? '24px' : '16px' }}>
+                <SendWrapper style={{ gap: '1rem' }}>
                   <StyledInput
                     className={'ion-text-size-sm'}
                     isHorizontal={true}

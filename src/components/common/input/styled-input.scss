@@ -68,7 +68,7 @@
 .styled-input-horizontal {
   @extend %styled-input-shared;
   border: 1px solid #958e99;
-  border-radius: 8px;
+  border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;
   --min-height: 40px;
   height: 40px;
   width: 100%;
