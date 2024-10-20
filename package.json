@@ -94,7 +94,7 @@
     "typescript": "4.8.4",
     "url": "0.11.3",
     "util": "0.12.5",
-    "viem": "2.15.1",
+    "viem": "2.21.15",
     "web-vitals": "0.2.4",
     "workbox-background-sync": "5.1.4",
     "workbox-broadcast-update": "5.1.4",
