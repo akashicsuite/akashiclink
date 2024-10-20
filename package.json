@@ -54,7 +54,7 @@
     "@datadog/browser-rum": "5.0.0",
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
-    "@ionic/react": "7.7.1",
+    "@ionic/react": "7.8.6",
     "@ionic/react-hooks": "0.0.8",
     "@ionic/react-router": "7.7.1",
     "@mui/icons-material": "5.15.0",
