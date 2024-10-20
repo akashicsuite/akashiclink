@@ -61,7 +61,7 @@
     "@mui/material": "5.15.0",
     "@reduxjs/toolkit": "2.2.1",
     "@types/react-lottie": "1.2.8",
-    "@walletconnect/web3wallet": "1.12.3",
+    "@walletconnect/web3wallet": "1.15.2",
     "assert": "2.1.0",
     "buffer": "6.0.3",
     "compare-version": "0.1.2",
