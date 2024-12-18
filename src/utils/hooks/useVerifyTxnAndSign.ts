@@ -1,10 +1,9 @@
 import { datadogRum } from '@datadog/browser-rum';
-import type {
-  CoinSymbol,
-  CurrencySymbol,
-  IBaseAcTransaction,
-} from '@helium-pay/backend';
 import {
+  type CoinSymbol,
+  type CurrencySymbol,
+  type FeeDelegationStrategy,
+  type IBaseAcTransaction,
   type IWithdrawalProposal,
   keyError,
   L2Regex,
@@ -49,7 +48,8 @@ export const useVerifyTxnAndSign = () => {
     validatedAddressPair: ValidatedAddressPair,
     amount: string,
     coinSymbol: CoinSymbol,
-    tokenSymbol?: CurrencySymbol
+    tokenSymbol?: CurrencySymbol,
+    feeDelegationStrategy?: FeeDelegationStrategy
   ): Promise<string | UseVerifyAndSignResponse> => {
     const isL2 = L2Regex.exec(validatedAddressPair?.convertedToAddress);
     const nitr0genApi = new Nitr0genApi();
@@ -110,6 +110,7 @@ export const useVerifyTxnAndSign = () => {
         amount,
         coinSymbol,
         tokenSymbol,
+        feeDelegationStrategy,
       };
 
       const { preparedTxn, fromAddress, delegatedFee } =
@@ -129,6 +130,9 @@ export const useVerifyTxnAndSign = () => {
         feesEstimate: uiFeesEstimate,
         layer: TransactionLayer.L1,
         txToSign: signedTxn,
+        internalFee: {
+          withdraw: delegatedFee,
+        },
       };
 
       return { txn, signedTxn, delegatedFee };

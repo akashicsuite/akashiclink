@@ -41,12 +41,14 @@ export function Nft() {
   const state = history.location.state?.nft;
   const [alert, setAlert] = useState(formAlertResetState);
   const { nfts } = useNftMe();
-  const currentNft = nfts.find((nft) => nft.name === state?.nftName) ?? nfts[0];
+  const currentNft = nfts.find((nft) => nft.name === state?.nftName);
   const storedTheme = useAppSelector(selectTheme);
   const isDarkMode = storedTheme === themeType.DARK;
 
+  const [isLinked, setIsLinked] = useState(!!currentNft?.aas.linked);
+
   const transferNft = () => {
-    if (currentNft?.acns?.value) {
+    if (currentNft?.aas?.linked) {
       setAlert(
         errorAlertShell('NSRecordWarning', { nftName: currentNft?.name || '' })
       );
@@ -75,14 +77,17 @@ export function Nft() {
       <NftWrapper>
         <IonGrid fixed={true}>
           <IonRow>
-            <NftContainer>
-              <OneNft
-                nft={currentNft}
-                isBig={true}
-                isAASDarkStyle={!isDarkMode}
-                nftImgWrapper="nft-wrapper-one"
-              />
-            </NftContainer>
+            {currentNft && (
+              <NftContainer>
+                <OneNft
+                  nft={currentNft}
+                  isBig={true}
+                  isAASDarkStyle={!isDarkMode}
+                  nftImgWrapper="nft-wrapper-one"
+                  isLinked={isLinked}
+                />
+              </NftContainer>
+            )}
           </IonRow>
           <IonRow className="ion-margin-top-xs ion-margin-bottom-xxs">
             <IonCol size="10" offset="1">
@@ -96,8 +101,12 @@ export function Nft() {
             </IonCol>
           </IonRow>
 
-          {currentNft && currentNft.acns && (
-            <AasListingSwitch aas={currentNft.acns} setAlert={setAlert} />
+          {currentNft && (
+            <AasListingSwitch
+              nft={currentNft}
+              setAlert={setAlert}
+              setParentLinkage={setIsLinked}
+            />
           )}
         </IonGrid>
       </NftWrapper>

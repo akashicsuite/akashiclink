@@ -1,5 +1,4 @@
 /// <reference lib="webworker" />
-/* eslint-disable no-restricted-globals */
 
 // This service worker can be customized!
 // See https://developers.google.com/web/tools/workbox/modules
@@ -39,7 +38,7 @@ registerRoute(
     // If this looks like a URL for a resource, because it contains
     // a file extension, skip.
     // Return true to signal that we want to use the handler.
-    return !url.pathname.match(fileExtensionRegexp);
+    return !RegExp(fileExtensionRegexp).exec(url.pathname);
   },
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );

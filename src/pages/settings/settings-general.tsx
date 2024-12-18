@@ -1,3 +1,4 @@
+import type { Language } from '@helium-pay/common-i18n/src/locales/supported-languages';
 import { LANGUAGE_LIST } from '@helium-pay/common-i18n/src/locales/supported-languages';
 import { IonRadioGroup } from '@ionic/react';
 import { useTranslation } from 'react-i18next';
@@ -24,8 +25,8 @@ const LanguageRadio = ({
   selectedLanguage,
   setSelectedLanguage,
 }: {
-  selectedLanguage: string;
-  setSelectedLanguage: (newValue: string) => Promise<void>;
+  selectedLanguage: Language;
+  setSelectedLanguage: (newValue: Language) => Promise<void>;
 }) => {
   return (
     <IonRadioGroup
@@ -35,6 +36,7 @@ const LanguageRadio = ({
       {LANGUAGE_LIST.map((item, i) => {
         return (
           <SettingsRadio
+            /* eslint-disable-next-line sonarjs/no-array-index-key */
             key={i}
             labelPlacement="end"
             justify="start"
@@ -94,7 +96,7 @@ export function SettingsGeneral() {
     },
     {
       header: t('HideSmallBalances'),
-      iconUrl: getImageIconUrl('visibility-off.svg'),
+      iconUrl: getImageIconUrl('visibility-off-primary-70.svg'),
       endComponent: (
         <div style={{ width: '60px' }}>
           <Toggle
@@ -122,10 +124,11 @@ export function SettingsGeneral() {
           {generalMenuItems.map((gMenuItems, index) => {
             return (
               <SettingItem
+                /* eslint-disable-next-line sonarjs/no-array-index-key */
                 key={index}
                 backgroundColor="var(--ion-background)"
                 header={gMenuItems.header}
-                iconUrl={gMenuItems.iconUrl}
+                icon={gMenuItems.iconUrl}
                 isAccordion={gMenuItems.isAccordion}
                 endComponent={gMenuItems.endComponent}
               >

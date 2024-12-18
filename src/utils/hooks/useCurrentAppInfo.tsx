@@ -6,13 +6,13 @@ import { useEffect, useState } from 'react';
 
 export const getManifestJson = async (): Promise<Record<string, string>> => {
   const response = await axios.get<Record<string, string>>('/manifest.json', {
-    data: {},
+    data: {}, // workaround for axios
   });
   return response.data;
 };
 
 export const useCurrentAppInfo = () => {
-  const [version, setVersion] = useState<string>();
+  const [version, setVersion] = useState<string>('');
   const [appInfo, setAppInfo] = useState<AppInfo>();
 
   useEffect(() => {
@@ -37,7 +37,6 @@ export const useCurrentAppInfo = () => {
         setAppInfo(appInfo);
       } catch (e) {
         datadogRum.addError(e);
-        console.warn(e);
       }
     };
 

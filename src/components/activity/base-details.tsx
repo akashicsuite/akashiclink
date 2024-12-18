@@ -41,6 +41,8 @@ export function BaseDetails({
         return t('Pending');
       case TransactionStatus.FAILED:
         return t('Failed');
+      case TransactionStatus.QUEUED:
+        return t('Queued');
       default:
         return t('MissingTranslationError');
     }
@@ -51,7 +53,7 @@ export function BaseDetails({
       className="transfer-detail ion-margin-top-lg"
       style={{
         display: 'flex',
-        gap: '16px',
+        gap: '8px',
         flexDirection: 'column',
       }}
     >

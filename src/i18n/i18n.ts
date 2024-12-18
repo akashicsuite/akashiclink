@@ -29,5 +29,4 @@ i18n.use(initReactI18next).init({
   keySeparator: '.',
 });
 
-// eslint-disable-next-line import/no-default-export
 export default i18n;

@@ -16,24 +16,31 @@ import '../src/theme/variables.css';
 import '../src/theme/font.css';
 import '../src/theme/common.scss';
 
+import {
+  mockGetExchangeRates,
+  mockGetManifest,
+  mockGetMinigate,
+  mockGetMinigateNftImage,
+  mockPostToAC,
+} from '@helium-pay/api-mocks';
 import { setupIonicReact } from '@ionic/react';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import type { Preview } from '@storybook/react';
 import { initialize, mswLoader } from 'msw-storybook-addon';
-import React, { Suspense, useEffect } from 'react';
-import { I18nextProvider } from 'react-i18next';
 
-import i18n from '../src/i18n/i18n';
+import { useI18next } from './providers/useI18next';
+import { useIonMemoryRouter } from './providers/useIonMemoryRouter';
+import { useReduxProvider } from './providers/useReduxProvider';
+import { useTheme } from './providers/useTheme';
 
-/** Must here here to allow Ionic components to render */
+/** Must set up here to allow Ionic components to render */
 setupIonicReact();
 
-/**
- * Setup mock service worker
- */
+/** Setup mock service worker */
 initialize({
   onUnhandledRequest: ({ method, url }) => {
-    if (url.pathname.startsWith('/api')) {
+    const pathname = new URL(url).pathname;
+    if (pathname.startsWith('/api')) {
       console.error(`Unhandled ${method} request to ${url}.
 
         This exception has been only logged in the console, however, it's strongly recommended to resolve this error as you don't want unmocked data in Storybook stories.
@@ -44,45 +51,17 @@ initialize({
   },
 });
 
-/**
- * Toggle theme when user toggle toolbar
- */
-const withTheme = (Story: any, context: any) => {
-  const isDark = context.globals.theme === 'Dark';
-
-  useEffect(() => {
-    document.body.classList.toggle('dark', isDark);
-    document.body.classList.toggle('light', !isDark);
-  }, [isDark]);
-
-  return <Story />;
-};
-
-/**
- * Inject translations into a story
- */
-const withI18next = (Story: any, context: any) => {
-  const { locale } = context.globals;
-
-  // When the locale global changes
-  // Set the new locale in i18n
-  useEffect(() => {
-    i18n.changeLanguage(locale);
-  }, [locale]);
-
-  return (
-    // This catches the suspense from components not yet ready (still loading translations)
-    // Alternative: set useSuspense to false on i18next.options.react when initializing i18next
-    <Suspense fallback={<div>loading translations...</div>}>
-      <I18nextProvider i18n={i18n}>
-        <Story />
-      </I18nextProvider>
-    </Suspense>
-  );
-};
-
 const preview: Preview = {
   parameters: {
+    msw: {
+      handlers: {
+        exchangeRate: mockGetExchangeRates,
+        manifest: mockGetManifest,
+        minigateNftImage: mockGetMinigateNftImage,
+        minigate: mockGetMinigate,
+        akashicChainPost: mockPostToAC,
+      },
+    },
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
       matchers: {
@@ -97,6 +76,13 @@ const preview: Preview = {
       viewports: {
         extension: {
           name: 'Extension',
+          styles: {
+            width: '360px',
+            height: '600px',
+          },
+        },
+        popup: {
+          name: 'Extension Popup',
           styles: {
             width: '360px',
             height: '720px',
@@ -133,24 +119,18 @@ const preview: Preview = {
     },
     theme: {
       description: 'Global theme for components',
-      defaultValue: 'Light',
+      defaultValue: 'light',
       toolbar: {
         title: 'Theme',
         items: [
-          { value: 'Light', title: '☀ Light' },
-          { value: 'Dark', title: '☾ Dark' },
+          { value: 'light', title: '☀ Light' },
+          { value: 'dark', title: '☾ Dark' },
         ],
         dynamicTitle: true,
       },
     },
   },
-  /**
-   * Common wrappers for each story
-   */
-  decorators: [withI18next, withTheme],
-  /**
-   * Mock requests from backend
-   */
+  decorators: [useI18next, useTheme, useIonMemoryRouter, useReduxProvider],
   loaders: [mswLoader],
 };
 

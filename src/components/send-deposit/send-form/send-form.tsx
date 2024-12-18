@@ -22,7 +22,7 @@ export const SendForm = () => {
   return (
     <IonGrid
       className={
-        'ion-padding-top-xxs ion-padding-bottom-xxs ion-padding-left-md ion-padding-right-md'
+        'ion-padding-top-0 ion-padding-bottom-xxs ion-padding-left-md ion-padding-right-md'
       }
     >
       <SendAddressInput

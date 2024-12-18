@@ -21,13 +21,11 @@ export function Toggle({
   secondIcon,
 }: Props) {
   return (
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
       className={`toggle-container ${currentState} ${
         isLoading ? 'loading' : ''
       }`}
       style={{ ...containerStyle }}
-      // eslint-disable-next-line jsx-a11y/role-has-required-aria-props
       role="switch"
     >
       <label className="switch" style={{ ...switchStyle }}>

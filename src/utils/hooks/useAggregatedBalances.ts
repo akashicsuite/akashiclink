@@ -1,4 +1,4 @@
-import { NetworkDictionary } from '@helium-pay/backend';
+import { NetworkDictionary, TEST_TO_MAIN } from '@helium-pay/backend';
 import { useEffect, useState } from 'react';
 
 import { makeWalletCurrency } from '../../constants/currencies';
@@ -6,6 +6,7 @@ import { useAppSelector } from '../../redux/app/hooks';
 import { selectFocusCurrencyDetail } from '../../redux/slices/preferenceSlice';
 import { CurrencyMap } from '../currencyMap';
 import { useAccountMe } from './useAccountMe';
+import { useL1TxnDelegatedFees } from './useL1TxnDelegatedFees';
 
 /** Map balances from backend onto the currencies supported nby the wallet */
 export function useAggregatedBalances() {
@@ -33,13 +34,21 @@ export function useAggregatedBalances() {
 
 export function useFocusCurrencySymbolsAndBalances() {
   const aggregatedBalances = useAggregatedBalances();
+  const { delegatedFeeList } = useL1TxnDelegatedFees();
+
   const walletCurrency = useAppSelector(selectFocusCurrencyDetail);
 
   const isCurrencyTypeToken = typeof walletCurrency.token !== 'undefined';
   const nativeCoin = NetworkDictionary[walletCurrency.chain].nativeCoin;
+  const delegatedFee =
+    delegatedFeeList.find(
+      (fee) => fee.coinSymbol === TEST_TO_MAIN.get(walletCurrency.chain)
+    )?.delegatedFee ?? '0';
 
   return {
     isCurrencyTypeToken,
+    chain: walletCurrency.chain,
+    token: walletCurrency.token,
     networkCurrencyCombinedDisplayName: walletCurrency.displayName,
     currencySymbol: isCurrencyTypeToken
       ? (walletCurrency.token as string)
@@ -59,5 +68,6 @@ export function useFocusCurrencySymbolsAndBalances() {
         displayName: nativeCoin.displayName,
         chain: walletCurrency.chain,
       }) ?? '0',
+    delegatedFee: delegatedFee,
   };
 }

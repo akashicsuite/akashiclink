@@ -24,8 +24,8 @@ export const unpackRequestErrorMessage = (error: unknown) => {
   const errorMsg = axios.isAxiosError(error)
     ? error?.response?.data?.message
     : error instanceof Error || isSerializedError(error)
-    ? error.message
-    : '';
+      ? error.message
+      : '';
 
   switch (true) {
     // TODO: the 3 errors below are most likely handled server-side - check and remove

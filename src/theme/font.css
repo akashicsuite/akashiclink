@@ -4,7 +4,8 @@
   font-style: normal;
   font-weight: 200;
   src: url('/public/shared-assets/fonts/nunito-sans-v12-latin-200.eot'); /* IE9 Compat Modes */
-  src: local(''),
+  src:
+    local(''),
     url('/public/shared-assets/fonts/nunito-sans-v12-latin-200.eot?#iefix')
       format('embedded-opentype'),
     /* IE6-IE8 */
@@ -26,7 +27,8 @@
   font-style: normal;
   font-weight: 300;
   src: url('/public/shared-assets/fonts/nunito-sans-v12-latin-300.eot'); /* IE9 Compat Modes */
-  src: local(''),
+  src:
+    local(''),
     url('/public/shared-assets/fonts/nunito-sans-v12-latin-300.eot?#iefix')
       format('embedded-opentype'),
     /* IE6-IE8 */
@@ -48,7 +50,8 @@
   font-style: normal;
   font-weight: 400;
   src: url('/public/shared-assets/fonts/nunito-sans-v12-latin-regular.eot'); /* IE9 Compat Modes */
-  src: local(''),
+  src:
+    local(''),
     url('/public/shared-assets/fonts/nunito-sans-v12-latin-regular.eot?#iefix')
       format('embedded-opentype'),
     /* IE6-IE8 */
@@ -70,7 +73,8 @@
   font-style: normal;
   font-weight: 600;
   src: url('/public/shared-assets/fonts/nunito-sans-v12-latin-600.eot'); /* IE9 Compat Modes */
-  src: local(''),
+  src:
+    local(''),
     url('/public/shared-assets/fonts/nunito-sans-v12-latin-600.eot?#iefix')
       format('embedded-opentype'),
     /* IE6-IE8 */
@@ -92,7 +96,8 @@
   font-style: normal;
   font-weight: 700;
   src: url('/public/shared-assets/fonts/nunito-sans-v12-latin-700.eot'); /* IE9 Compat Modes */
-  src: local(''),
+  src:
+    local(''),
     url('/public/shared-assets/fonts/nunito-sans-v12-latin-700.eot?#iefix')
       format('embedded-opentype'),
     /* IE6-IE8 */
@@ -114,7 +119,8 @@
   font-style: normal;
   font-weight: 800;
   src: url('/public/shared-assets/fonts/nunito-sans-v12-latin-800.eot'); /* IE9 Compat Modes */
-  src: local(''),
+  src:
+    local(''),
     url('/public/shared-assets/fonts/nunito-sans-v12-latin-800.eot?#iefix')
       format('embedded-opentype'),
     /* IE6-IE8 */
@@ -136,7 +142,8 @@
   font-style: normal;
   font-weight: 900;
   src: url('/public/shared-assets/fonts/nunito-sans-v12-latin-900.eot'); /* IE9 Compat Modes */
-  src: local(''),
+  src:
+    local(''),
     url('/public/shared-assets/fonts/nunito-sans-v12-latin-900.eot?#iefix')
       format('embedded-opentype'),
     /* IE6-IE8 */

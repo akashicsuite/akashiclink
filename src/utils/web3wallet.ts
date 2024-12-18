@@ -1,7 +1,7 @@
 import { Core } from '@walletconnect/core';
 import { buildApprovedNamespaces } from '@walletconnect/utils';
-import type { Web3WalletTypes } from '@walletconnect/web3wallet';
-import { type IWeb3Wallet, Web3Wallet } from '@walletconnect/web3wallet';
+import type { IWeb3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import { Web3Wallet } from '@walletconnect/web3wallet';
 import { useEffect, useState } from 'react';
 import type { Chain } from 'viem';
 
@@ -58,7 +58,7 @@ export const buildApproveSessionNamespace = ({
 };
 
 export const useWeb3Wallet = () => {
-  const [web3wallet, setWeb3Wallet] = useState<IWeb3Wallet>();
+  const [web3Wallet, setWeb3Wallet] = useState<IWeb3Wallet>();
 
   useEffect(() => {
     const init = async () => {
@@ -69,5 +69,5 @@ export const useWeb3Wallet = () => {
     init();
   }, []);
 
-  return web3wallet;
+  return web3Wallet;
 };

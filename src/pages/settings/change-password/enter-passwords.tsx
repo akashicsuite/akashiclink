@@ -1,9 +1,9 @@
+import { userConst } from '@helium-pay/backend';
 import { IonAlert, IonCol, IonRow } from '@ionic/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
-import { userConst } from '../../../../../backend';
 import {
   AlertBox,
   errorAlertShell,
@@ -18,9 +18,9 @@ import { MainGrid } from '../../../components/layout/main-grid';
 import { DashboardLayout } from '../../../components/page-layout/dashboard-layout';
 import { urls } from '../../../constants/urls';
 import {
-  type LocationState,
   historyGoBackOrReplace,
   historyReplace,
+  type LocationState,
 } from '../../../routing/history';
 import { useAccountStorage } from '../../../utils/hooks/useLocalAccounts';
 import { useLogout } from '../../../utils/hooks/useLogout';
@@ -32,18 +32,31 @@ export function ChangePassword() {
   const logout = useLogout();
   const history = useHistory<LocationState>();
 
+  const [passwordsMatched, setPasswordsMatched] = useState(true);
   const [oldPassword, setOldPassword] = useState<string>();
   const [newPassword, setNewPassword] = useState<string>();
   const [confirmPassword, setConfirmPassword] = useState<string>();
   const [allowedToChange, setAllowedToChange] = useState<boolean>(false);
 
   const validatePassword = (value: string) =>
-    !!value.match(userConst.passwordRegex);
-
-  const validateConfirmPassword = (value: string) => newPassword === value;
+    !!RegExp(userConst.passwordRegex).exec(value);
 
   const [alertRequest, setAlertRequest] = useState(formAlertResetState);
   const { changeOtkPassword } = useAccountStorage();
+
+  // Check if passwords match
+  const validatePasswordsMatch = (
+    password?: string,
+    confirmPassword?: string
+  ) => {
+    if (!confirmPassword) return true;
+    return password === confirmPassword;
+  };
+
+  // Update passwords match state whenever either password changes
+  useEffect(() => {
+    setPasswordsMatched(validatePasswordsMatch(newPassword, confirmPassword));
+  }, [newPassword, confirmPassword]);
 
   // When confirming or cancelling
   const resetStates = () => {
@@ -148,7 +161,7 @@ export function ChangePassword() {
                 label={t('OldPassword')}
                 placeholder={t('EnterPassword')}
                 type="password"
-                onIonInput={({ target: { value } }) => {
+                onIonInput={({ detail: { value } }) => {
                   setOldPassword(value as string);
                   validatePasswordChange(
                     value as string,
@@ -166,7 +179,7 @@ export function ChangePassword() {
                 label={t('NewPassword')}
                 placeholder={t('EnterPassword')}
                 type="password"
-                onIonInput={({ target: { value } }) => {
+                onIonInput={({ detail: { value } }) => {
                   setNewPassword(value as string);
                   validatePasswordChange(
                     oldPassword,
@@ -184,7 +197,7 @@ export function ChangePassword() {
                 label={t('ConfirmPassword')}
                 type="password"
                 placeholder={t('ConfirmPassword')}
-                onIonInput={({ target: { value } }) => {
+                onIonInput={({ detail: { value } }) => {
                   setConfirmPassword(value as string);
                   validatePasswordChange(
                     oldPassword,
@@ -194,7 +207,7 @@ export function ChangePassword() {
                 }}
                 value={confirmPassword}
                 errorPrompt={StyledInputErrorPrompt.ConfirmPassword}
-                validate={validateConfirmPassword}
+                isValid={passwordsMatched}
                 submitOnEnter={changePassword}
               />
             </IonCol>

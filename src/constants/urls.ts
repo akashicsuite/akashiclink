@@ -1,4 +1,4 @@
-export type Url = typeof urls[keyof typeof urls];
+export type Url = (typeof urls)[keyof typeof urls];
 export const urls = {
   root: '/',
   akashicPay: 'akashic',
@@ -34,7 +34,10 @@ export const urls = {
   settings: 'settings',
   settingsGeneral: 'settings-general',
   settingsSecurity: 'settings-security',
+  settingsNetwork: 'settings-network',
   settingsAboutUs: 'settings-about-us',
   settingsBackup: 'settings-backup',
   settingsVersion: 'settings-version',
 } as const;
+
+export const SUPPORT_MAIL = 'support@akashiclink.com';

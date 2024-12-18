@@ -2,27 +2,25 @@ import './settings.scss';
 
 import styled from '@emotion/styled';
 import { IonContent, IonIcon, IonItem, IonPopover } from '@ionic/react';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
 import { akashicPayPath } from '../../routing/navigation-tabs';
 import { useLogout } from '../../utils/hooks/useLogout';
 import { getImageIconUrl } from '../../utils/url-utils';
-import { SettingsModal } from './setting-modal';
 
 const SettingsDropDownItem = styled(IonItem)`
   --min-height: 32px;
   --inner-border-width: 0px;
   padding: 4px 0;
 `;
-export function SettingSelect({ loggedIn }: { loggedIn: boolean }) {
+export function SettingSelect() {
   const logout = useLogout();
   const settingPopoverRef = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const history = useHistory();
-  const modal = useRef<HTMLIonModalElement>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+
   const { t } = useTranslation();
   return (
     <>
@@ -34,17 +32,11 @@ export function SettingSelect({ loggedIn }: { loggedIn: boolean }) {
           cursor: 'pointer',
           marginRight: -8,
         }}
-        src={
-          loggedIn
-            ? getImageIconUrl('setting-menu.svg')
-            : getImageIconUrl('setting-menu-primary.svg')
-        }
+        src={getImageIconUrl('setting-menu.svg')}
         onClick={(e) => {
-          if (loggedIn && settingPopoverRef.current) {
+          if (settingPopoverRef.current) {
             settingPopoverRef.current.event = e;
             setPopoverOpen(!popoverOpen);
-          } else {
-            setModalOpen(!modalOpen);
           }
         }}
       />
@@ -92,11 +84,6 @@ export function SettingSelect({ loggedIn }: { loggedIn: boolean }) {
           </SettingsDropDownItem>
         </IonContent>
       </IonPopover>
-      <SettingsModal
-        modal={modal}
-        isOpen={modalOpen}
-        setIsOpen={setModalOpen}
-      />
     </>
   );
 }

@@ -93,7 +93,7 @@ export function AccountSelection({
           ...localAccounts.map((account) => (
             <IonSelectOption key={account.identity} value={account.identity}>
               {`${
-                account.aasName ?? account?.accountName ?? `Wallet`
+                account.alias ?? account?.accountName ?? `Wallet`
               } - ${displayLongText(account.identity, 20)}`}
             </IonSelectOption>
           )),

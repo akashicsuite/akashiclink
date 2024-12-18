@@ -2,7 +2,7 @@ import './styled-input.scss';
 
 import { IonInput, IonItem, IonLabel, IonNote } from '@ionic/react';
 import type { ComponentProps } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type Translation from '../../../i18n/translation/en_US.json';
@@ -30,11 +30,13 @@ type StyledInputProps = ComponentProps<typeof IonInput> & {
   /** Method returning true/false checking user input */
   validate?: (value: string) => boolean;
   /** Text to display to user is validation fails */
-  errorPrompt?: typeof StyledInputErrorPrompt[keyof typeof StyledInputErrorPrompt];
+  errorPrompt?: (typeof StyledInputErrorPrompt)[keyof typeof StyledInputErrorPrompt];
   // Required to allow translations to be passed in e.g. t('ConfirmPassword')
   placeholder: string;
   /** Callback to trigger when return key is hit */
   submitOnEnter?: () => void;
+  // New prop for external validation state
+  isValid?: boolean;
 };
 
 /**
@@ -48,25 +50,26 @@ export function StyledInput({
   isHorizontal = false,
   errorPrompt,
   submitOnEnter,
+  isValid: externalValid,
   ...props
 }: StyledInputProps) {
-  const [inputValid, setInputValid] = useState(true);
+  const [internalValid, setInternalValid] = useState(true);
   const { t } = useTranslation();
   const helpText = errorPrompt ? t(errorPrompt) : t('InvalidInput');
 
-  /**
-   * Execute the user-supplied validation function
-   * flagging error by highlighting the input box in red
-   */
+  // Use external validation state if provided, otherwise use internal state
+  const inputValid =
+    externalValid !== undefined ? externalValid : internalValid;
+
   function validateInput(ev: Event) {
     if (!validate) return;
 
     const value = (ev.target as HTMLInputElement).value;
     if (value === '') {
-      setInputValid(true);
+      setInternalValid(true);
       return;
     }
-    validate(value) ? setInputValid(true) : setInputValid(false);
+    validate(value) ? setInternalValid(true) : setInternalValid(false);
   }
 
   return (

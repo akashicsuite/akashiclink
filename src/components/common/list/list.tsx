@@ -20,8 +20,8 @@ const StyledList = styled(IonList)<{ bordered: boolean; compact: boolean }>(
     border: bordered ? `1px solid var(--ion-color-grey)` : 'none',
     ['ion-item']: {
       '--min-height': '28px',
-      '--padding-start': bordered ? '16px' : 0,
-      '--inner-padding-end': bordered ? '16px' : 0,
+      '--padding-start': bordered ? (compact ? '4px' : '16px') : 0,
+      '--inner-padding-end': bordered ? (compact ? '4px' : '16px') : 0,
       lineHeight: '24px',
     },
     ['ion-label']: {

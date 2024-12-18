@@ -47,12 +47,10 @@ function extractNestedKeys(asn: any, type = 'privateKey'): string {
     } else {
       return asn[type].toString('hex');
     }
+  } else if (asn.ECNested) {
+    return extractNestedKeys(asn.ECNested, type);
   } else {
-    if (asn.ECNested) {
-      return extractNestedKeys(asn.ECNested, type);
-    } else {
-      throw new Error('PPK not found inside ASN');
-    }
+    throw new Error('PPK not found inside ASN');
   }
 }
 

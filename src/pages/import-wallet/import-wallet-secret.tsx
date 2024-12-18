@@ -13,6 +13,7 @@ import { MainGrid } from '../../components/layout/main-grid';
 import { PublicLayout } from '../../components/page-layout/public-layout';
 import { SecretWords } from '../../components/wallet-setup/secret-words';
 import { urls } from '../../constants/urls';
+import { LINK_TYPE, useI18nInfoUrls } from '../../i18n/links';
 import { useAppDispatch, useAppSelector } from '../../redux/app/hooks';
 import {
   onClear,
@@ -43,6 +44,7 @@ export const ImportWalletSecret = () => {
   const dispatch = useAppDispatch();
   const importWalletForm = useAppSelector(selectImportWalletForm);
   const importWalletError = useAppSelector(selectError);
+  const infoUrls = useI18nInfoUrls();
 
   const [alert, setAlert] = useState(formAlertResetState);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,33 +59,25 @@ export const ImportWalletSecret = () => {
         ? errorAlertShell(unpackRequestErrorMessage(importWalletError))
         : formAlertResetState
     );
+    // if import failed, release button to let user try again
+    setIsLoading(false);
   }, [importWalletError, t]);
 
   const onConfirmRecoveryPhrase = async () => {
     setIsLoading(true);
 
     if (
+      !importWalletForm.passPhrase ||
       !isAllFilled ||
-      typeof importWalletForm.passPhrase === 'undefined' ||
       !validateSecretPhrase(importWalletForm.passPhrase)
     ) {
       setAlert(errorAlertShell('InvalidSecretPhrase'));
+      setIsLoading(false);
       return;
     }
 
-    try {
-      dispatch(reconstructOtkAsync(importWalletForm.passPhrase));
-    } catch (e) {
-      setAlert(
-        errorAlertShell(
-          importWalletError?.message ||
-            (e as Error).message ||
-            'GenericFailureMsg'
-        )
-      );
-    }
-
-    setIsLoading(false);
+    // user will be redirected to other page if import is successful
+    dispatch(reconstructOtkAsync(importWalletForm.passPhrase));
   };
 
   const onSecretWordsChange = async (values: string[]) => {
@@ -112,7 +106,7 @@ export const ImportWalletSecret = () => {
               <p className={'ion-text-align-center'}>
                 {t('AkashicWalletCannotRecoverYourPassword')}{' '}
                 <a
-                  href="https://akashic-1.gitbook.io/akashiclink"
+                  href={infoUrls[LINK_TYPE.QuickGuide]}
                   target={'_blank'}
                   style={{
                     textDecoration: 'none',
@@ -183,7 +177,7 @@ export const ImportWalletSecret = () => {
             </PrimaryButton>
           </IonCol>
           <IonCol size="6">
-            <WhiteButton expand="block" onClick={onCancel}>
+            <WhiteButton disabled={isLoading} expand="block" onClick={onCancel}>
               {t('Cancel')}
             </WhiteButton>
           </IonCol>

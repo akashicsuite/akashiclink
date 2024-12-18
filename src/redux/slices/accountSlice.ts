@@ -36,33 +36,33 @@ export const accountSlice = createAppSlice({
         state.localAccounts = accountsWithPrefix;
       }
     }),
-    addAasToAccountByIdentity: create.reducer(
-      (state, action: PayloadAction<{ aasName: string; identity: string }>) => {
+    addAliasToAccountByIdentity: create.reducer(
+      (state, action: PayloadAction<{ alias: string; identity: string }>) => {
         const updatedAccounts = state.localAccounts.map((l) => {
           if (l.identity === action.payload.identity) {
-            return { ...l, aasName: action.payload.aasName };
+            return { ...l, alias: action.payload.alias };
           }
           return l;
         });
         if (state.activeAccount)
           state.activeAccount = {
             ...state.activeAccount,
-            aasName: action.payload.aasName,
+            alias: action.payload.alias,
           };
         state.localAccounts = updatedAccounts;
       }
     ),
-    removeAasFromAccountByIdentity: create.reducer(
+    removeAliasFromAccountByIdentity: create.reducer(
       (state, action: PayloadAction<{ identity: string }>) => {
         const updatedAccounts = state.localAccounts.map((l) => {
           if (l.identity === action.payload.identity) {
-            const { aasName: _, ...rest } = l;
+            const { alias: _, ...rest } = l;
             return rest;
           }
           return l;
         });
         if (state.activeAccount) {
-          state.activeAccount = { ...state.activeAccount, aasName: undefined };
+          state.activeAccount = { ...state.activeAccount, alias: undefined };
         }
         state.localAccounts = updatedAccounts;
       }

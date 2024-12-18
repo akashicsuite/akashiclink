@@ -27,7 +27,7 @@ export function ImportWalletPassword({ isPopup = false }) {
   const [isLoading, setIsLoading] = useState(false);
   /** Tracking user input */
   const validatePassword = (value: string) =>
-    !!value.match(userConst.passwordRegex);
+    !!RegExp(userConst.passwordRegex).exec(value);
   const { addLocalOtkAndCache, addLocalAccount, setActiveAccount } =
     useAccountStorage();
   const importWalletForm = useAppSelector(selectImportWalletForm);
@@ -60,7 +60,7 @@ export function ImportWalletPassword({ isPopup = false }) {
       return;
     }
 
-    if (isPasswordValid && otk && otk.identity) {
+    if (isPasswordValid && otk?.identity) {
       // call import api and store the Identity.
       // added local otk
       addLocalOtkAndCache(otk, importWalletForm.password);

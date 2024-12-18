@@ -6,6 +6,10 @@ import axios from 'axios';
 //   CHAIN = '5260',
 //   NFT = '8080',
 // }
+interface NodesPingInfo {
+  key: string;
+  ping: number;
+}
 
 export enum PortType {
   CHAIN = 'general',
@@ -14,8 +18,11 @@ export enum PortType {
 
 export enum TestNodeKey {
   JP1 = 'JP1',
+  JP2 = 'JP2',
   SG1 = 'SG1',
   SG2 = 'SG2',
+  HK1 = 'HK1',
+  HK2 = 'HK2',
 }
 
 export enum ProductionNodeKey {
@@ -38,8 +45,11 @@ const ProductionChainNodes = {
 
 const TestChainNodes = {
   [TestNodeKey.JP1]: 'https://jp1.testnet.akashicchain.com/',
+  [TestNodeKey.JP2]: 'https://jp2.testnet.akashicchain.com/',
   [TestNodeKey.SG1]: 'https://sg1.testnet.akashicchain.com/',
   [TestNodeKey.SG2]: 'https://sg2.testnet.akashicchain.com/',
+  [TestNodeKey.HK1]: 'https://hk1.testnet.akashicchain.com/',
+  [TestNodeKey.HK2]: 'https://hk2.testnet.akashicchain.com/',
 };
 
 const ProductionNFTNodes = {
@@ -53,8 +63,11 @@ const ProductionNFTNodes = {
 
 const TestNFTNodes = {
   [TestNodeKey.JP1]: 'https://jp1-minigate.testnet.akashicchain.com/',
+  [TestNodeKey.JP2]: 'https://jp2-minigate.testnet.akashicchain.com/',
   [TestNodeKey.SG1]: 'https://sg1-minigate.testnet.akashicchain.com/',
   [TestNodeKey.SG2]: 'https://sg2-minigate.testnet.akashicchain.com/',
+  [TestNodeKey.HK1]: 'https://hk1-minigate.testnet.akashicchain.com/',
+  [TestNodeKey.HK2]: 'https://hk2-minigate.testnet.akashicchain.com/',
 };
 
 /**
@@ -85,15 +98,29 @@ export function getRetryDelayInMS(error: string, attempts = 1) {
   }
 }
 
+export async function getChainNode(port: PortType, node: string) {
+  if (process.env.REACT_APP_ENV === 'prod') {
+    return port === PortType.CHAIN
+      ? ProductionChainNodes[node as ProductionNodeKey]
+      : ProductionNFTNodes[node as ProductionNodeKey];
+  } else {
+    return port === PortType.CHAIN
+      ? TestChainNodes[node as TestNodeKey]
+      : TestNFTNodes[node as TestNodeKey];
+  }
+}
+
 export async function chooseBestNodes(port: PortType) {
   const cookieMap = await CapacitorCookies.getCookies();
+  if (cookieMap['preferred-node-key']) {
+    return getChainNode(port, cookieMap['preferred-node-key']);
+  }
 
   if (cookieMap[`node-${port}`]) {
     return cookieMap[`node-${port}`];
   }
 
   const isProd = process.env.REACT_APP_ENV === 'prod';
-
   const nodeKey = await Promise.any(
     Object.entries(isProd ? ProductionNFTNodes : TestNFTNodes).map(
       async ([key, endpoint]) => {
@@ -102,21 +129,7 @@ export async function chooseBestNodes(port: PortType) {
       }
     )
   );
-
-  let node: string;
-
-  // use "if" to make typescript happy
-  if (isProd) {
-    node =
-      port === PortType.CHAIN
-        ? ProductionChainNodes[nodeKey as ProductionNodeKey]
-        : ProductionNFTNodes[nodeKey as ProductionNodeKey];
-  } else {
-    node =
-      port === PortType.CHAIN
-        ? TestChainNodes[nodeKey as TestNodeKey]
-        : TestNFTNodes[nodeKey as TestNodeKey];
-  }
+  const node = await getChainNode(port, nodeKey);
 
   await CapacitorCookies.setCookie({
     key: `node-${port}`,
@@ -125,6 +138,38 @@ export async function chooseBestNodes(port: PortType) {
   });
 
   return node;
+}
+export async function fetchNodesPing(
+  hardRefresh: boolean
+): Promise<NodesPingInfo[]> {
+  const cookieMap = await CapacitorCookies.getCookies();
+  if (!hardRefresh && cookieMap[`nodePingData`]) {
+    return JSON.parse(cookieMap[`nodePingData`]);
+  }
+  const isProd = process.env.REACT_APP_ENV === 'prod';
+  const nodeEntries = Object.entries(
+    isProd ? ProductionNFTNodes : TestNFTNodes
+  );
+  const nodePingData = await Promise.all(
+    nodeEntries.map(async ([key, endpoint]) => {
+      const start = Date.now();
+      let ping;
+      try {
+        await axios.get(endpoint);
+        ping = Date.now() - start;
+      } catch {
+        ping = 0; // Set default ping to be unreachable
+      }
+      return { key, ping };
+    })
+  );
+
+  await CapacitorCookies.setCookie({
+    key: `nodePingData`,
+    value: JSON.stringify(nodePingData),
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24).toUTCString(), // 1 day
+  });
+  return nodePingData;
 }
 
 // Below is to replicate previous backend Nitr0gen error handling

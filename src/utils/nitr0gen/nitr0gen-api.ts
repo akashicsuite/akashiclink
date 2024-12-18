@@ -18,7 +18,7 @@ import {
 } from '@helium-pay/backend';
 import axios from 'axios';
 
-import { convertToFromASPrefix } from '../convert-as-prefix';
+import { prefixWithAS } from '../convert-as-prefix';
 import { getManifestJson } from '../hooks/useCurrentAppInfo';
 import type {
   ActiveLedgerResponse,
@@ -29,7 +29,9 @@ import type {
 import {
   BadGatewayException,
   chooseBestNodes,
+  fetchNodesPing,
   ForbiddenException,
+  getChainNode,
   getRetryDelayInMS,
   NotFoundException,
   PortType,
@@ -47,24 +49,27 @@ enum ProductionContracts {
   Onboard = 'a456ddc07da6d46a6897d24de188e767b87a9d9f2f3c617d858aaf819e0e5bce@1.0.0',
   NFTNamespace = 'akashicnft',
   NFTTransfer = 'e7ba6aa2aea7ae33f6bce49a07e6f8a2e6a5983e66b44f236e76cf689513c20a@1.0.0',
-  NFTAcnsRecord = '6b1acfbfba1f54571036fd579f509f4c60ac1e363c111f70815bea33957cf64a@1.0.0',
-  NFTAcnsRecordTesting = 'DNE',
+  NFTAasRecord = '6b1acfbfba1f54571036fd579f509f4c60ac1e363c111f70815bea33957cf64a@1.0.0',
+  NFTAasRecordTesting = 'DNE',
 }
 
 enum TestNetContracts {
-  Namespace = 'akashic',
-  Create = 'c4f1186c58f49db2fdba401a1b36832902325d11a2e69ac6ef800836274c6894@5.1.4',
-  CreateSecondaryOtk = '5160b43ea831f05faace12e01a82ebec8a4eb036ddfd429559c7d37fe32c4ffb@1.1.1',
-  CryptoTransfer = 'd1903e29ea83413ecc759d129f7a21e4f8039ac5650360cf83d993343b5ffaa6@5.8.3',
-  DiffConsensus = '76869d5f632c283324b0cb7c8e16ba14eec2cf5d6d7b3f4521cc9b6a12818623@3.0.3',
-  Onboard = 'b089a212ac22f57e2bef7d8a7f25702ebda98173939be2eba1ac0c2523d77383@5.0.4',
-  NFTNamespace = 'candypig',
-  NFTTransfer = '9c6ce3ed0c1e669471cd72ad9a81ea6ad13b6c3ba18b3ca05281fa721903f0e0@1.0.8',
+  Namespace = 'akashicchain',
+  Create = 'ad171259a7c628ba6993c6bd555f07111525128194aa4226662e48a0b0a93116@1.0.0',
+  CreateSecondaryOtk = '3030f7c2bda3a02330ef3bfd9a1a1f66fec4a96c0c04c019b64255a4e8ba31ca@1.0.0',
+  CryptoTransfer = 'a32a8bc21ceaeeaa671573126a246c15ec4dc3a5c825e3cffc9441636019acb1@1.1.1',
+  DiffConsensus = '17be1db84dbf81c1ff1b2f5aebd4ba4e95d81338daf98d7c2bc7b54ad8994d1c@1.0.0',
+  Onboard = 'c19c6f4d3c443ae7abb14d17d33b29d134df8d11bdabc568bd23f7023ee991fd@1.0.0',
+  NFTNamespace = 'akashicnft',
+  NFTTransfer = '604fd945206ef3bf410a714971152576e75ad98bec9eaef169a5c6fffcf4c2d1@1.0.0',
   // The "Testing" contract has a 60s cooldown on Alias-linking (vs 72hrs for
   // real contract)
-  NFTAcnsRecord = '4efd09f16b5c50ac95aeddcd36852d52eca0cf59e46dda39607e872b298dbefb@1.0.5',
-  NFTAcnsRecordTesting = '48192d7629e1b42772b9a4b87974e24c7d7c7225346e7dc9cbe74acb311a29db@1.0.2',
+  NFTAasRecord = '8a3be7eb9f042f7d95ec52a9fe3d2ce5f4169d8661e6972e18a9a4d31f97fb30@1.0.0',
+  NFTAasRecordTesting = '461846656354b677f530a978b249b0b5373a0c576ed3947a6ecebed7c3fec1b5@1.0.2',
 }
+
+const NFT_RECORD_TYPE = 'wallet';
+const NFT_RECORD_NAME = 'key';
 
 const Nitr0gen =
   process.env.REACT_APP_ENV === 'prod' ? ProductionContracts : TestNetContracts;
@@ -108,7 +113,7 @@ export class Nitr0genApi {
       throw new Error('Failed to generate identity for OTK');
     }
     // Convert ledgerId to include AS-prefix used in Akashic
-    return { ledgerId: convertToFromASPrefix(ledgerId, 'to') };
+    return { ledgerId: prefixWithAS(ledgerId) };
   }
 
   public async createKey(otk: IKeyExtended, coinSymbol: CoinSymbol) {
@@ -117,9 +122,8 @@ export class Nitr0genApi {
       NetworkDictionary[coinSymbol].nitr0genSymbol,
       NetworkDictionary[coinSymbol].nitr0genNetwork
     );
-    const response = await this.post<
-      ActiveLedgerResponse<IKeyCreationResponse>
-    >(tx);
+    const response =
+      await this.post<ActiveLedgerResponse<IKeyCreationResponse>>(tx);
 
     const newKey = response.$responses?.[0];
     if (!newKey) {
@@ -138,7 +142,7 @@ export class Nitr0genApi {
     }
 
     return {
-      ledgerId: convertToFromASPrefix(newKey.id, 'to'),
+      ledgerId: prefixWithAS(newKey.id),
       address: newKey.address,
       hashes: newKey.hashes,
     };
@@ -146,13 +150,15 @@ export class Nitr0genApi {
 
   protected async createNitr0genUrl(
     port: PortType,
-    path?: string
+    path?: string,
+    node?: string
   ): Promise<string> {
-    // TODO: Replace with user-stored selected node
-    let NITR0_URL = await chooseBestNodes(port);
+    let NITR0_URL = await (node
+      ? getChainNode(port, node)
+      : chooseBestNodes(port));
 
     if (path) {
-      NITR0_URL += `/${path}`;
+      NITR0_URL += `${path}`;
     }
     return NITR0_URL;
   }
@@ -170,39 +176,81 @@ export class Nitr0genApi {
     method: 'get' | 'post' = 'post',
     timeout = 5000
   ): Promise<T> {
-    const NITR0_URL = await this.createNitr0genUrl(port, path);
-
+    let NITR0_URL: string | undefined;
     try {
-      const requestFunction = method === 'post' ? axios.post : axios.get;
-
-      let version;
-      try {
-        const appInfo = await App.getInfo();
-        version = appInfo.version;
-      } catch (e) {
-        const manifestData = await getManifestJson();
-        version = manifestData.version;
-      }
-      const headers = {
-        'Ap-Version': version,
-        'Ap-Client': Capacitor.getPlatform(),
-      };
-
-      const response = await requestFunction(NITR0_URL, tx, {
-        ...(method === 'get' ? { timeout, headers } : { headers }),
-      });
-
-      // Prefix "AS" to umids so that "L2-hashes" have the prefix
-      if (response.data.$umid) {
-        response.data.$umid = 'AS' + response.data.$umid;
-      }
-
-      return response.data;
+      NITR0_URL = await this.createNitr0genUrl(port, path);
+      return await this.executeSend<T>(NITR0_URL, tx, method, timeout);
     } catch (e: unknown) {
-      console.error(e);
-      throw e;
-      // TODO: Handle error with retry-logic in-app
+      console.error(
+        `Attempt with ${NITR0_URL} (preferred or bestNode) failed: `,
+        e
+      );
+
+      const sortedNodes = (await fetchNodesPing(false)).sort(
+        (a, b) => a.ping - b.ping
+      );
+
+      const nodesWithUrl = await Promise.all(
+        sortedNodes.map(async (node) => ({
+          ...node,
+          url: await this.createNitr0genUrl(port, path, node.key),
+        }))
+      );
+
+      const nodeUrls = nodesWithUrl.reduce((urls: string[], node) => {
+        if (node.url && node.url !== NITR0_URL) {
+          urls.push(node.url);
+        }
+        return urls;
+      }, []);
+
+      let lastError: unknown;
+      for (const nodeUrl of nodeUrls) {
+        try {
+          return await this.executeSend<T>(nodeUrl, tx, method, timeout);
+        } catch (e: unknown) {
+          console.error(`Attempt with ${nodeUrl} failed: `, e);
+          lastError = e;
+        }
+      }
+      console.error('All nodes failed:', lastError);
+      throw lastError;
     }
+  }
+
+  protected async executeSend<T>(
+    url: string,
+    tx: object | undefined,
+    method: 'get' | 'post',
+    timeout: number
+  ): Promise<T> {
+    const requestFunction = method === 'post' ? axios.post : axios.get;
+
+    let version;
+    try {
+      const appInfo = await App.getInfo();
+      version = appInfo.version;
+    } catch {
+      const manifestData = await getManifestJson();
+      version = manifestData.version;
+    }
+    const headers = {
+      'Ap-Version': version,
+      'Ap-Client': Capacitor.getPlatform(),
+    };
+
+    const response = await requestFunction(url, tx, {
+      ...(method === 'get' ? { timeout, headers } : { headers }),
+    });
+
+    // Prefix "AS" to umids for "L2-hashes"
+    if (response.data.$umid) {
+      response.data.$umid = 'AS' + response.data.$umid;
+    }
+    if (response.data.$summary?.errors?.length > 0) {
+      throw new Error(response.data.$summary.errors[0]);
+    }
+    return response.data;
   }
 
   /**
@@ -444,9 +492,7 @@ export class Nitr0genApi {
    */
   async aasSwitchTransaction(
     otk: IKeyExtended,
-    acnsStreamId: string,
-    recordType: string,
-    recordKey: string,
+    aasStreamId: string,
     value?: string
   ): Promise<IBaseAcTransaction> {
     const txBody: IBaseAcTransaction = {
@@ -455,13 +501,13 @@ export class Nitr0genApi {
         $namespace: Nitr0gen.NFTNamespace,
         $contract:
           process.env.REACT_APP_ENV === 'prod'
-            ? Nitr0gen.NFTAcnsRecord
-            : Nitr0gen.NFTAcnsRecordTesting,
+            ? Nitr0gen.NFTAasRecord
+            : Nitr0gen.NFTAasRecordTesting,
         $i: {
           nft: {
-            $stream: acnsStreamId,
-            recordType: recordType,
-            recordName: recordKey,
+            $stream: aasStreamId,
+            recordType: NFT_RECORD_TYPE,
+            recordName: NFT_RECORD_NAME,
             recordValue: value,
           },
         },
@@ -472,7 +518,7 @@ export class Nitr0genApi {
 
     return await signTxBody(txBody, {
       ...otk,
-      identity: acnsStreamId,
+      identity: aasStreamId,
     });
   }
 
@@ -488,7 +534,7 @@ export class Nitr0genApi {
    */
   public async transferNftTransaction(
     otk: IKeyExtended,
-    acnsStreamId: string,
+    aasStreamId: string,
     newOwnerIdentity: string
   ): Promise<IBaseAcTransaction> {
     // Build Transaction
@@ -498,7 +544,7 @@ export class Nitr0genApi {
         $contract: Nitr0gen.NFTTransfer,
         $i: {
           nft: {
-            $stream: acnsStreamId,
+            $stream: aasStreamId,
           },
         },
         $o: {
@@ -513,7 +559,7 @@ export class Nitr0genApi {
     // "Hack" used when signing nft transactions, identity must be something else than the otk identity
     return await signTxBody(txBody, {
       ...otk,
-      identity: acnsStreamId,
+      identity: aasStreamId,
     });
   }
 

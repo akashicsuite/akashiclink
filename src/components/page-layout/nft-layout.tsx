@@ -1,5 +1,3 @@
-import './nft-layout.scss';
-
 import { Preferences } from '@capacitor/preferences';
 import { IonCol, IonContent, IonPage, IonRow } from '@ionic/react';
 import type { ReactNode } from 'react';
@@ -32,7 +30,7 @@ export function NftLayout({
   return (
     <IonPage>
       <Header />
-      <IonContent class="nft-layout">
+      <IonContent className="nft-layout ion-text-align-center">
         <IonRow>
           <IonCol size="12" className="ion-no-padding">
             <AccountNameBar />

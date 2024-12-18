@@ -1,6 +1,7 @@
 import { userConst } from '@helium-pay/backend';
 import { IonCheckbox, IonCol, IonRow } from '@ionic/react';
 import type { ActionCreatorWithPayload } from '@reduxjs/toolkit';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from '../../redux/app/hooks';
@@ -42,12 +43,29 @@ export function CreatePasswordForm({
 }) {
   useIosScrollPasswordKeyboardIntoView();
   const { t } = useTranslation();
-
-  /** Tracking user input */
-  const validatePassword = (value: string) =>
-    !!value.match(userConst.passwordRegex);
   const dispatch = useAppDispatch();
-  const validateConfirmPassword = (value: string) => form.password === value;
+
+  const [passwordsMatched, setPasswordsMatched] = useState(true);
+
+  // Validate password format
+  const validatePassword = (value: string) =>
+    !!RegExp(userConst.passwordRegex).exec(value);
+
+  // Check if passwords match
+  const validatePasswordsMatch = (
+    password?: string,
+    confirmPassword?: string
+  ) => {
+    if (!confirmPassword) return true;
+    return password === confirmPassword;
+  };
+
+  // Update passwords match state whenever either password changes
+  useEffect(() => {
+    setPasswordsMatched(
+      validatePasswordsMatch(form.password, form.confirmPassword)
+    );
+  }, [form.password, form.confirmPassword]);
 
   return (
     <PublicLayout className="vertical-center">
@@ -67,13 +85,13 @@ export function CreatePasswordForm({
                 label={t('NewPassword')}
                 placeholder={t('EnterPassword')}
                 type="password"
-                onIonInput={({ target: { value } }) =>
+                onIonInput={({ detail: { value } }) => {
                   dispatch(
                     onInputChange({
                       password: String(value),
                     })
-                  )
-                }
+                  );
+                }}
                 value={form.password}
                 errorPrompt={StyledInputErrorPrompt.Password}
                 validate={validatePassword}
@@ -84,16 +102,16 @@ export function CreatePasswordForm({
                 label={t('ConfirmPassword')}
                 type="password"
                 placeholder={t('ConfirmPassword')}
-                onIonInput={({ target: { value } }) =>
+                onIonInput={({ detail: { value } }) => {
                   dispatch(
                     onInputChange({
                       confirmPassword: String(value),
                     })
-                  )
-                }
+                  );
+                }}
                 value={form.confirmPassword}
                 errorPrompt={StyledInputErrorPrompt.ConfirmPassword}
-                validate={validateConfirmPassword}
+                isValid={passwordsMatched}
                 submitOnEnter={onSubmit}
               />
             </IonCol>
@@ -127,7 +145,8 @@ export function CreatePasswordForm({
                 !form.password ||
                 !form.confirmPassword ||
                 !form.checked ||
-                form.password !== form.confirmPassword
+                !passwordsMatched ||
+                !validatePassword(form.password)
               }
               isLoading={isLoading}
             >

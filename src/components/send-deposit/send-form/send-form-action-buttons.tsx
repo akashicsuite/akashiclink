@@ -1,3 +1,4 @@
+import { FeeDelegationStrategy } from '@helium-pay/backend';
 import { IonCol, IonRow } from '@ionic/react';
 import type { FC } from 'react';
 import { useState } from 'react';
@@ -22,6 +23,7 @@ type SendFormActionButtonsProps = {
   validatedAddressPair: ValidatedAddressPair;
   amount: string;
   disabled: boolean;
+  isDelegated: boolean;
   onAddressReset: () => void;
 };
 
@@ -29,6 +31,7 @@ export const SendFormActionButtons: FC<SendFormActionButtonsProps> = ({
   validatedAddressPair,
   amount,
   disabled,
+  isDelegated,
   onAddressReset,
 }) => {
   const { t } = useTranslation();
@@ -48,7 +51,10 @@ export const SendFormActionButtons: FC<SendFormActionButtonsProps> = ({
         validatedAddressPair,
         amount,
         chain,
-        token
+        token,
+        isDelegated
+          ? FeeDelegationStrategy.Delegate
+          : FeeDelegationStrategy.None
       );
       if (typeof res === 'string') {
         setAlert(
@@ -73,7 +79,7 @@ export const SendFormActionButtons: FC<SendFormActionButtonsProps> = ({
           },
         },
       });
-    } catch (e) {
+    } catch {
       setAlert(errorAlertShell('GenericFailureMsg'));
     } finally {
       setIsLoading(false);
@@ -99,7 +105,7 @@ export const SendFormActionButtons: FC<SendFormActionButtonsProps> = ({
             expand="block"
             className={'w-100'}
             onClick={onConfirm}
-            disabled={disabled || isLoading}
+            disabled={isLoading || disabled}
             isLoading={isLoading}
           >
             {t('Next')}

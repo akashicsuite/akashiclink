@@ -20,7 +20,6 @@ import { IonApp, setupIonicReact } from '@ionic/react';
 import { IonReactMemoryRouter } from '@ionic/react-router';
 import { useEffect } from 'react';
 
-import { VersionUpdateAlert } from './components/layout/version-update-alert';
 import { PopupTree } from './popup/popup-tree';
 import { useAppSelector } from './redux/app/hooks';
 import { selectTheme } from './redux/slices/preferenceSlice';
@@ -51,7 +50,6 @@ const InitializeApp = () => {
   useIdleTime();
 };
 
-// eslint-disable-next-line import/no-default-export
 export default function App() {
   InitializeApp();
 
@@ -65,9 +63,6 @@ export default function App() {
         {type === 'webPageRequest' && <PopupTree />}
         {type !== 'webPageRequest' && <NavigationTree />}
       </IonReactMemoryRouter>
-      {process.env.REACT_APP_SKIP_UPDATE_CHECK !== 'true' && (
-        <VersionUpdateAlert />
-      )}
     </IonApp>
   );
 }

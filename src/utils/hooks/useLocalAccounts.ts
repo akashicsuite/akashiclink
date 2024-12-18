@@ -1,4 +1,3 @@
-import { SecureStorage } from '@aparajita/capacitor-secure-storage';
 import { L2Regex } from '@helium-pay/backend';
 import crypto from 'crypto';
 
@@ -12,10 +11,13 @@ import {
   setLocalAccounts,
 } from '../../redux/slices/accountSlice';
 import type { FullOtk } from '../otk-generation';
-import { useLocalStorage } from './useLocalStorage';
+import { useSecureStorage } from './useSecureStorage';
 
+// TODO this is vulnerable to padding oracle attacks. CBC should be replaced
+//  with GCM (or similar), but we'll need to be careful about backwards
+//  compatibility. https://sonarsource.atlassian.net/browse/RSPEC-5542
 const algorithm = 'aes-256-cbc';
-const secretIv = '6RxIESTJ1eJLpjpe';
+const secretIv = process.env.REACT_APP_SECRETIV ?? '6RxIESTJ1eJLpjpe';
 
 /**
  * When logging in, a user will select a wallet `identity`
@@ -25,7 +27,7 @@ const secretIv = '6RxIESTJ1eJLpjpe';
 export interface LocalAccount {
   identity: string;
   username?: string;
-  aasName?: string;
+  alias?: string;
   accountName?: string;
   ledgerId?: string;
 }
@@ -35,7 +37,6 @@ export interface LocalAccount {
  * - activeAccount: session account set when user is logged in
  * - localAccounts: available accounts that user has imported
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export const useAccountStorage = () => {
   // Because of migrating from local storages to redux and wanting to keep the
   // data, we fetch localStorage accounts and tack them on what is stored in
@@ -44,15 +45,12 @@ export const useAccountStorage = () => {
   // TODO: Delete the legacy-stuff when backwards-compatibility to local storage
   // no longer necessary
   const dispatch = useAppDispatch();
-
-  const [legacyLocalAccounts, _c, removeLegacyLocalAccounts] = useLocalStorage<
-    LocalAccount[] | undefined
-  >('cached-accounts', undefined);
+  const { getItem, setItem, removeItem } = useSecureStorage();
 
   const storedLocalAccounts = useAppSelector(selectLocalAccounts);
 
   const localAccounts = Object.values(
-    [...storedLocalAccounts, ...(legacyLocalAccounts ?? [])].reduce(
+    [...storedLocalAccounts].reduce(
       (acc, next) => {
         next.identity && (acc[next.identity] = next);
         return acc;
@@ -63,21 +61,7 @@ export const useAccountStorage = () => {
 
   const cacheOtk = useAppSelector(selectCacheOtk);
 
-  const [legacyActiveAccount, _s, removeLegacyActiveAccount] =
-    useLocalStorage<LocalAccount | null>('session-account', null);
-
-  const activeAccount =
-    useAppSelector(selectActiveAccount) ?? legacyActiveAccount;
-
-  // After running this code we know we have migrated away from local storage
-  // and can thus null legacy-storage and force-update the redux account-list
-  if (legacyLocalAccounts && legacyLocalAccounts.length) {
-    dispatch(setLocalAccounts(localAccounts));
-    removeLegacyLocalAccounts();
-  }
-  if (legacyActiveAccount) {
-    removeLegacyActiveAccount();
-  }
+  const activeAccount = useAppSelector(selectActiveAccount);
 
   const addPrefixToAccounts = async () => {
     if (localAccounts.some((acc) => !L2Regex.exec(acc.identity))) {
@@ -92,18 +76,18 @@ export const useAccountStorage = () => {
   };
 
   const addAasToAccountByIdentity = async (
-    aasName: string,
+    alias: string,
     identity: string,
     ledgerId: string
   ) => {
     const updatedAccounts = localAccounts.map((l) => {
       if (l.identity === identity) {
-        return { ...l, aasName, ledgerId };
+        return { ...l, alias, ledgerId };
       }
       return l;
     });
     if (activeAccount && activeAccount.identity === identity) {
-      dispatch(setActiveAccountState({ ...activeAccount, aasName, ledgerId }));
+      dispatch(setActiveAccountState({ ...activeAccount, alias, ledgerId }));
     }
     dispatch(setLocalAccounts(updatedAccounts));
   };
@@ -111,7 +95,7 @@ export const useAccountStorage = () => {
   const removeAasFromAccountByIdentity = async (identity: string) => {
     const updatedAccounts = localAccounts.map((l) => {
       if (l.identity === identity) {
-        const { aasName: _, ledgerId: _a, ...rest } = l;
+        const { alias: _, ledgerId: _a, ...rest } = l;
         return rest;
       }
       return l;
@@ -120,7 +104,7 @@ export const useAccountStorage = () => {
       dispatch(
         setActiveAccountState({
           ...activeAccount,
-          aasName: undefined,
+          alias: undefined,
           ledgerId: undefined,
         })
       );
@@ -157,7 +141,7 @@ export const useAccountStorage = () => {
     identity: string,
     password: string
   ): Promise<FullOtk | undefined> => {
-    const encryptedOtk = await SecureStorage.getItem(identity);
+    const encryptedOtk = await getItem(identity);
 
     if (!encryptedOtk) {
       return undefined;
@@ -187,11 +171,12 @@ export const useAccountStorage = () => {
 
   const addLocalOtk = async (otk: FullOtk, password: string) => {
     const key = genKeyFromPassword(password);
+    // eslint-disable-next-line sonarjs/encryption-secure-mode
     const cipher = crypto.createCipheriv(algorithm, key, secretIv);
     const encryptedOtk = Buffer.from(
       cipher.update(JSON.stringify(otk), 'utf8', 'hex') + cipher.final('hex')
     ).toString('base64');
-    await SecureStorage.setItem(otk.identity, encryptedOtk);
+    await setItem(otk.identity, encryptedOtk);
   };
 
   const addLocalOtkAndCache = async (otk: FullOtk, password: string) => {
@@ -211,7 +196,7 @@ export const useAccountStorage = () => {
   };
 
   const removeLocalOtk = async (identity: string) => {
-    await SecureStorage.removeItem(identity);
+    await removeItem(identity);
 
     dispatch(setCacheOtkState(null));
   };

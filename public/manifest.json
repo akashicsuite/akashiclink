@@ -1,9 +1,10 @@
 {
-  "short_name": "AW",
-  "name": "AkashicLink Staging",
-  "description": "Your interface with the Akashic ecosystem",
+  "short_name": "AL",
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
   "version": "0.0.33",
   "releaseDate": "2024-01-30",
+  "default_locale": "en",
   "icons": {
     "16": "shared-assets/icons/extension-icon/Icon16.png",
     "32": "shared-assets/icons/extension-icon/Icon32.png",
@@ -12,8 +13,8 @@
   },
   "manifest_version": 3,
   "action": {
+    "default_title": "__MSG_extensionName__",
     "default_icon": "shared-assets/icons/extension-icon/Icon128.png",
-    "default_title": "AkashicLink Staging",
     "default_popup": "index.html"
   },
   "permissions": ["storage", "alarms"],

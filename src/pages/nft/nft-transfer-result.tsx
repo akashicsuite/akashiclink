@@ -11,9 +11,9 @@ import { NftLayout } from '../../components/page-layout/nft-layout';
 import { errorMsgs } from '../../constants/error-messages';
 import { urls } from '../../constants/urls';
 import {
-  type LocationState,
   historyGo,
   historyResetStackAndRedirect,
+  type LocationState,
 } from '../../routing/history';
 import { useNftTransfersMe } from '../../utils/hooks/useNftTransfersMe';
 import { displayLongText } from '../../utils/long-text';
@@ -61,7 +61,7 @@ export interface TransferResultType {
   sender: string | null | undefined;
   receiver: string;
   nftName: string;
-  acnsAlias: string;
+  alias: string;
   txHash?: string;
 }
 
@@ -120,7 +120,7 @@ export function NftTransferResult() {
                 </TextWrapper>
                 <TextWrapper>
                   <TextTitle>{'NFT'}</TextTitle>
-                  <TextContent>{state?.transaction?.acnsAlias}</TextContent>
+                  <TextContent>{state?.transaction?.alias}</TextContent>
                 </TextWrapper>
               </ResultContent>
             </IonCol>

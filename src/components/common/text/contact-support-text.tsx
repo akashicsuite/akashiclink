@@ -1,6 +1,7 @@
 import { IonText } from '@ionic/react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { SUPPORT_MAIL } from '../../../constants/urls';
 
 export const ContactSupportText = () => {
   const { t } = useTranslation();
@@ -20,7 +21,7 @@ export const ContactSupportText = () => {
       <p className={'ion-text-align-center ion-margin-top-xs'}>
         {t('NeedHelp')}{' '}
         <a
-          href="support@akashiclink.com"
+          href={SUPPORT_MAIL}
           target={'_blank'}
           style={{
             textDecoration: 'none',

@@ -156,6 +156,7 @@ export function Activity() {
                 ? ListFooter
                 : undefined,
           }}
+          /* TODO should extract a standalone component here as the linter suggests */
           itemContent={(index, transfer) => (
             <OneActivity
               transfer={transfer}

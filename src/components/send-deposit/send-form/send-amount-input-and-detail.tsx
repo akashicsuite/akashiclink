@@ -15,14 +15,18 @@ import {
   formAlertResetState,
 } from '../../common/alert/alert';
 import { TextButton } from '../../common/buttons';
-import { SendDetailBox } from './send-detail-box';
-import { SendFormActionButtons } from './send-form-action-buttons';
+import { L2Icon } from '../../common/chain-icon/l2-icon';
+import { NetworkIcon } from '../../common/chain-icon/network-icon';
+import { SendTxnDetailBox } from './send-txn-detail-box';
+import { SendTxnDetailBoxWithDelegateOption } from './send-txn-detail-box-with-delegate-option';
 import type { ValidatedAddressPair } from './types';
 
 const CurrencyChip = styled(IonChip)({
   '--background': 'var(--ion-color-primary)',
   '--color': 'var(--ion-color-primary-contrast)',
+  minWidth: '120px',
   opacity: 1,
+  justifyContent: 'center',
 });
 
 const AmountInput = styled(IonInput)({
@@ -33,6 +37,7 @@ const AmountInput = styled(IonInput)({
   fontSize: '1.5rem',
   fontWeight: 700,
   width: '100%',
+  maxWidth: 160,
 });
 
 export const SendAmountInputAndDetail = ({
@@ -55,6 +60,8 @@ export const SendAmountInputAndDetail = ({
     currencySymbol,
     nativeCoinBalance,
     nativeCoinSymbol,
+    chain,
+    delegatedFee,
   } = useFocusCurrencySymbolsAndBalances();
 
   const isL2 = L2Regex.exec(validatedAddressPair?.convertedToAddress);
@@ -106,7 +113,7 @@ export const SendAmountInputAndDetail = ({
     setAlert(formAlertResetState);
     setAmount(
       Big(currencyBalance)
-        .sub(isL2 ? calculateL2Fee() : '0')
+        .sub(isL2 ? calculateL2Fee() : delegatedFee)
         .toString()
     );
   };
@@ -118,6 +125,8 @@ export const SendAmountInputAndDetail = ({
           <CurrencyChip disabled>
             {networkCurrencyCombinedDisplayName}
           </CurrencyChip>
+          {isL2 && <L2Icon size={32} />}
+          {!isL2 && <NetworkIcon chain={chain} size={32} />}
         </IonCol>
       </IonRow>
       <IonRow className={'ion-grid-row-gap-xxxs'}>
@@ -125,8 +134,8 @@ export const SendAmountInputAndDetail = ({
           className={
             'ion-center ion-flex-direction-column ion-align-items-center'
           }
-          offset={'2'}
-          size={'8'}
+          offset={'1'}
+          size={'10'}
         >
           <AmountInput
             placeholder={isFocused ? '' : '0.00'}
@@ -158,16 +167,25 @@ export const SendAmountInputAndDetail = ({
           )}
         </IonCol>
       </IonRow>
-      {isAmountLargerThanZero && (
-        <SendDetailBox
+      {/* No delegate options if it is L2 OR L1 native coin */}
+      {isAmountLargerThanZero && (isL2 || (!isL2 && !isCurrencyTypeToken)) && (
+        <SendTxnDetailBox
           validatedAddressPair={validatedAddressPair}
           amount={amount}
           fee={calculateL2Fee()}
-          isFeeDelegated={
-            // TODO: perform a more accute checking to see if nativeCoinBalance is enough to pay gas fee
-            !isL2 && isCurrencyTypeToken && Big(nativeCoinBalance).eq(0)
-          }
-          currencySymbol={networkCurrencyCombinedDisplayName}
+          disabled={alert.visible}
+          setAlert={setAlert}
+          onAddressReset={onAddressReset}
+        />
+      )}
+      {/* Show delegate options if it is L1 /w token */}
+      {isAmountLargerThanZero && !isL2 && isCurrencyTypeToken && (
+        <SendTxnDetailBoxWithDelegateOption
+          validatedAddressPair={validatedAddressPair}
+          amount={amount}
+          disabled={alert.visible}
+          setAlert={setAlert}
+          onAddressReset={onAddressReset}
         />
       )}
       {alert.visible && (
@@ -176,14 +194,6 @@ export const SendAmountInputAndDetail = ({
             <AlertBox state={alert} />
           </IonCol>
         </IonRow>
-      )}
-      {isAmountLargerThanZero && (
-        <SendFormActionButtons
-          validatedAddressPair={validatedAddressPair}
-          onAddressReset={onAddressReset}
-          amount={amount}
-          disabled={alert.visible}
-        />
       )}
     </>
   );

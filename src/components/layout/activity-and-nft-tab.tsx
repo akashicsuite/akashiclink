@@ -46,7 +46,7 @@ const NoDataDiv = styled.span({
 });
 
 const NoDataWrapper = styled.div({
-  height: '25vh',
+  height: '136px',
   position: 'relative',
 });
 
@@ -62,7 +62,7 @@ export const ActivityAndNftTabs = ({
   const { t } = useTranslation();
   const history = useHistory();
   return (
-    <Tabs>
+    <Tabs data-testid={'activity-nft-tabs'}>
       <TabButton
         style={{ width: '50%', marginInline: '0' }}
         id="activity"
@@ -146,14 +146,15 @@ export function ActivityAndNftTab() {
                 />
               );
             })}
-        {isActivityTabReady && formattedTransfers.length >= itemDisplayLimit && (
-          <SeeMore
-            className="ion-margin-top-xs"
-            to={akashicPayPath(urls.activity)}
-          >
-            {t('SeeMore')}
-          </SeeMore>
-        )}
+        {isActivityTabReady &&
+          formattedTransfers.length >= itemDisplayLimit && (
+            <SeeMore
+              className="ion-margin-top-xs"
+              to={akashicPayPath(urls.activity)}
+            >
+              {t('SeeMore')}
+            </SeeMore>
+          )}
         {isActivityTabReady && formattedTransfers.length === 0 && (
           <NoDataWrapper>
             <NoDataDiv>{t('NoActivity')}</NoDataDiv>

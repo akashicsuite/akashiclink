@@ -53,11 +53,9 @@ export function Nfts() {
   const isDarkMode = storedTheme === themeType.DARK;
   const history = useHistory();
   const { nfts, isLoading } = useNftMe();
-  const sortedNfts = nfts.sort((a, b) => {
-    if (a.acns?.value && !b.acns?.value) return -1;
-    if (!a.acns?.value && b.acns?.value) return 1;
-    return 0;
-  });
+  const sortedNfts = [...nfts].sort(
+    (a, b) => (b.aas?.linked ? 1 : 0) - (a.aas?.linked ? 1 : 0)
+  );
 
   const selectNft = (nft: INft) => {
     history.push({

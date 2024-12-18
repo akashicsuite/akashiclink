@@ -2,7 +2,6 @@ import { Browser } from '@capacitor/browser';
 import { Clipboard } from '@capacitor/clipboard';
 import {
   IonContent,
-  IonIcon,
   IonLabel,
   IonNote,
   IonPopover,
@@ -12,6 +11,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { displayLongText } from '../../utils/long-text';
+import { CopyIcon } from '../common/icons/copy-icon';
 
 export const ListCopyTxHashItem = ({
   txHash,
@@ -76,13 +76,11 @@ export const ListCopyTxHashItem = ({
           style={{ height: '18px', width: '18px' }}
           className="ion-margin-left-xs"
         >
-          <IonIcon
+          <CopyIcon
             onClick={onClickCopyIcon}
             slot="icon-only"
             className="copy-icon"
-            src={`/shared-assets/images/copy-icon-${
-              suffix === 'AS' ? 'gray' : 'white'
-            }.svg`}
+            isGrey={suffix === 'AS'}
           />
         </div>
         <IonPopover

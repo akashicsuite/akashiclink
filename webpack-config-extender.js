@@ -41,6 +41,7 @@ module.exports = {
         resolvePackagePath('../backend/src'),
         resolvePackagePath('../../packages/common-i18n/src'),
         resolvePackagePath('../../packages/ui-lib/src'),
+        resolvePackagePath('../../packages/api-mocks/src'),
       ]);
     }
 
@@ -56,6 +57,19 @@ module.exports = {
       webpackConfig.resolve.alias = {
         ...webpackConfig.resolve.alias,
         react: path.resolve(resolvePackagePath('../../node_modules/react')),
+      };
+      webpackConfig.resolve.fallback = {
+        ...webpackConfig.resolve.fallback,
+        crypto: require.resolve('crypto-browserify'),
+        constants: require.resolve('constants-browserify'),
+        util: require.resolve('util/'),
+        http: require.resolve('stream-http'),
+        https: require.resolve('https-browserify'),
+        url: require.resolve('url/'),
+        stream: require.resolve('stream-browserify'),
+        assert: require.resolve('assert/'),
+        buffer: require.resolve('buffer/'),
+        fs: false,
       };
     }
 

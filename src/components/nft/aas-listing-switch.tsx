@@ -1,16 +1,10 @@
 import styled from '@emotion/styled';
-import {
-  type IAcns,
-  type INft,
-  nftErrors,
-  userConst,
-} from '@helium-pay/backend';
+import { type INft, nftErrors, userConst } from '@helium-pay/backend';
 import axios from 'axios';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useUpdateAcns } from '../../utils/hooks/nitr0gen';
-import { useFetchAndRemapAASToAddress } from '../../utils/hooks/useFetchAndRemapAASToAddress';
+import { useUpdateAas } from '../../utils/hooks/nitr0gen';
 import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
 import { useNftMe } from '../../utils/hooks/useNftMe';
 import { Nitr0genApi, signTxBody } from '../../utils/nitr0gen/nitr0gen-api';
@@ -30,14 +24,12 @@ const AASListSwitchContainer = styled.div`
 /* In minutes. 72hrs on prod, 1 min else */
 const AAS_LINK_RESTRICT_TIME = process.env.REACT_APP_ENV === 'prod' ? 4320 : 1;
 
-const validateLinkRestriction = (acnsDocument: IAcns) => {
-  // For legacy-reasons this prop is "linkedAt", while in the current logic it
-  // actually represents time of de-linking
-  if (acnsDocument.linkedAt) {
+const validateLinkRestriction = (nftDocument: INft) => {
+  if (nftDocument.aas.unLinkedAt) {
     // Difference in ms between when aas can be linked again (linkedAt + 72hrs) and now
     const timeUntilLinkAllowed =
       // HACK bc dates get turned into strings going from BE -> FE
-      new Date(acnsDocument.linkedAt).getTime() +
+      new Date(nftDocument.aas.unLinkedAt).getTime() +
       AAS_LINK_RESTRICT_TIME * 60 * 1000 -
       Date.now();
 
@@ -52,49 +44,72 @@ const validateLinkRestriction = (acnsDocument: IAcns) => {
         hoursDifference
           ? hoursDifference + ' hours'
           : minutesDifference
-          ? minutesDifference + ' minutes'
-          : secondsDifference + ' seconds'
+            ? minutesDifference + ' minutes'
+            : secondsDifference + ' seconds'
       );
     }
   }
 };
 
-const verifyUpdateAcns = (
+const verifyUpdateAas = (
   ownerIdentity: string,
-  acns: IAcns,
+  nft: INft,
   nfts: INft[],
   newValue?: string
 ) => {
   // Show generic error
   if (newValue && ownerIdentity !== newValue)
-    throw new Error(userConst.acnsOwnershipError);
-  // Show generic error
-  if (acns.ownerIdentity !== ownerIdentity) {
+    throw new Error(userConst.aasOwnershipError);
+
+  if (nft.ownerIdentity !== ownerIdentity) {
     throw new Error(nftErrors.ownerIdentityShouldBeSame);
   }
 
-  if (!!newValue && nfts.some((nft) => nft.acns?.value)) {
+  if (!!newValue && nfts.some((nft) => nft.aas?.linked)) {
     throw new Error(nftErrors.onlyOneAASLinkingAllowed);
   }
 
-  validateLinkRestriction(acns);
+  validateLinkRestriction(nft);
 };
 
 export const AasListingSwitch = ({
-  aas,
+  nft,
   setAlert,
+  setParentLinkage,
 }: {
-  aas: IAcns;
+  nft: INft;
   setAlert: React.Dispatch<React.SetStateAction<FormAlertState>>;
+  setParentLinkage: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { activeAccount, cacheOtk } = useAccountStorage();
   const { nfts, mutateNftMe } = useNftMe();
   const { t } = useTranslation();
-  const [isListed, setIsListed] = useState<boolean>(!!aas.value);
+  const [isLinked, setIsLinked] = useState<boolean>(!!nft.aas.linked);
   const [isLoading, setIsLoading] = useState(false);
-  const fetchAndRemapAASToAddress = useFetchAndRemapAASToAddress();
+  const { addAasToAccountByIdentity, removeAasFromAccountByIdentity } =
+    useAccountStorage();
   const nitr0genApi = new Nitr0genApi();
-  const { trigger: triggerUpdateAcns } = useUpdateAcns();
+  const { trigger: triggerUpdateAas } = useUpdateAas();
+
+  // We use these functions directly instead of `fetchAndRemap..` as
+  // backend might not be aware of the aas-event yet and so fetching data
+  // from backend is not guaranteed to match the correct state
+  const addOrRemoveAasToAccount = async (
+    linking: boolean,
+    alias?: string,
+    nftLedgerId?: string
+  ) => {
+    if (!activeAccount) return;
+    if (linking && alias && nftLedgerId) {
+      await addAasToAccountByIdentity(
+        nft.alias,
+        activeAccount.identity,
+        nft.ledgerId
+      );
+    } else if (!linking) {
+      await removeAasFromAccountByIdentity(activeAccount?.identity);
+    }
+  };
 
   const updateAASList = async () => {
     try {
@@ -102,45 +117,45 @@ export const AasListingSwitch = ({
         throw new Error('GenericFailureMsg');
       }
       setIsLoading(true);
-      if (aas.name && activeAccount?.identity && cacheOtk) {
-        const newValue = !isListed ? activeAccount.identity : undefined;
-        verifyUpdateAcns(cacheOtk.identity, aas, nfts, newValue);
+      if (nft.alias && activeAccount?.identity && cacheOtk) {
+        const newValue = !isLinked ? activeAccount.identity : undefined;
+        verifyUpdateAas(cacheOtk.identity, nft, nfts, newValue);
 
         const txToSign = await nitr0genApi.aasSwitchTransaction(
           cacheOtk,
-          aas.ledgerId,
-          aas.recordType,
-          aas.recordKey,
+          nft.aas.ledgerId,
           newValue
         );
 
         // "Hack" used when signing nft transactions, identity must be something else than the otk identity
         const signerOtk = {
           ...cacheOtk,
-          identity: aas.ledgerId,
+          identity: nft.aas.ledgerId,
         };
 
         const signedTx = await signTxBody(txToSign, signerOtk);
 
-        await triggerUpdateAcns(signedTx);
+        await triggerUpdateAas(signedTx);
 
-        await fetchAndRemapAASToAddress(activeAccount.identity);
+        // If not linked before, it will now get linked
+        await addOrRemoveAasToAccount(!isLinked, nft.alias, nft.ledgerId);
       }
       await mutateNftMe();
-      setIsListed(!isListed);
+      setIsLinked(!isLinked);
+      setParentLinkage(!isLinked);
     } catch (error) {
       const errorMsg = axios.isAxiosError(error)
         ? error?.response?.data?.message
         : error instanceof Error // From time-link-restriction
-        ? error.message
-        : '';
+          ? error.message
+          : '';
       const timeUnits = ['hours', 'minutes', 'seconds'];
       if (errorMsg === nftErrors.onlyOneAASLinkingAllowed) {
         setAlert(errorAlertShell('OnlyOneAAS'));
       } else if (timeUnits.includes(errorMsg.split(' ')[1])) {
         setAlert(
           errorAlertShell('AASLinkingFailed', {
-            name,
+            name: nft.alias,
             timeRemaining: errorMsg.split(' ')[0],
             timeUnit: t(errorMsg.split(' ')[1]),
           })
@@ -171,7 +186,7 @@ export const AasListingSwitch = ({
         switchStyle={{ width: '60px' }}
         isLoading={isLoading}
         onClickHandler={updateAASList}
-        currentState={isListed ? 'active' : 'inActive'}
+        currentState={isLinked ? 'active' : 'inActive'}
       />
     </AASListSwitchContainer>
   );

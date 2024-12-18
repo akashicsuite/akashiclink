@@ -1,30 +1,33 @@
-import { LANGUAGE_LIST } from '@helium-pay/common-i18n/src/locales/supported-languages';
+import {
+  DEFAULT_LANGUAGE,
+  Language,
+} from '@helium-pay/common-i18n/src/locales/supported-languages';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLocalStorage } from './useLocalStorage';
 
-const getLocalisationLanguage = (): string => {
-  const browserLanguage = window.navigator.language;
-  for (const lang of LANGUAGE_LIST)
-    if (lang.locale === browserLanguage) return lang.locale;
-
-  return LANGUAGE_LIST[0].locale;
+const getLocalisationLanguage = (): Language => {
+  const browserLanguage = window?.navigator?.language;
+  for (const lang of Object.values(Language)) {
+    if (lang === browserLanguage) return lang;
+  }
+  return DEFAULT_LANGUAGE;
 };
 
 export const useSetGlobalLanguage = (): [
-  string,
-  (newValue: string) => Promise<void>
+  Language,
+  (newValue: Language) => Promise<void>,
 ] => {
   const { i18n } = useTranslation();
   const localLanguage = getLocalisationLanguage();
-  const [selectedLanguage, setSelectedLanguage] = useLocalStorage(
+  const [selectedLanguage, setSelectedLanguage] = useLocalStorage<Language>(
     'language',
     localLanguage
   );
 
   useEffect(() => {
-    if (selectedLanguage !== '' && selectedLanguage !== i18n.language) {
+    if (selectedLanguage !== i18n.language) {
       i18n.changeLanguage(selectedLanguage);
     }
   }, [selectedLanguage, i18n]);

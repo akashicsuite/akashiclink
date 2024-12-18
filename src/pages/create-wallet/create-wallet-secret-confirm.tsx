@@ -33,7 +33,7 @@ import {
 } from '../../routing/history';
 import { EXTENSION_EVENT, responseToSite } from '../../utils/chrome';
 import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
-import { createAccountWithKeys } from './akashic-chain-interaction';
+import { createAccountWithKeys } from '../../utils/wallet-creation';
 
 export const StyledSpan = styled.span({
   fontSize: '12px',

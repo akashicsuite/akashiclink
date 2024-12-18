@@ -19,6 +19,7 @@ export function Header() {
       className="ion-no-border"
       style={{
         background: 'var(--ion-header-background)',
+        display: 'flex',
       }}
     >
       <HistoryBackButton />
@@ -35,7 +36,7 @@ export function Header() {
           width: 40,
         }}
       >
-        <SettingSelect loggedIn />
+        <SettingSelect />
       </div>
     </IonHeader>
   );

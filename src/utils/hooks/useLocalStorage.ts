@@ -29,15 +29,11 @@ export const useLocalStorage = <T>(
 
         if (result.value == undefined && initialValue != undefined) {
           await setPreferenceAndStateValue(initialValue as T);
+        } else if (result.value) {
+          JSON.stringify(stateValue) !== result.value &&
+            setStateValue(JSON.parse(result.value));
         } else {
-          if (result.value) {
-            JSON.stringify(stateValue) !== result.value &&
-              setStateValue(JSON.parse(result.value));
-          } else {
-            console.warn(
-              'preference value not found, initialValue value not found'
-            );
-          }
+          console.warn(key + ' preference value & initialValue not found');
         }
       } catch (e) {
         datadogRum.addError(e);

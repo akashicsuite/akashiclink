@@ -1,7 +1,10 @@
 import { Preferences } from '@capacitor/preferences';
 import { datadogRum } from '@datadog/browser-rum';
-import type { IBaseAcTransaction } from '@helium-pay/backend';
 import {
+  EthereumSymbol,
+  FeeDelegationStrategy,
+  type IBaseAcTransaction,
+  isCoinSymbol,
   type ITransactionProposalClientSideOtk,
   type ITransferNftResponse,
   nftErrors,
@@ -112,13 +115,17 @@ export const useSendL1Transaction = () => {
       );
 
       // Only store locally if we are not hiding the transaction
+      // And if not ETH/SEP as they get presigned and have the special "queued" transaction
       if (
-        (hideSmallTransactions && usdtValue.gte(1)) ||
-        !hideSmallTransactions
+        !isCoinSymbol(signedTransactionData.coinSymbol, EthereumSymbol) &&
+        ((hideSmallTransactions && usdtValue.gte(1)) || !hideSmallTransactions)
       ) {
         dispatch(
           addLocalTransaction({
             ...signedTransactionData,
+            feeIsDelegated:
+              signedTransactionData.feeDelegationStrategy ===
+              FeeDelegationStrategy.Delegate,
             status: TransactionStatus.PENDING,
             initiatedAt: new Date(),
             layer: TransactionLayer.L1,
@@ -148,7 +155,7 @@ export const useNftTransfer = () => {
   const trigger = async (
     signedTx: IBaseAcTransaction
   ): Promise<
-    Omit<ITransferNftResponse, 'nftName' | 'ownerIdentity' | 'acnsAlias'>
+    Omit<ITransferNftResponse, 'nftName' | 'ownerIdentity' | 'alias'>
   > => {
     const response = await nitr0genApi.sendSignedTx(signedTx);
     nitr0genApi.checkForNitr0genError(response);
@@ -160,7 +167,7 @@ export const useNftTransfer = () => {
   return { trigger };
 };
 
-export const useUpdateAcns = () => {
+export const useUpdateAas = () => {
   const nitr0genApi = new Nitr0genApi();
 
   const trigger = async (
@@ -175,7 +182,7 @@ export const useUpdateAcns = () => {
       };
     } catch (err) {
       const error =
-        err instanceof Error ? err : new Error(nftErrors.linkingAcnsFailed);
+        err instanceof Error ? err : new Error(nftErrors.linkingAasFailed);
       datadogRum.addError(error);
       throw err;
     }

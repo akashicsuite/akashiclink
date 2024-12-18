@@ -30,7 +30,7 @@ export function CreateWalletPassword() {
 
   /** Tracking user input */
   const validatePassword = (value: string) =>
-    !!value.match(userConst.passwordRegex);
+    !!RegExp(userConst.passwordRegex).exec(value);
   const validateConfirmPassword = (value: string) =>
     createWalletForm.password === value;
 

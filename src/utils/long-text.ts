@@ -23,11 +23,9 @@ export function displayLongText(
     } else {
       return long.slice(0, halfLength) + '...' + long.slice(-halfLength);
     }
+  } else if (isPostfix) {
+    return long.slice(0, length - 2) + '..';
   } else {
-    if (isPostfix) {
-      return long.slice(0, length - 2) + '..';
-    } else {
-      return long.slice(0, length - 5) + '...' + long.slice(-5);
-    }
+    return long.slice(0, length - 5) + '...' + long.slice(-5);
   }
 }

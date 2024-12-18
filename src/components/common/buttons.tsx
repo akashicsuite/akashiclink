@@ -7,7 +7,7 @@ type IonButtonProps = React.ComponentProps<typeof IonButton>;
 
 const squareButtonBaseCss: CSSInterpolation = {
   border: '1px solid transparent',
-  borderRadius: '4px !important',
+  borderRadius: '4px',
   textAlign: 'center',
   height: '32px',
 };
@@ -17,6 +17,7 @@ const buttonBaseCss: CSSInterpolation = {
   borderRadius: '100px !important',
   textAlign: 'center',
   height: '40px',
+  letterSpacing: '0.01rem',
 };
 
 const buttonTextBaseCss: CSSInterpolation = {
@@ -71,18 +72,26 @@ const PrimaryButtonCSS = styled(IonButton)<{ disabled?: boolean }>`
   }
 `;
 
-export const PrimaryButton = (
-  props: IonButtonProps & { isLoading?: boolean; disabled?: boolean }
-) => (
-  <PrimaryButtonCSS disabled={props.isLoading ?? props.disabled} {...props}>
-    {props.children}
-    {props.isLoading && (
-      <IonSpinner className={'ion-margin-start'} slot="end" name="circular" />
+export const PrimaryButton = ({
+  isLoading,
+  disabled,
+  children,
+  ...props
+}: IonButtonProps & { isLoading?: boolean; disabled?: boolean }) => (
+  <PrimaryButtonCSS disabled={isLoading || disabled} {...props}>
+    {children}
+    {isLoading && (
+      <IonSpinner
+        style={{ width: 20 }}
+        className={children ? 'ion-margin-left-xs' : ''}
+        slot="end"
+        name="circular"
+      />
     )}
   </PrimaryButtonCSS>
 );
 
-export const WhiteButton = styled(IonButton)<{ disabled?: boolean }>`
+export const WhiteButtonCSS = styled(IonButton)<{ disabled?: boolean }>`
   ${whiteButtonCss}
   &::part(native) {
     ${(props) =>
@@ -91,6 +100,25 @@ export const WhiteButton = styled(IonButton)<{ disabled?: boolean }>`
         : 'color: var(--ion-color-primary);'}
   }
 `;
+
+export const WhiteButton = ({
+  isLoading,
+  disabled,
+  children,
+  ...props
+}: IonButtonProps & { isLoading?: boolean; disabled?: boolean }) => (
+  <WhiteButtonCSS disabled={isLoading || disabled} {...props}>
+    {children}
+    {isLoading && (
+      <IonSpinner
+        style={{ width: 20 }}
+        className={children ? 'ion-margin-left-xs' : ''}
+        slot="end"
+        name="circular"
+      />
+    )}
+  </WhiteButtonCSS>
+);
 
 export const OutlineButton = styled(IonButton)({
   ['&::part(native)']: {
@@ -102,15 +130,19 @@ export const OutlineButton = styled(IonButton)({
 });
 
 export const SquareWhiteButton = styled(IonButton, {
-  shouldForwardProp: (props) => props !== 'forceStyle',
-})<{ forceStyle?: CSSProperties }>(({ forceStyle }) => ({
-  ['&::part(native)']: {
-    ...squareButtonBaseCss,
-    ...whiteButtonBase,
-    ...buttonTextBaseCss,
-    ...(forceStyle ? forceStyle : {}),
-  },
-}));
+  shouldForwardProp: (props) =>
+    props !== 'forceStyle' && props !== 'borderRadius',
+})<{ forceStyle?: CSSProperties; borderRadius?: string | number }>(
+  ({ forceStyle, borderRadius }) => ({
+    ['&::part(native)']: {
+      ...squareButtonBaseCss,
+      ...whiteButtonBase,
+      ...buttonTextBaseCss,
+      ...(forceStyle ? forceStyle : {}),
+      borderRadius: borderRadius || squareButtonBaseCss.borderRadius,
+    },
+  })
+);
 
 export const TabButton = styled(IonButton)({
   ...tabButtonCss,

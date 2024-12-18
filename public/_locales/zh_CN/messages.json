@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "AkashicLink Staging",
+    "description": "Name of extension"
+  },
+  "extensionDescription": {
+    "message": "非托管式托管加密钱包",
+    "description": "Description of extension"
+  }
+}

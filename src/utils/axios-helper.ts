@@ -19,9 +19,7 @@ instance.interceptors.request.use(async (config) => {
     if (appInfo) {
       config.headers['Ap-Version'] = appInfo.version;
     }
-  } catch (e) {
-    console.warn(e);
-
+  } catch {
     // App.getInfo() does not work on web. Try manifest
     const manifestData = await getManifestJson();
     config.headers['Ap-Version'] = manifestData.version;

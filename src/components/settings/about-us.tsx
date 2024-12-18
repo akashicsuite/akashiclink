@@ -7,6 +7,7 @@ import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { LINK_TYPE, useI18nInfoUrls } from '../../i18n/links';
 import { useCurrentAppInfo } from '../../utils/hooks/useCurrentAppInfo';
 import { useLocalStorage } from '../../utils/hooks/useLocalStorage';
 import { getImageIconUrl } from '../../utils/url-utils';
@@ -29,7 +30,7 @@ function UpdateModal({
   const [updateUrl] = useLocalStorage('update-url', '');
   const [highlights] = useLocalStorage('highlights', ['']);
   const { t } = useTranslation();
-  const [isMoreInfo, setMoreInfo] = useState(false);
+  const [isMoreInfo, setIsMoreInfo] = useState(false);
   return (
     <IonModal
       id="update-modal"
@@ -64,9 +65,9 @@ function UpdateModal({
               })}
             </h4>
             <ul>
-              {highlights.map((highlight, i) => {
+              {highlights.map((highlight) => {
                 return (
-                  <li className="ion-text-size-xs" key={i}>
+                  <li className="ion-text-size-xs" key={highlight}>
                     {highlight}
                   </li>
                 );
@@ -79,7 +80,7 @@ function UpdateModal({
           fill="clear"
           className="ion-text-size-xxs p-0 m-0 more-info-btn no-ripple"
           onClick={() => {
-            setMoreInfo(!isMoreInfo);
+            setIsMoreInfo(!isMoreInfo);
           }}
         >
           {!isMoreInfo ? t('MoreInfo') : t('LessInfo')}
@@ -134,12 +135,14 @@ export function AboutUs({
   const [updateModal, setUpdateModal] = useState(false);
   const [updateType] = useLocalStorage('update-type', '');
 
+  const infoUrls = useI18nInfoUrls();
+
   const aboutUsMenu: SettingItemProps[] = [
     {
       header: t('PrivacyPolicy'),
       onClick: async () => {
         await Browser.open({
-          url: 'https://akashic-1.gitbook.io/akashiclink/terms-of-use-and-privacy-policy-1',
+          url: infoUrls[LINK_TYPE.PrivacyPolicy],
         });
       },
       endComponent: <ForwardArrow />,
@@ -148,7 +151,7 @@ export function AboutUs({
       header: t('TermsOfUse'),
       onClick: async () => {
         await Browser.open({
-          url: 'https://akashic-1.gitbook.io/akashiclink/terms-of-use-and-privacy-policy-1',
+          url: infoUrls[LINK_TYPE.TermsOfUse],
         });
       },
       endComponent: <ForwardArrow />,
@@ -158,7 +161,7 @@ export function AboutUs({
       header: t('VisitOurWebsite'),
       onClick: async () => {
         await Browser.open({
-          url: 'https://www.akashiclink.com/en',
+          url: infoUrls[LINK_TYPE.InfoSite],
         });
       },
       endComponent: <ForwardArrow />,
@@ -216,8 +219,9 @@ export function AboutUs({
         {aboutUsMenu.map((abm, index) => {
           return (
             <SettingItem
+              /* eslint-disable-next-line sonarjs/no-array-index-key */
               key={index}
-              iconUrl={abm.iconUrl}
+              icon={abm.icon}
               header={abm.header}
               onClick={abm.onClick}
               endComponent={abm.endComponent}

@@ -13,7 +13,6 @@ import type {
 import { SendConfirmationDetailList } from './send-confirmation-detail-list';
 import { SendConfirmationFormActionButtons } from './send-confirmation-form-action-buttons';
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export const SendConfirmationForm = () => {
   const { t } = useTranslation();
   const history = useHistory<LocationState>();

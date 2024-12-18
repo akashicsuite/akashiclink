@@ -4,4 +4,4 @@ export const themeType = {
   SYSTEM: 'system',
 } as const;
 
-export type ThemeType = typeof themeType[keyof typeof themeType];
+export type ThemeType = (typeof themeType)[keyof typeof themeType];

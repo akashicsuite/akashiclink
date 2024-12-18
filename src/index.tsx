@@ -1,5 +1,6 @@
 import './i18n/i18n';
 
+import { App as CapacitorApp } from '@capacitor/app';
 import { datadogRum } from '@datadog/browser-rum';
 import { isPlatform } from '@ionic/react';
 import { ConnectedRouter } from 'connected-react-router';
@@ -14,33 +15,52 @@ import { store } from './redux/app/store';
 import { reportWebVitals } from './reportWebVitals';
 import { history } from './routing/history';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import { getManifestJson } from './utils/hooks/useCurrentAppInfo';
 
 const container = document.getElementById('root');
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(container!);
 
-if (!isPlatform('android')) {
-  datadogRum.init({
-    applicationId: process.env.REACT_APP_DATADOG_APPLICATION_ID || '',
-    clientToken: process.env.REACT_APP_DATADOG_CLIENT_TOKEN || '',
-    site: 'datadoghq.com',
-    service: 'akashic-wallet',
-    env: process.env.REACT_APP_ENV || '',
-    allowedTracingUrls: [`${process.env.REACT_APP_API_BASE_URL}/api`],
+const initDatadog = async () => {
+  let version = '';
 
-    // Specify a version number to identify the deployed version of your application in Datadog
-    version: '0.0.1',
-    sessionSampleRate: 100,
-    sessionReplaySampleRate: 20,
-    trackUserInteractions: true,
-    trackResources: true,
-    trackLongTasks: true,
-    defaultPrivacyLevel: 'mask-user-input',
-  });
+  try {
+    const appInfo = await CapacitorApp.getInfo();
+    if (appInfo) {
+      version = appInfo.version;
+    }
+  } catch (e) {
+    console.warn(e);
 
-  datadogRum.startSessionReplayRecording();
-}
+    // App.getInfo() does not work on web. Try manifest
+    const manifestData = await getManifestJson();
+    version = manifestData.version;
+  }
+
+  if (!isPlatform('android')) {
+    datadogRum.init({
+      applicationId: process.env.REACT_APP_DATADOG_APPLICATION_ID || '',
+      clientToken: process.env.REACT_APP_DATADOG_CLIENT_TOKEN || '',
+      site: 'datadoghq.com',
+      service: 'akashic-wallet',
+      env: process.env.REACT_APP_ENV || '',
+      allowedTracingUrls: [`${process.env.REACT_APP_API_BASE_URL}/api`],
+
+      // Specify a version number to identify the deployed version of your application in Datadog
+      version,
+      sessionSampleRate: 100,
+      sessionReplaySampleRate: 20,
+      trackUserInteractions: true,
+      trackResources: true,
+      trackLongTasks: true,
+      defaultPrivacyLevel: 'mask-user-input',
+    });
+
+    datadogRum.startSessionReplayRecording();
+  }
+};
+
+initDatadog();
 
 const persistor = persistStore(store);
 root.render(

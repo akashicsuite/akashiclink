@@ -1,14 +1,12 @@
 import { Clipboard } from '@capacitor/clipboard';
 import styled from '@emotion/styled';
-import { IonContent, IonIcon, IonPopover } from '@ionic/react';
+import { IonContent, IonPopover } from '@ionic/react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../../redux/app/hooks';
-import { selectTheme } from '../../../redux/slices/preferenceSlice';
-import { themeType } from '../../../theme/const';
 import { displayLongText } from '../../../utils/long-text';
 import { SquareWhiteButton } from '../../common/buttons';
+import { CopyIcon } from '../../common/icons/copy-icon';
 
 const AddressWrapper = styled.div({
   display: 'flex',
@@ -24,7 +22,6 @@ interface Props {
 export function AddressCopyBlock(props: Props) {
   const copyAddressPopover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const storedTheme = useAppSelector(selectTheme);
   const { t } = useTranslation();
 
   const copyAddress = async (e: never) => {
@@ -53,14 +50,8 @@ export function AddressCopyBlock(props: Props) {
         >
           {displayLongText(props.address, 18)}
         </div>
-        <IonIcon
-          className="icon-button-icon"
+        <CopyIcon
           slot="icon-only"
-          src={`/shared-assets/images/${
-            storedTheme === themeType.DARK
-              ? 'copy-icon-white.svg'
-              : 'copy-icon-dark.svg'
-          }`}
           style={{
             height: '16px',
             width: '16px',

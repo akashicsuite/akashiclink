@@ -18,14 +18,14 @@ export function SettingsSecurity() {
   const securityMenuItems: SettingItemProps[] = [
     {
       header: t('KeyPairBackup'),
-      iconUrl: getImageIconUrl('key-pair-backup.svg'),
+      icon: getImageIconUrl('key-pair-backup.svg'),
       onClick: () => {
         history.push(akashicPayPath(urls.settingsBackup));
       },
     },
     {
       header: t('ChangePassword'),
-      iconUrl: getImageIconUrl('change-password.svg'),
+      icon: getImageIconUrl('change-password.svg'),
       onClick: () => {
         history.push(akashicPayPath(urls.changePassword));
       },
@@ -47,8 +47,9 @@ export function SettingsSecurity() {
             return (
               <SettingItem
                 backgroundColor="var(--ion-background)"
+                /* eslint-disable-next-line sonarjs/no-array-index-key */
                 key={index}
-                iconUrl={securityMenuItem.iconUrl}
+                icon={securityMenuItem.icon}
                 header={securityMenuItem.header}
                 onClick={securityMenuItem.onClick}
                 endComponent={securityMenuItem.endComponent}

@@ -9,7 +9,8 @@ import { TEST_TO_MAIN } from '@helium-pay/backend';
 import { IonCol, IonRow } from '@ionic/react';
 import Big from 'big.js';
 import { useEffect, useState } from 'react';
-import SwiperCore, { Navigation, Virtual } from 'swiper';
+import type SwiperCore from 'swiper';
+import { Navigation, Virtual } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import type { IWalletCurrency } from '../../constants/currencies';
@@ -26,9 +27,6 @@ import {
 import { formatAmount } from '../../utils/formatAmount';
 import { useAggregatedBalances } from '../../utils/hooks/useAggregatedBalances';
 import { useExchangeRates } from '../../utils/hooks/useExchangeRates';
-
-// install Virtual module
-SwiperCore.use([Virtual, Navigation]);
 
 const BalanceTitle = styled.div({
   fontStyle: 'normal',
@@ -67,21 +65,17 @@ export function SelectCoin() {
 
   const findExchangeRate = ({ chain, token }: IWalletCurrency) =>
     exchangeRates.find(
-      (ex) => !token && ex.coinSymbol === (TEST_TO_MAIN.get(chain) || chain)
+      (ex) => !token && ex.coinSymbol === (TEST_TO_MAIN.get(chain) ?? chain)
     )?.price || 1;
 
   const aggregatedBalances = useAggregatedBalances();
 
   /** Update the USDT equivalent once exchange rates are loaded */
-  useEffect(
-    () => {
-      const defaultBig = Big(aggregatedBalances.get(focusCurrency) || 0);
-      const conversionRate = findExchangeRate(focusCurrency);
-      setFocusCurrencyUSDTBalance(Big(conversionRate).times(defaultBig));
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [aggregatedBalances, exchangeRateLength]
-  );
+  useEffect(() => {
+    const defaultBig = Big(aggregatedBalances.get(focusCurrency) || 0);
+    const conversionRate = findExchangeRate(focusCurrency);
+    setFocusCurrencyUSDTBalance(Big(conversionRate).times(defaultBig));
+  }, [aggregatedBalances, exchangeRateLength]);
 
   /** Tracking of swiper and currency under focus  */
   const [swiperRef, setSwiperRef] = useState<SwiperCore>();
@@ -155,6 +149,7 @@ export function SelectCoin() {
     <IonRow className={'ion-grid-row-gap-sm'}>
       <IonCol class="ion-center">
         <Swiper
+          modules={[Navigation, Virtual]}
           onSwiper={setSwiperRef}
           onSlideChange={handleSlideChange}
           slidesPerView={3}
@@ -168,7 +163,7 @@ export function SelectCoin() {
             setTimeout(() => {
               try {
                 swiper.loopCreate();
-              } catch (e) {
+              } catch {
                 console.warn('swiper not ready');
               }
             }, 1000);
@@ -187,6 +182,7 @@ export function SelectCoin() {
               return (
                 <SwiperSlide
                   className="unselectable"
+                  /* eslint-disable-next-line sonarjs/no-array-index-key */
                   key={idx}
                   style={{
                     alignItems: 'center',

@@ -1,12 +1,12 @@
-import path, { dirname } from 'path';
 import fs from 'fs';
+import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirName = dirname(filename);
 
 const manifestJson = path.resolve(
-  path.resolve(__dirname, '../public/manifest.json')
+  path.resolve(dirName, '../public/manifest.json')
 );
 
 const APP_NAME = process.argv[2];

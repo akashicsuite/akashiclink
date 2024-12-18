@@ -108,7 +108,7 @@ export function LoginForm({ isPopup = false }) {
             value={password}
             type={'password'}
             placeholder={t('Password')}
-            onIonInput={({ target: { value } }) => setPassword(value as string)}
+            onIonInput={({ detail: { value } }) => setPassword(value as string)}
             submitOnEnter={onClickLogin}
             enterkeyhint="go"
           />

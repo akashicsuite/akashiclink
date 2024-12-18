@@ -14,7 +14,7 @@ import { DownArrow } from '../../components/settings/down-arrow';
 import type { SettingItemProps } from '../../components/settings/setting-item';
 import { SettingItem } from '../../components/settings/setting-item';
 import { SettingsRadio } from '../../components/settings/setting-radio';
-import { urls } from '../../constants/urls';
+import { SUPPORT_MAIL, urls } from '../../constants/urls';
 import { useAppDispatch, useAppSelector } from '../../redux/app/hooks';
 import {
   selectAutoLockTime,
@@ -91,24 +91,21 @@ const AutoLockAccordion = ({
     >
       {autoLockTimeMap.map((item, i) => {
         return (
-          <>
-            <SettingsRadio
-              key={i}
-              labelPlacement="end"
-              justify="start"
-              value={item.value}
-              onClick={() => {
-                setAutoLock(item);
-                dispatch(setAutoLockTime(item.value));
-              }}
-              width={'33.33%'}
-              mode="md"
-            >
-              <h5 className="ion-no-margin">{`${item.label} ${t(
-                item.unit
-              )}`}</h5>
-            </SettingsRadio>
-          </>
+          <SettingsRadio
+            /* eslint-disable-next-line sonarjs/no-array-index-key */
+            key={i}
+            labelPlacement="end"
+            justify="start"
+            value={item.value}
+            onClick={() => {
+              setAutoLock(item);
+              dispatch(setAutoLockTime(item.value));
+            }}
+            width={'33.33%'}
+            mode="md"
+          >
+            <h5 className="ion-no-margin">{`${item.label} ${t(item.unit)}`}</h5>
+          </SettingsRadio>
         );
       })}
     </IonRadioGroup>
@@ -132,21 +129,28 @@ export function Settings() {
   const menuItems: SettingItemProps[] = [
     {
       header: t('General'),
-      iconUrl: getImageIconUrl('settings.svg'),
+      icon: getImageIconUrl('settings.svg'),
       onClick: () => {
         history.push(akashicPayPath(urls.settingsGeneral));
       },
     },
     {
       header: t('Security'),
-      iconUrl: getImageIconUrl('security.svg'),
+      icon: getImageIconUrl('security.svg'),
       onClick: () => {
         history.push(akashicPayPath(urls.settingsSecurity));
       },
     },
     {
+      header: t('Chain.Title'),
+      icon: getImageIconUrl('network.svg'),
+      onClick: () => {
+        history.push(akashicPayPath(urls.settingsNetwork));
+      },
+    },
+    {
       header: t('AutoLock'),
-      iconUrl: getImageIconUrl('lock-light.svg'),
+      icon: getImageIconUrl('lock-light.svg'),
       endComponent: (
         <AutoLockTextCaret
           autoLockTime={`${autoLock.label} ${t(autoLock.unit)}`}
@@ -159,7 +163,7 @@ export function Settings() {
     },
     {
       header: t('AboutUs'),
-      iconUrl: getImageIconUrl('people.svg'),
+      icon: getImageIconUrl('people.svg'),
       onClick: () => {
         history.push(akashicPayPath(urls.settingsAboutUs));
       },
@@ -167,7 +171,8 @@ export function Settings() {
     },
     {
       header: t('Support'),
-      iconUrl: getImageIconUrl('support_agent.svg'),
+      link: SUPPORT_MAIL,
+      icon: getImageIconUrl('support_agent.svg'),
       endComponent: (
         <IonIcon
           className="ion-no-margin ion-margin-left-xs"
@@ -196,13 +201,15 @@ export function Settings() {
           {menuItems.map((menuItem, index) => {
             return (
               <SettingItem
+                /* eslint-disable-next-line sonarjs/no-array-index-key */
                 key={index}
-                iconUrl={menuItem.iconUrl}
+                icon={menuItem.icon}
                 backgroundColor={'var(--ion-background)'}
                 header={menuItem.header}
                 onClick={menuItem.onClick}
                 endComponent={menuItem.endComponent}
                 isAccordion={menuItem.isAccordion}
+                link={menuItem.link}
               >
                 {menuItem.children}
               </SettingItem>

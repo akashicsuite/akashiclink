@@ -7,6 +7,7 @@ import { LAST_HISTORY_ENTRIES } from '../../constants';
 import { history } from '../../routing/history';
 import { Footer } from '../layout/footer';
 import { PublicHeader } from '../layout/public-header';
+import { VersionUpdateAlert } from '../layout/version-update-alert';
 
 const StyledLayout = styled.div({
   ['& > .content']: {
@@ -48,6 +49,9 @@ export function PublicLayout({
         <div className={`content ${className ?? ''}`} style={contentStyle}>
           {children}
         </div>
+        {process.env.REACT_APP_SKIP_UPDATE_CHECK !== 'true' && (
+          <VersionUpdateAlert />
+        )}
       </StyledLayout>
       <Footer />
     </IonPage>

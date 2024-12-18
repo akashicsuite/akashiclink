@@ -3,17 +3,10 @@ import {
   type CurrencySymbol,
   L2Regex,
 } from '@helium-pay/backend';
-import { IonCol, IonRow, IonSpinner } from '@ionic/react';
 import { getSdkError } from '@walletconnect/utils';
 import { type Web3WalletTypes } from '@walletconnect/web3wallet';
 import { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { BorderedBox } from '../components/common/box/border-box';
-import { OutlineButton, PrimaryButton } from '../components/common/buttons';
-import { List } from '../components/common/list/list';
-import { ListVerticalLabelValueItem } from '../components/common/list/list-vertical-label-value-item';
-import { PopupLayout } from '../components/page-layout/popup-layout';
 import {
   closePopup,
   ETH_METHOD,
@@ -29,13 +22,11 @@ import {
 import { useGenerateSecondaryOtk } from '../utils/hooks/useGenerateSecondaryOtk';
 import { useSignAuthorizeActionMessage } from '../utils/hooks/useSignAuthorizeActionMessage';
 import { useVerifyTxnAndSign } from '../utils/hooks/useVerifyTxnAndSign';
+import type { ITransactionFailureResponse } from '../utils/nitr0gen/nitr0gen.interface';
 import { useWeb3Wallet } from '../utils/web3wallet';
+import { SignTypedDataContent } from './sign-typed-data-content';
 
 export function SignTypedData() {
-  const { t } = useTranslation();
-
-  const searchParams = new URLSearchParams(window.location.search);
-
   const web3wallet = useWeb3Wallet();
 
   const [isProcessingRequest, setIsProcessingRequest] = useState(false);
@@ -87,10 +78,13 @@ export function SignTypedData() {
   );
 
   const onSessionRequestExpire = useCallback(async () => {
+    responseToSite({
+      method: ETH_METHOD.SIGN_TYPED_DATA,
+      error: EXTENSION_ERROR.REQUEST_EXPIRED,
+    });
     await closePopup();
   }, []);
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   const acceptSessionRequest = async () => {
     const { topic, id, primaryType, toSign, secondaryOtk } = requestContent;
 
@@ -114,7 +108,7 @@ export function SignTypedData() {
             {
               userInputToAddress: toSign.addressInput as string,
               convertedToAddress: toSign.convertedToAddress as string,
-              acnsAlias: toSign.acnsAlias as string,
+              alias: toSign.alias as string,
             },
             toSign.amount as string,
             toSign.chain as CoinSymbol,
@@ -146,7 +140,7 @@ export function SignTypedData() {
                 });
 
           if (!response.isSuccess) {
-            throw new Error(response.reason);
+            throw new Error((response as ITransactionFailureResponse).reason);
           }
 
           signedMsg = `0x${response.txHash}`;
@@ -164,6 +158,12 @@ export function SignTypedData() {
           result: signedMsg,
         },
       });
+
+      // Need this setTimeout for respondSessionRequest to completely finish before closing itself
+      setTimeout(() => {
+        window.removeEventListener('beforeunload', onPopupClosed);
+        closePopup();
+      }, 100);
     } catch (e) {
       try {
         await web3wallet?.respondSessionRequest({
@@ -175,10 +175,15 @@ export function SignTypedData() {
           },
         });
       } finally {
+        console.warn('Failed to sign', e);
         responseToSite({
           method: ETH_METHOD.SIGN_TYPED_DATA,
           error: EXTENSION_ERROR.UNKNOWN,
         });
+        setTimeout(() => {
+          window.removeEventListener('beforeunload', onPopupClosed);
+          closePopup();
+        }, 100);
       }
     }
   };
@@ -206,16 +211,19 @@ export function SignTypedData() {
 
   const onClickSign = async () => {
     setIsProcessingRequest(true);
-    window.removeEventListener('beforeunload', onPopupClosed);
     await acceptSessionRequest();
     setIsProcessingRequest(false);
-    await closePopup();
   };
 
   const onClickReject = async () => {
-    window.removeEventListener('beforeunload', onPopupClosed);
-    await rejectSessionRequest();
-    await closePopup();
+    try {
+      await rejectSessionRequest();
+    } finally {
+      setTimeout(() => {
+        window.removeEventListener('beforeunload', onPopupClosed);
+        closePopup();
+      }, 100);
+    }
   };
 
   useEffect(() => {
@@ -245,6 +253,7 @@ export function SignTypedData() {
 
     return () => {
       web3wallet?.off('session_request', onSessionRequest);
+      web3wallet?.off('session_request_expire', onSessionRequestExpire);
       window.removeEventListener('beforeunload', onPopupClosed);
     };
   }, [onSessionRequest, web3wallet]);
@@ -252,100 +261,12 @@ export function SignTypedData() {
   const isWaitingRequestContent = requestContent.method === '';
 
   return (
-    <PopupLayout>
-      <IonRow>
-        <IonCol size={'8'} offset={'2'}>
-          <BorderedBox lines="full" compact>
-            <h4 className="w-100 ion-justify-content-center ion-margin-0">
-              {searchParams.get('appUrl') ?? '-'}
-            </h4>
-          </BorderedBox>
-        </IonCol>
-        <IonCol size={'12'}>
-          <h2 className="ion-justify-content-center ion-margin-top-lg ion-margin-bottom-xs">
-            {t('SignatureRequest')}
-          </h2>
-          <p className="ion-justify-content-center ion-margin-bottom-sm ion-text-align-center">
-            {t('OnlySignThisMessageIfYouFullyUnderstand')}
-          </p>
-        </IonCol>
-        <IonCol
-          size={'12'}
-          className={'ion-justify-content-center ion-align-items-center'}
-        >
-          {isWaitingRequestContent && (
-            <IonSpinner
-              className={'w-100 ion-margin-top-xl'}
-              color="secondary"
-              name="circular"
-            />
-          )}
-          <List lines={'none'}>
-            {/* // TODO: prepare array of display to do render */}
-            {Object.entries(
-              requestContent?.message?.toDisplay ??
-                requestContent?.message ??
-                {}
-            ).map(([key, value]) => {
-              if (Array.isArray(value)) {
-                return value.map((v) =>
-                  Object.entries(v).map(([key, value]) => {
-                    if (value) {
-                      return (
-                        <ListVerticalLabelValueItem
-                          key={key}
-                          label={t(`Popup.${key}`)}
-                          value={(value as string) ?? '-'}
-                        />
-                      );
-                    }
-                  })
-                );
-              } else if (typeof value === 'object') {
-                return Object.entries(value).map(([key, value]) => {
-                  if (value) {
-                    return (
-                      <ListVerticalLabelValueItem
-                        key={key}
-                        label={t(`Popup.${key}`)}
-                        value={(value as string) ?? '-'}
-                      />
-                    );
-                  }
-                });
-              } else if (value !== '') {
-                return (
-                  <ListVerticalLabelValueItem
-                    key={key}
-                    label={t(`Popup.${key}`)}
-                    value={value ?? '-'}
-                  />
-                );
-              }
-            })}
-          </List>
-        </IonCol>
-      </IonRow>
-      <IonRow className={'ion-margin-top-auto'}>
-        <IonCol size={'6'}>
-          <OutlineButton
-            expand="block"
-            disabled={isWaitingRequestContent || isProcessingRequest}
-            onClick={onClickReject}
-          >
-            {t('Deny')}
-          </OutlineButton>
-        </IonCol>
-        <IonCol size={'6'}>
-          <PrimaryButton
-            expand="block"
-            isLoading={isWaitingRequestContent || isProcessingRequest}
-            onClick={onClickSign}
-          >
-            {t('Confirm')}
-          </PrimaryButton>
-        </IonCol>
-      </IonRow>
-    </PopupLayout>
+    <SignTypedDataContent
+      isWaitingRequestContent={isWaitingRequestContent}
+      requestContent={requestContent}
+      isProcessingRequest={isProcessingRequest}
+      onClickSign={onClickSign}
+      onClickReject={onClickReject}
+    />
   );
 }

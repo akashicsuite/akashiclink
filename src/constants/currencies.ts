@@ -1,7 +1,7 @@
 import {
-  type ICurrency,
   CoinSymbol,
   CurrencySymbol,
+  type ICurrency,
   NetworkDictionary,
 } from '@helium-pay/backend';
 
@@ -120,7 +120,7 @@ class CurrencyFactory {
   }
 
   /**
-   * Lookup metadata of a currency
+   * Lookup metadata of a currency or default to the first one
    */
   public lookup(wc1: IWalletCurrency) {
     return (
@@ -152,7 +152,7 @@ export const SUPPORTED_CURRENCIES_FOR_EXTENSION = new CurrencyFactory([
     },
     {
       chain: CoinSymbol.Tron,
-      // eslint-disable-next-line sonarjs/no-duplicate-string
+
       currencyIcon: '/shared-assets/images/trx.png',
       darkCurrencyIcon: '/shared-assets/images/trx.png',
       greyCurrencyIcon: '/shared-assets/images/trx-grey.png',
@@ -163,7 +163,7 @@ export const SUPPORTED_CURRENCIES_FOR_EXTENSION = new CurrencyFactory([
       // eslint-disable-next-line sonarjs/no-duplicate-string
       currencyIcon: '/shared-assets/images/usdt.png',
       darkCurrencyIcon: '/shared-assets/images/usdt.png',
-      // eslint-disable-next-line sonarjs/no-duplicate-string
+
       greyCurrencyIcon: '/shared-assets/images/usdt-grey.png',
     },
     {
@@ -206,16 +206,7 @@ export const SUPPORTED_CURRENCIES_FOR_EXTENSION = new CurrencyFactory([
     : []),
 ]);
 
-export const ALLOWED_NETWORKS =
+export const ALLOWED_NETWORKS: CoinSymbol[] =
   process.env.REACT_APP_ENABLE_TESTNET_CURRENCIES === 'true'
-    ? [
-        CoinSymbol.Binance_Smart_Chain_Testnet,
-        CoinSymbol.Ethereum_Sepolia,
-        CoinSymbol.Tron_Nile,
-        CoinSymbol.Tron_Shasta,
-      ]
-    : [
-        CoinSymbol.Binance_Smart_Chain_Mainnet,
-        CoinSymbol.Ethereum_Mainnet,
-        CoinSymbol.Tron,
-      ];
+    ? [CoinSymbol.Ethereum_Sepolia, CoinSymbol.Tron_Shasta]
+    : [CoinSymbol.Ethereum_Mainnet, CoinSymbol.Tron];

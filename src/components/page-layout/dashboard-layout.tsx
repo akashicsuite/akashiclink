@@ -8,6 +8,7 @@ import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
 import { Header } from '../layout/header';
 import { AccountNameBar } from '../layout/toolbar/account-name-bar';
 import { Toolbar } from '../layout/toolbar/toolbar';
+import { VersionUpdateAlert } from '../layout/version-update-alert';
 
 // TODO: move the exported component to a separate file since it is used in other places
 
@@ -53,6 +54,9 @@ export function DashboardLayout({
         {children}
       </IonContent>
       {footer && <IonFooter class={'ion-no-border'}>{footer}</IonFooter>}
+      {process.env.REACT_APP_SKIP_UPDATE_CHECK !== 'true' && (
+        <VersionUpdateAlert />
+      )}
     </IonPage>
   );
 }

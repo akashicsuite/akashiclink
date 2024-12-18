@@ -36,14 +36,19 @@ export function ImportWalletKeypair() {
         ? errorAlertShell(unpackRequestErrorMessage(importWalletError))
         : formAlertResetState
     );
+    // // if import failed, release button to let user try again
+    setIsLoading(false);
   }, [importWalletError, t]);
 
-  const onRequestImport = async () => {
-    if (importWalletForm.privateKey) {
-      setIsLoading(true);
-      dispatch(restoreOtkFromKeypairAsync(importWalletForm.privateKey));
+  const onRequestImport = () => {
+    setIsLoading(true);
+    if (!importWalletForm.privateKey) {
+      setAlert(errorAlertShell('InvalidKeyPair'));
       setIsLoading(false);
+      return;
     }
+    // user will be redirected to other page if import is successful
+    dispatch(restoreOtkFromKeypairAsync(importWalletForm.privateKey));
   };
 
   const onCancel = () => {
@@ -71,11 +76,11 @@ export function ImportWalletKeypair() {
             type={'text'}
             value={importWalletForm.privateKey}
             placeholder={t('EnterKeyPair')}
-            onIonInput={({ target: { value } }) => {
+            onIonInput={({ detail: { value } }) => {
               dispatch(onClear());
               dispatch(
                 onInputChange({
-                  privateKey: String(value).replace(/[^a-zA-Z\d]+/g, ''), // Filter out non-alphanumeric
+                  privateKey: String(value).replace(/[^a-z\d]+/gi, ''), // Filter out non-alphanumeric
                 })
               );
               setAlert(formAlertResetState);
@@ -99,7 +104,12 @@ export function ImportWalletKeypair() {
           </PrimaryButton>
         </IonCol>
         <IonCol size="6">
-          <WhiteButton expand="block" fill="clear" onClick={onCancel}>
+          <WhiteButton
+            disabled={isLoading}
+            expand="block"
+            fill="clear"
+            onClick={onCancel}
+          >
             {t('Cancel')}
           </WhiteButton>
         </IonCol>

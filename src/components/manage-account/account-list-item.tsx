@@ -128,7 +128,7 @@ export const AccountListItem = ({
 
           <IonLabel>
             <h3 className={'ion-text-align-left ion-margin-bottom-0'}>
-              {account.aasName ?? account.accountName}
+              {account.alias ?? account.accountName}
             </h3>
             <p className={'ion-text-align-left ion-text-size-xxs'}>
               {isShortAddress

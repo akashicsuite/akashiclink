@@ -1,5 +1,4 @@
 import { IonHeader, IonImg } from '@ionic/react';
-import React from 'react';
 
 import { useAppSelector } from '../redux/app/hooks';
 import { selectTheme } from '../redux/slices/preferenceSlice';
@@ -19,6 +18,7 @@ export function PopupHeader() {
       style={{
         background: 'var(--ion-header-background)',
         justifyContent: 'center',
+        display: 'flex',
       }}
     >
       <div>

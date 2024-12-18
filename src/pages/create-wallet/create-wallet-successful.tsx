@@ -6,6 +6,7 @@ import { PrimaryButton } from '../../components/common/buttons';
 import { SuccessfulIconWithTitle } from '../../components/common/state-icon-with-title/successful-icon-with-title';
 import { MainGrid } from '../../components/layout/main-grid';
 import { PublicLayout } from '../../components/page-layout/public-layout';
+import { LINK_TYPE, useI18nInfoUrls } from '../../i18n/links';
 import { useAppDispatch } from '../../redux/app/hooks';
 import { onClear } from '../../redux/slices/createWalletSlice';
 import { historyResetStackAndRedirect } from '../../routing/history';
@@ -23,6 +24,7 @@ export const StyledA = styled.a({
 export const CreateWalletSuccessful = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const infoUrls = useI18nInfoUrls();
 
   const handleOnConfirm = async () => {
     dispatch(onClear());
@@ -57,7 +59,7 @@ export const CreateWalletSuccessful = () => {
                 </li>
                 <li>
                   <StyledA
-                    href="https://akashic-1.gitbook.io/akashiclink/"
+                    href={infoUrls[LINK_TYPE.QuickGuide]}
                     target={'_blank'}
                   >
                     {t('LearnMore')}

@@ -105,8 +105,8 @@ const WithdrawDetails = ({
           isL2
             ? 'L2Fee'
             : currentTransfer.feeIsDelegated
-            ? 'DelegatedGasFee'
-            : 'GasFee'
+              ? 'DelegatedGasFee'
+              : 'GasFee'
         )}
         value={`${
           isL2 || currentTransfer.feeIsDelegated

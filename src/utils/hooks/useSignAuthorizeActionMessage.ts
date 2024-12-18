@@ -7,7 +7,7 @@ import { signAuthenticationData } from '../otk-generation';
 import { unpackRequestErrorMessage } from '../unpack-request-error-message';
 
 export type AuthorizeActionToSign = Omit<IBecomeBp, 'signature'> &
-  Record<string, string | unknown>;
+  Record<string, unknown>;
 
 export const useSignAuthorizeActionMessage = () => {
   const cacheOtk = useAppSelector(selectCacheOtk);

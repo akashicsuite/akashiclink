@@ -1,11 +1,9 @@
-import type { IInternalFee } from '@helium-pay/backend';
-import {
-  type CoinSymbol,
-  type CurrencySymbol,
-  NetworkDictionary,
-  otherError,
+import type {
+  CoinSymbol,
+  CurrencySymbol,
+  IInternalFee,
 } from '@helium-pay/backend';
-import { BadRequestException } from '@nestjs/common';
+import { NetworkDictionary, otherError } from '@helium-pay/backend';
 import Big from 'big.js';
 
 /**
@@ -17,7 +15,7 @@ import Big from 'big.js';
  * convertFromSmallestUnit('1_234_567_890_123_456_789', 'ETH') => '1.234_567_890_123_456_789'
  * @param amount a string representing the amount in the smallest unit
  *
- * @throws BadRequestException if:
+ * @throws Error if:
  * - the coin/token combination is not supported
  * - the amount cannot be represented as an integer in the smallest denomination
  */
@@ -45,7 +43,7 @@ export function convertFromSmallestUnit(
  * convertFromSmallestUnit('1.234_567_890_123_456_789', 'ETH') => '1_234_567_890_123_456_789'
  * @param amount a string representing the amount in human-friendly, divisible units
  *
- * @throws BadRequestException if:
+ * @throws Error if:
  * - the coin/token combination is not supported
  * - the amount cannot be represented as an integer in the smallest denomination
  */
@@ -151,12 +149,12 @@ function getConversionFactor(
   const token = NetworkDictionary[coinSymbol].tokens.find(
     (t) => t.symbol === tokenSymbol
   );
-  if (!token) throw new BadRequestException(otherError.unsupportedCoinError);
+  if (!token) throw new Error(otherError.unsupportedCoinError);
 
   return token.decimal;
 }
 
 function throwIfNotInteger(amount: Big) {
   if (amount.mod(1).toString() !== '0')
-    throw new BadRequestException(otherError.transactionTooSmallError);
+    throw new Error(otherError.transactionTooSmallError);
 }

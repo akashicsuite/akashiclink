@@ -10,7 +10,7 @@ import { useLocalStorage } from '../../utils/hooks/useLocalStorage';
 
 export const VersionUpdateAlert = () => {
   const { t } = useTranslation();
-  const { config } = useConfig();
+  const { config, isLoading } = useConfig();
 
   const [, setAvailableVersion] = useLocalStorage('available-app-version', '');
   const [, setUpdateUrl] = useLocalStorage('update-url', '');
@@ -20,36 +20,45 @@ export const VersionUpdateAlert = () => {
   const info = useCurrentAppInfo();
 
   useEffect(() => {
-    const appVersion = info?.version?.split('-')[0];
+    const getUpdateType = async () => {
+      const appVersion = info?.version?.split('-')[0];
 
-    // compare when all versions are loaded
-    if (!appVersion || !config) {
-      setUpdateType('');
-      return;
+      // compare when all versions are loaded
+      if (!appVersion || !config) {
+        await setUpdateType('');
+        return;
+      }
+
+      await setAvailableVersion(config.awLatestVersion);
+      await setUpdateUrl(config.awUrl);
+
+      if (compareVersions(appVersion, config.awMinVersion) === -1) {
+        await setUpdateType('hard');
+      } else if (
+        // check if skip before
+        skipVersion !== config.awLatestVersion &&
+        compareVersions(appVersion, config.awLatestVersion) === -1
+      ) {
+        await setUpdateType('soft');
+        await setHighlights(config.highlights || ['']);
+      } else {
+        await setUpdateType('');
+      }
+    };
+
+    if (!isLoading) {
+      getUpdateType();
     }
-
-    setAvailableVersion(config.awLatestVersion);
-    setUpdateUrl(config.awUrl);
-
-    if (compareVersions(appVersion, config.awMinVersion) === -1) {
-      setUpdateType('hard');
-    } else if (
-      // check if skip before
-      skipVersion !== config.awLatestVersion &&
-      compareVersions(appVersion, config.awLatestVersion) === -1
-    ) {
-      setUpdateType('soft');
-      setHighlights(config.highlights || ['']);
-    }
-  }, [config, skipVersion, info]);
+  }, [isLoading, config, skipVersion, info]);
 
   return (
     <IonAlert
-      isOpen={updateType === 'soft' || updateType === 'hard'}
+      isOpen={!isLoading && (updateType === 'soft' || updateType === 'hard')}
       onDidDismiss={() => updateType === 'soft' && setUpdateType('')}
       backdropDismiss={false}
       header={t('NewVersionAvailable')}
       message={t('NewVersionAvailableMessage')}
+      cssClass={'force-update-alert'}
       buttons={[
         ...(config && updateType === 'soft'
           ? [

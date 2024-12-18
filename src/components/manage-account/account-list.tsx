@@ -10,10 +10,12 @@ import { AccountManagementList } from './account-management-list';
 import { DeleteAccountModal } from './delete-account-modal';
 
 const StyledList = styled(IonList)({
-  backgroundColor: 'transparent',
-  marginBottom: 16,
-  paddingBottom: 8,
-  overflowY: 'scroll',
+  ['&&']: {
+    backgroundColor: 'transparent',
+    marginBottom: 16,
+    paddingBottom: 8,
+    overflowY: 'scroll',
+  },
 });
 
 interface AccountListProps {
@@ -68,8 +70,8 @@ export const AccountList: React.FC<AccountListProps> = ({ height, style }) => {
               isDeleting
                 ? onDeleteAccountClick(account)
                 : account.identity !== activeAccount?.identity
-                ? onSelectAccountClick(account)
-                : undefined
+                  ? onSelectAccountClick(account)
+                  : undefined
             }
             showDeleteIcon={isDeleting}
             account={account}

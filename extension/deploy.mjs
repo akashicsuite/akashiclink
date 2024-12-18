@@ -1,8 +1,8 @@
-import zipFolder from 'zip-folder';
-import fs from 'fs';
-import path from 'path';
-import https from 'https';
 import chromeWebstoreUpload from 'chrome-webstore-upload';
+import fs from 'fs';
+import https from 'https';
+import path from 'path';
+import zipFolder from 'zip-folder';
 
 const REFRESH_TOKEN = process.env.EXTENSION_REFRESH_TOKEN;
 const EXTENSION_NAME = process.env.EXTENSION_NAME;
@@ -133,7 +133,7 @@ const upload = () => {
   const zipFile = fs.createReadStream(zipName);
   webStore
     .uploadExisting(zipFile)
-    .then((res) => {
+    .then(() => {
       slack({
         attachments: [
           {

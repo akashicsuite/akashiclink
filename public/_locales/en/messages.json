@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "AkashicLink Staging",
+    "description": "Name of extension"
+  },
+  "extensionDescription": {
+    "message": "A non-custodial custodian crypto gateway to our blockchain ecosystem.",
+    "description": "Description of extension"
+  }
+}

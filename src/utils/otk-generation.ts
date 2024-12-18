@@ -104,7 +104,7 @@ export function signAuthenticationData(
       kp = new ActiveCrypto.KeyPair('secp256k1', pemPrivate);
     }
     return kp.sign(data);
-  } catch (error) {
+  } catch {
     throw new Error(keyError.invalidPrivateKey);
   }
 }

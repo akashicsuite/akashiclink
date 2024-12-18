@@ -14,6 +14,9 @@ const webpackConfigExtender = require('./webpack-config-extender');
 
 module.exports = {
   productionSourceMap: false,
+  eslint: {
+    enable: false,
+  },
   webpack: {
     configure: (webpackConfig) => {
       // webpack >= 5 does not auto-polyfill core node.js modules. Have to add them like this

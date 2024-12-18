@@ -1,16 +1,13 @@
 import { Clipboard } from '@capacitor/clipboard';
-import { IonContent, IonIcon, IonPopover } from '@ionic/react';
+import { IonContent, IonPopover } from '@ionic/react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../redux/app/hooks';
-import { selectTheme } from '../../redux/slices/preferenceSlice';
-import { themeType } from '../../theme/const';
 import { SquareWhiteButton } from './buttons';
+import { CopyIcon } from './icons/copy-icon';
 
 export function CopyButton({ value }: { value: string }) {
   const { t } = useTranslation();
-  const storedTheme = useAppSelector(selectTheme);
 
   const copyPopoverRef = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -31,13 +28,7 @@ export function CopyButton({ value }: { value: string }) {
 
   return (
     <SquareWhiteButton className="icon-button" onClick={copyValue}>
-      <IonIcon
-        className="icon-button-icon"
-        slot="icon-only"
-        src={`/shared-assets/images/copy-icon-${
-          storedTheme === themeType.DARK ? 'white' : 'dark'
-        }.svg`}
-      />
+      <CopyIcon slot="icon-only" />
       <IonPopover
         side="top"
         alignment="center"

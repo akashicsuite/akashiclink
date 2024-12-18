@@ -20,5 +20,4 @@ const createRootReducer = (history: History) =>
     localTransactionSlice: localTransactionSlice.reducer,
   });
 
-// eslint-disable-next-line import/no-default-export
 export default createRootReducer;

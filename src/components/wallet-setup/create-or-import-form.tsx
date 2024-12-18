@@ -1,14 +1,16 @@
 import { IonCheckbox, IonCol, IonGrid, IonRow } from '@ionic/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { urls } from '../../constants/urls';
+import { LINK_TYPE, useI18nInfoUrls } from '../../i18n/links';
 import { akashicPayPath } from '../../routing/navigation-tabs';
 import { PrimaryButton, WhiteButton } from '../common/buttons';
 
 export const CreateOrImportForm = () => {
   const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
+  const infoUrls = useI18nInfoUrls();
 
   return (
     <IonGrid>
@@ -33,7 +35,7 @@ export const CreateOrImportForm = () => {
           </IonCheckbox>
           <a
             rel="noreferrer"
-            href="https://akashic-1.gitbook.io/akashiclink/terms-of-use-and-privacy-policy-1"
+            href={infoUrls[LINK_TYPE.TermsOfUse]}
             target={'_blank'}
             style={{
               color: 'var(--ion-color-primary)',

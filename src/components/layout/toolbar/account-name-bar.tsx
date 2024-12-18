@@ -32,7 +32,7 @@ export const AccountNameBar = () => {
   };
 
   const displayName =
-    activeAccount?.aasName ??
+    activeAccount?.alias ??
     activeAccount?.accountName ??
     localAccounts.find((acc) => acc.identity === activeAccount?.identity)
       ?.accountName ??

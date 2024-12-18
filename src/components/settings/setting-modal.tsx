@@ -8,9 +8,9 @@ import { useLocalStorage } from '../../utils/hooks/useLocalStorage';
 import { getImageIconUrl } from '../../utils/url-utils';
 import { ThemeSelect } from '../layout/toolbar/theme-select';
 import { AboutUs, AboutUsCaret } from './about-us';
-import { type SettingItemProps, SettingItem } from './setting-item';
+import { SettingItem, type SettingItemProps } from './setting-item';
 
-export function SettingsModal({
+export function SettingModal({
   modal,
   isOpen,
   setIsOpen,
@@ -21,20 +21,20 @@ export function SettingsModal({
 }) {
   const info = useCurrentAppInfo();
   const { t } = useTranslation();
-  const [isAboutUs, setAboutUs] = useState(false);
+  const [isAboutUs, setIsAboutUs] = useState(false);
   const [updateType] = useLocalStorage('update-type', '');
   const settingsMenu: SettingItemProps[] = [
     {
       header: t('Theme'),
-      iconUrl: '/shared-assets/images/theme.svg',
+      icon: '/shared-assets/images/theme.svg',
       endComponent: <ThemeSelect />,
     },
     {
       header: t('AboutUs'),
-      iconUrl: getImageIconUrl('people.svg'),
+      icon: getImageIconUrl('people.svg'),
       onClick: () => {
         modal.current?.setCurrentBreakpoint(updateType === 'soft' ? 0.72 : 0.6);
-        setAboutUs(true);
+        setIsAboutUs(true);
       },
       endComponent: <AboutUsCaret appVersion={info.version ?? '0.0.0'} />,
     },
@@ -48,7 +48,7 @@ export function SettingsModal({
       breakpoints={[0, 0.25, 0.3, 0.6, 0.72]}
       isOpen={isOpen}
       onIonModalDidDismiss={() => {
-        setAboutUs(false);
+        setIsAboutUs(false);
         setIsOpen(false);
       }}
     >
@@ -84,8 +84,9 @@ export function SettingsModal({
             settingsMenu.map((m, index) => {
               return (
                 <SettingItem
+                  /* eslint-disable-next-line sonarjs/no-array-index-key */
                   key={index}
-                  iconUrl={m.iconUrl}
+                  icon={m.icon}
                   header={m.header}
                   onClick={m.onClick}
                   endComponent={m.endComponent}

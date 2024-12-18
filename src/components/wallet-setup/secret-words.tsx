@@ -13,6 +13,9 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { CopyIcon } from '../common/icons/copy-icon';
+import { VisibilityOnIcon } from '../common/icons/visibility-on-icon';
+
 const WordCol = styled(IonCol)`
   --ion-padding: 4px;
 `;
@@ -36,29 +39,30 @@ const WordNumber = styled(IonLabel)`
 
 type WordInputProps = {
   fillable: boolean;
+  inputVisibility: boolean;
 };
 
 const WordInput = styled(IonInput)<WordInputProps>`
-  border-radius: 8px;
-  border: ${(props) =>
-    props.fillable
-      ? '2px solid var(--ion-color-primary-70)'
-      : '1px solid #7B757F'};
-  font-size: 0.625rem;
-  text-align: center;
-  color: var(--ion-color-primary-10);
-  width: 64px;
-  margin-left: 4px;
-  min-height: 24px !important;
-  opacity: unset !important;
-  --highlight-color-focused: none;
-  input {
-    height: 24px;
-    padding: 8px !important;
-    &:disabled {
-      opacity: 1 !important;
-    }
-  }
+   && {
+    border-radius: 8px;
+    border: ${(props) =>
+      !props.inputVisibility && props.fillable
+        ? '2px solid var(--ion-color-primary-70)'
+        : '1px solid var(--ion-color-grey)'};
+    font-size: 0.625rem;
+    text-align: center;
+    color: var(--ion-color-primary-10);
+    width: 64px;
+    margin-left: 4px;
+    min-height: 24px !important;
+    opacity: unset !important;
+    --highlight-color-focused: none;
+    input {
+      height: 24px;
+      padding: 8px !important;
+      &:disabled {
+        opacity: 1 !important;
+      }
 `;
 
 type MaskContainerProps = {
@@ -85,21 +89,15 @@ const MaskLabelContainer = styled.div`
   justify-content: center;
   height: 100%;
   width: 100%;
-  color: var(--ion-color-primary);
+  color: var(--secret-word-text);
   ion-label {
     font-weight: 700;
   }
   z-index: 1;
 `;
 
-const StyledIonIcon = styled(IonIcon)`
-  font-size: 0.75rem;
-  height: 20px;
-  width: 20px;
-`;
-
 const CopyClipBoardLabel = styled(IonLabel)`
-  color: var(--ion-color-primary);
+  color: var(--secret-word-text);
   font-weight: 700;
   font-size: 0.625rem;
   align-items: center;
@@ -136,9 +134,10 @@ export function SecretWords({
   onHiddenChange?: (isSecretPhraseHidden: boolean) => void;
 }) {
   const { t } = useTranslation();
+
   const [words, setWords] = useState(initialWords);
   const [isHidden, setIsHidden] = useState(withAction ? true : false);
-  const [visibilityArray, setVisibility] = useState<boolean[]>(
+  const [visibilityArray, setVisibilityArray] = useState<boolean[]>(
     new Array(initialWords.length).fill(!inputVisibility) as boolean[]
   );
 
@@ -196,10 +195,7 @@ export function SecretWords({
       <MaskContainer isHidden={isHidden}>
         {isHidden && (
           <MaskLabelContainer onClick={onHiddenBtnClick}>
-            <IonIcon
-              src={`/shared-assets/images/visibility-on.svg`}
-              style={{ height: '20px', width: '20px' }}
-            ></IonIcon>
+            <VisibilityOnIcon style={{ height: '20px', width: '20px' }} />
             <IonLabel className="ion-text-size-xxs">
               {t('MakeSureNoBodyIsLooking')}
             </IonLabel>
@@ -218,6 +214,8 @@ export function SecretWords({
             <IonRow>
               {visibilityArray.map((visibility, i) => {
                 return (
+                  // ok because the array has 12 ordered elements, mapping to the 12 words
+                  // eslint-disable-next-line sonarjs/no-array-index-key
                   <WordCol size="4" key={i} class="ion-padding-horizontal">
                     <WordItem>
                       <WordNumber>{i + 1}.</WordNumber>
@@ -226,25 +224,26 @@ export function SecretWords({
                         id={`wordInput-${i}`}
                         value={words[i]}
                         type={visibility ? 'text' : 'password'}
+                        inputVisibility={inputVisibility}
                         disabled={disableInput ? initialWords[i] !== '' : false}
                         fillable={disableInput ? initialWords[i] === '' : true}
-                        onIonInput={({ target: { value } }) =>
+                        onIonInput={({ detail: { value } }) =>
                           onInputChange(value as string, i)
                         }
-                      ></WordInput>
+                      />
                       {inputVisibility && (
                         <IonIcon
                           src={`/shared-assets/images/visibility-${
                             visibility ? 'on' : 'off'
-                          }.svg`}
+                          }-grey.svg`}
                           onClick={() => {
                             visibilityArray[i] = !visibility;
-                            setVisibility([...visibilityArray]);
+                            setVisibilityArray([...visibilityArray]);
                           }}
                           style={{
                             cursor: 'pointer',
-                            height: '15px',
-                            width: '15px',
+                            height: '16px',
+                            width: '16px',
                             marginLeft: '4px',
                           }}
                         />
@@ -265,9 +264,14 @@ export function SecretWords({
                 className="ion-no-margin"
                 onClick={handleCopy}
               >
-                <StyledIonIcon
+                <CopyIcon
+                  isDim
                   slot="icon-only"
-                  src={`/shared-assets/images/copy-icon-secret-white.svg`}
+                  style={{
+                    fontSize: '0.75rem',
+                    height: '20px',
+                    width: '20px',
+                  }}
                 />
                 {t('CopyToClipboard')}
               </CopyClipBoardLabel>

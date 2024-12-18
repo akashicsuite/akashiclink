@@ -1,12 +1,10 @@
 import { Clipboard } from '@capacitor/clipboard';
-import { IonContent, IonIcon, IonLabel, IonPopover } from '@ionic/react';
+import { IonContent, IonLabel, IonPopover } from '@ionic/react';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppSelector } from '../../redux/app/hooks';
-import { selectTheme } from '../../redux/slices/preferenceSlice';
-import { themeType } from '../../theme/const';
 import { BorderedBox } from './box/border-box';
+import { CopyIcon } from './icons/copy-icon';
 
 export function CopyBox({
   compact = false,
@@ -20,7 +18,6 @@ export function CopyBox({
   copyText?: string;
 }) {
   const { t } = useTranslation();
-  const storedTheme = useAppSelector(selectTheme);
   const handleCopy = async (e: never) => {
     await Clipboard.write({
       string: copyText || text || '',
@@ -41,16 +38,7 @@ export function CopyBox({
       {label && <IonLabel class="ion-text-size-xs">{label}</IonLabel>}
       <BorderedBox compact={compact} lines="full" onClick={handleCopy}>
         <p className="ion-text-size-sm ion-text-bold">{text}</p>
-        <IonIcon
-          size={'small'}
-          slot="end"
-          className="icon-button-icon"
-          src={`/shared-assets/images/${
-            storedTheme === themeType.DARK
-              ? 'copy-icon-white.svg'
-              : 'copy-icon-dark.svg'
-          }`}
-        />
+        <CopyIcon size={'small'} slot="end" />
         <IonPopover
           side="top"
           alignment="center"

@@ -20,7 +20,7 @@ ion-checkbox {
 body.dark {
   ion-checkbox {
     --size: 24px;
-    --checkbox-background-checked: var(--ion-color-primary-container);
+    --checkbox-background-checked: var(--ion-color-primary);
     --checkmark-color: var(--ion-color-primary-10);
   }
 }

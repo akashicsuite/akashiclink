@@ -4,9 +4,9 @@ import { useHistory } from 'react-router';
 
 import { type Url, urls } from '../../../constants/urls';
 import {
-  type LocationState,
   history,
   historyGoBackOrReplace,
+  type LocationState,
 } from '../../../routing/history';
 import { akashicPayPath } from '../../../routing/navigation-tabs';
 

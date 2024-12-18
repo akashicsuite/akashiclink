@@ -23,7 +23,6 @@ const meta: Meta<typeof OneActivity> = {
   },
   args: {
     showDetail: false,
-
     hasHoverEffect: false,
     divider: false,
   },
@@ -37,7 +36,8 @@ const baseTransaction = {
   toAddress: '0xa900365635a4e3ACE87d730C1eFDFffA7A3e81D1',
   amount: '0.010000',
   date: new Date(),
-  status: TransactionStatus.PENDING,
+  initiatedAt: new Date(),
+  status: TransactionStatus.CONFIRMED,
   layer: TransactionLayer.L1,
   coinSymbol: CoinSymbol.Tron_Nile,
 } as const;

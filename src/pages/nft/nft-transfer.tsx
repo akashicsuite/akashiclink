@@ -1,7 +1,7 @@
 import { datadogRum } from '@datadog/browser-rum';
 import styled from '@emotion/styled';
-import type { IBaseAcTransaction } from '@helium-pay/backend';
-import { type INft, L2Regex, nftErrors } from '@helium-pay/backend';
+import type { IBaseAcTransaction, INft } from '@helium-pay/backend';
+import { L2Regex, nftErrors } from '@helium-pay/backend';
 import { IonCol, IonImg, IonRow, IonSpinner } from '@ionic/react';
 import { debounce } from 'lodash';
 import { useState } from 'react';
@@ -26,8 +26,8 @@ import { urls } from '../../constants/urls';
 import { useAppSelector } from '../../redux/app/hooks';
 import { selectTheme } from '../../redux/slices/preferenceSlice';
 import {
-  type LocationState,
   historyGoBackOrReplace,
+  type LocationState,
 } from '../../routing/history';
 import { akashicPayPath } from '../../routing/navigation-tabs';
 import { themeType } from '../../theme/const';
@@ -89,7 +89,7 @@ export const NftContainer = styled.div`
 `;
 enum SearchResult {
   Layer2 = 'Layer2',
-  AcnsName = 'AcnsName',
+  Alias = 'Alias',
   NoResult = 'NoResult',
   NoInput = 'NoInput',
   IsSelfAddress = 'isSelfAddress',
@@ -98,7 +98,7 @@ enum SearchResult {
 
 interface IVerifyNftResponse {
   nftOwnerIdentity: string;
-  nftAcnsStreamId: string;
+  nftAasStreamId: string;
   txToSign: IBaseAcTransaction;
 }
 
@@ -107,13 +107,13 @@ const verifyNftTransaction = async (
   cacheOtk: FullOtk | null,
   toAddress: string
 ): Promise<IVerifyNftResponse> => {
-  if (!cacheOtk || !nft.acns?.ledgerId) {
+  if (!cacheOtk || !nft.aas?.ledgerId) {
     throw new Error('GenericFailureMsg');
   }
 
   const nitr0genApi = new Nitr0genApi();
-  if (nft.acns?.value) {
-    throw new Error(nftErrors.acnsValueShouldBeDeleted);
+  if (nft.aas?.linked) {
+    throw new Error(nftErrors.aasValueShouldBeDeleted);
   }
   if (nft.ownerIdentity === toAddress) {
     throw new Error(nftErrors.toAddressIsAlreadyOwner);
@@ -121,24 +121,23 @@ const verifyNftTransaction = async (
 
   const txToSign = await nitr0genApi.transferNftTransaction(
     cacheOtk,
-    nft.acns?.ledgerId,
+    nft.aas?.ledgerId,
     toAddress
   );
 
   return {
     nftOwnerIdentity: nft.ownerIdentity,
-    nftAcnsStreamId: nft.acns.ledgerId,
+    nftAasStreamId: nft.aas.ledgerId,
     txToSign,
   };
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export function NftTransfer() {
   const { t } = useTranslation();
   const { nfts, isLoading, mutateNftMe } = useNftMe();
   const history = useHistory<LocationState>();
   const state = history.location.state?.nft;
-  const currentNft = nfts.find((nft) => nft.name === state?.nftName) ?? nfts[0];
+  const currentNft = nfts.find((nft) => nft.name === state?.nftName);
   const [inputValue, setInputValue] = useState<string>('');
   const [toAddress, setToAddress] = useState<string>('');
   const [searched, setSearched] = useState(false);
@@ -163,25 +162,25 @@ export function NftTransfer() {
       return;
     }
     // Not allow sending to self address
-    if (value === activeAccount?.identity || value === activeAccount?.aasName) {
+    if (value === activeAccount?.identity || value === activeAccount?.alias) {
       setToAddress('');
       setSearched(false);
       setSearchedResultType(SearchResult.IsSelfAddress);
       return;
     }
-    const { l2Address, acnsAlias, isBp } = await OwnersAPI.lookForL2Address({
+    const { l2Address, alias, isBp } = await OwnersAPI.lookForL2Address({
       to: value,
     });
 
     // Not allow sending BP by alias
-    if (acnsAlias === value && isBp) {
+    if (alias === value && isBp) {
       setToAddress('');
       setSearched(false);
       setSearchedResultType(SearchResult.SendBpByAlias);
       return;
     }
 
-    if (l2Address && value.match(L2Regex)) {
+    if (l2Address && RegExp(L2Regex).exec(value)) {
       setToAddress(l2Address);
       setSearchedResultType(SearchResult.Layer2);
       setSearched(true);
@@ -191,10 +190,11 @@ export function NftTransfer() {
     }
   }, 500);
 
+  // TODO this async fn is used in the onClick event, we should move it to a hook
   const transferNft = async () => {
     setLoading(true);
     try {
-      if (!cacheOtk) {
+      if (!cacheOtk || !currentNft) {
         throw new Error('GenericFailureMsg');
       }
 
@@ -207,7 +207,7 @@ export function NftTransfer() {
       // "Hack" used when signing nft transactions, identity must be something else than the otk identity
       const signerOtk = {
         ...cacheOtk,
-        identity: verifiedNft.nftAcnsStreamId,
+        identity: verifiedNft.nftAasStreamId,
       };
       const signedTx = await signTxBody(verifiedNft.txToSign, signerOtk);
 
@@ -217,7 +217,7 @@ export function NftTransfer() {
         sender: activeAccount?.identity,
         receiver: toAddress,
         nftName: currentNft.name,
-        acnsAlias: currentNft.acns?.name || '',
+        alias: currentNft.alias || '',
         txHash: response.txHash,
       };
       history.push({
@@ -274,15 +274,17 @@ export function NftTransfer() {
             }}
           >
             <IonRow className="w-100">
-              <StyledNftWrapper>
-                <OneNft
-                  nft={currentNft}
-                  isBig={true}
-                  isAASDarkStyle={!isDarkMode}
-                  nftImgWrapper="nft-wrapper-transfer"
-                  screen="transfer"
-                />
-              </StyledNftWrapper>
+              {currentNft && (
+                <StyledNftWrapper>
+                  <OneNft
+                    nft={currentNft}
+                    isBig={true}
+                    isAASDarkStyle={!isDarkMode}
+                    nftImgWrapper="nft-wrapper-transfer"
+                    screen="transfer"
+                  />
+                </StyledNftWrapper>
+              )}
             </IonRow>
             <IonRow>
               <IonCol class="ion-center">
@@ -294,37 +296,38 @@ export function NftTransfer() {
                     placeholder={t('EnterAddress')}
                     type={'text'}
                     errorPrompt={StyledInputErrorPrompt.Address}
-                    onIonInput={({ target: { value } }) => {
+                    onIonInput={({ detail: { value } }) => {
                       !value && setSearchedResultType(SearchResult.NoInput);
                       typeof value === 'string' && inputToAddress(value);
                       typeof value === 'string' && setInputValue(value);
                     }}
                     value={inputValue}
                   />
-                  {inputValue && searchedResultType !== SearchResult.NoInput && (
-                    <AddressWrapper>
-                      <AddressBox>
-                        {searchedResultType === SearchResult.AcnsName &&
-                          `${inputValue} = ${displayLongText(toAddress)}`}
-                        {searchedResultType === SearchResult.Layer2 &&
-                          `${displayLongText(toAddress)}`}
-                        {searchedResultType === SearchResult.NoResult &&
-                          t('NoSearchResult')}
-                        {searchedResultType === SearchResult.IsSelfAddress &&
-                          t('NoSelfSend')}
-                      </AddressBox>
+                  {inputValue &&
+                    searchedResultType !== SearchResult.NoInput && (
+                      <AddressWrapper>
+                        <AddressBox>
+                          {searchedResultType === SearchResult.Alias &&
+                            `${inputValue} = ${displayLongText(toAddress)}`}
+                          {searchedResultType === SearchResult.Layer2 &&
+                            `${displayLongText(toAddress)}`}
+                          {searchedResultType === SearchResult.NoResult &&
+                            t('NoSearchResult')}
+                          {searchedResultType === SearchResult.IsSelfAddress &&
+                            t('NoSelfSend')}
+                        </AddressBox>
 
-                      <IonImg
-                        alt={''}
-                        src={
-                          searched
-                            ? '/shared-assets/images/right.png'
-                            : '/shared-assets/images/wrong.png'
-                        }
-                        style={{ width: '40px', height: '40px' }}
-                      />
-                    </AddressWrapper>
-                  )}
+                        <IonImg
+                          alt={''}
+                          src={
+                            searched
+                              ? '/shared-assets/images/right.png'
+                              : '/shared-assets/images/wrong.png'
+                          }
+                          style={{ width: '40px', height: '40px' }}
+                        />
+                      </AddressWrapper>
+                    )}
                 </SendWrapper>
               </IonCol>
             </IonRow>
@@ -338,18 +341,20 @@ export function NftTransfer() {
                 <PrimaryButton
                   expand="block"
                   disabled={!inputValue || !searched}
+                  isLoading={loading}
+                  /* eslint-disable-next-line sonarjs/no-misused-promises */
                   onClick={transferNft}
                 >
                   {t('Send')}
-                  {loading ? (
-                    <IonSpinner style={{ marginLeft: '10px' }}></IonSpinner>
-                  ) : null}
                 </PrimaryButton>
               </IonCol>
               <IonCol>
                 <WhiteButton
                   expand="block"
+                  disabled={loading}
+                  /* eslint-disable-next-line sonarjs/no-misused-promises */
                   onClick={() =>
+                    // TODO move to a hook!
                     historyGoBackOrReplace(urls.nft, { nft: state })
                   }
                 >

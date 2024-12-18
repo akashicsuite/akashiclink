@@ -46,9 +46,7 @@ export const useMyTransfersInfinite = (limit = 100, query = {}) => {
     if (
       !activeAccount?.identity ||
       !cacheOtk || // not unlocked
-      (previousPageData &&
-        previousPageData?.transactions &&
-        !previousPageData?.transactions?.length) // reached the end
+      (previousPageData?.transactions && !previousPageData.transactions?.length) // reached the end
     )
       return null;
 
@@ -76,9 +74,12 @@ export const useMyTransfersInfinite = (limit = 100, query = {}) => {
 
   const result = {
     ...data?.[0], // other fields such as transactionCount
-    transactions: data?.reduce((prev, next) => {
-      return [...prev, ...next.transactions];
-    }, [] as IOwnerTransactionsResponse['transactions']), // grouped txns
+    transactions: data?.reduce(
+      (prev, next) => {
+        return [...prev, ...next.transactions];
+      },
+      [] as IOwnerTransactionsResponse['transactions']
+    ), // grouped txns
   };
 
   const transactionL2Hashes = (result?.transactions ?? []).map(

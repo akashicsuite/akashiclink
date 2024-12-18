@@ -66,7 +66,7 @@ export function ConfirmLockPassword({
               label={t('Password')}
               type="password"
               placeholder={t('PleaseConfirmYourPassword')}
-              onIonInput={({ target: { value } }) => {
+              onIonInput={({ detail: { value } }) => {
                 setAlert(formAlertResetState);
                 setPassword(value as string);
               }}

@@ -53,8 +53,8 @@ export const SendConfirmationDetailList = ({
     totalFee > Big(0)
       ? totalFee.toString()
       : internalFee > Big(0)
-      ? internalFee.toString()
-      : '0';
+        ? internalFee.toString()
+        : '0';
 
   const precision = getPrecision(txn.amount, feeForPrecision);
 
@@ -80,7 +80,7 @@ export const SendConfirmationDetailList = ({
     ? currencySymbol + (isL2 ? ` (${nativeCoinSymbol})` : '')
     : nativeCoinSymbol;
 
-  const alias = validatedAddressPair.acnsAlias ?? '-';
+  const alias = validatedAddressPair.alias ?? '-';
 
   const feeCurrencyDisplayName =
     isCurrencyTypeToken && (isL2 || !!delegatedFee)

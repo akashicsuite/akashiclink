@@ -1,6 +1,8 @@
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 import styled from '@emotion/styled';
 import { IonIcon, IonItem, IonLabel, IonText } from '@ionic/react';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useState } from 'react';
 
 import { Divider } from '../common/divider';
@@ -34,7 +36,7 @@ const StyledIonItem = styled(IonItem)<{ backgroundColor?: string }>`
 
 export type SettingItemProps = {
   header: string;
-  iconUrl?: string;
+  icon?: string;
   onClick?: () => void;
   isAccordion?: boolean;
   children?: ReactNode;
@@ -43,9 +45,23 @@ export type SettingItemProps = {
   backgroundColor?: string;
   subHeading?: string;
   ripple?: boolean;
+  link?: string;
+  headerStyle?: CSSProperties;
+  iconStyle?: CSSProperties;
 };
+
+const handleLink = async (link: string) => {
+  const isNative = Capacitor.isNativePlatform();
+
+  if (isNative) {
+    await Browser.open({ url: `mailto:${link}` });
+  } else {
+    window.location.href = `mailto:${link}`;
+  }
+};
+
 export function SettingItem({
-  iconUrl,
+  icon,
   header,
   isAccordion = false,
   endComponent,
@@ -55,8 +71,20 @@ export function SettingItem({
   backgroundColor,
   subHeading,
   ripple = true,
+  link,
+  headerStyle,
+  iconStyle,
 }: SettingItemProps) {
   const [showAccordionItem, setShowAccordionItem] = useState(false);
+  const handleClick = async () => {
+    if (link) {
+      await handleLink(link);
+    } else if (!isAccordion && onClick) {
+      onClick();
+    } else if (isAccordion) {
+      setShowAccordionItem(!showAccordionItem);
+    }
+  };
   return (
     <>
       <StyledIonItem
@@ -64,27 +92,23 @@ export function SettingItem({
         button={ripple}
         detail={false}
         className="ion-no-padding"
-        onClick={
-          !isAccordion
-            ? onClick
-            : () => {
-                setShowAccordionItem(!showAccordionItem);
-              }
-        }
+        onClick={handleClick}
       >
-        {iconUrl && (
-          <IonIcon
-            className="ion-no-margin ion-margin-left-xxs"
-            slot="start"
-            size="24px"
-            src={iconUrl}
-          />
-        )}
+        <IonIcon
+          className="ion-no-margin ion-margin-left-xxs"
+          slot="start"
+          size="24px"
+          src={icon || ''}
+          style={{
+            visibility: icon ? 'visible' : 'hidden',
+            ...iconStyle,
+          }}
+        />
         <IonLabel
           className="ion-no-margin"
           style={{ display: 'flex', flexDirection: 'column' }}
         >
-          <Header>{header}</Header>
+          <Header style={headerStyle}>{header}</Header>
           {subHeading && <SubHeader>{subHeading}</SubHeader>}
         </IonLabel>
         {endComponent ? endComponent : <ForwardArrow />}

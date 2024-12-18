@@ -1,13 +1,14 @@
 import { IonItem, IonLabel, IonNote } from '@ionic/react';
-import type { FC } from 'react';
-import { type ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
 
-type ListLabelValueRowProps = {
+export type ListLabelValueRowProps = {
   label: string | number | ReactNode;
   value: string | number | ReactNode;
   remark?: string;
   labelBold?: boolean;
   valueBold?: boolean;
+  valueDim?: boolean;
+  valueShorten?: boolean;
   labelSize?: 'xs' | 'sm' | 'md' | 'lg';
   valueSize?: 'xs' | 'sm' | 'md' | 'lg';
 };
@@ -18,6 +19,8 @@ export const ListLabelValueItem: FC<ListLabelValueRowProps> = ({
   remark,
   labelBold = false,
   valueBold = false,
+  valueDim = false,
+  valueShorten = false,
   labelSize = 'xs',
   valueSize = 'xs',
 }) => {
@@ -33,15 +36,23 @@ export const ListLabelValueItem: FC<ListLabelValueRowProps> = ({
         </span>
       </IonLabel>
       <IonNote
-        className={`ion-text-size-${valueSize} ion-flex-direction-column ion-display-flex ion-align-items-end ${
+        className={`ion-text-size-${valueSize} ion-flex-direction-column ion-display-flex ion-align-items-end ion-justify-content-center ${
           valueBold ? 'ion-text-bold' : ''
         } ion-no-margin ion-text-align-right`}
         style={{
-          width: '62%',
+          width: valueShorten ? '44%' : '66%',
+          minHeight: 32,
+          lineHeight: '1.125rem',
         }}
         slot={'end'}
       >
-        <span className={'ion-text-color-primary-10'}>{value}</span>
+        <span
+          className={
+            valueDim ? 'ion-text-color-grey' : 'ion-text-color-primary-10'
+          }
+        >
+          {value}
+        </span>
         {remark && (
           <span
             style={{ lineHeight: '0.75rem' }}
