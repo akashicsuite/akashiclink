@@ -5,7 +5,6 @@ import {
   type FeeDelegationStrategy,
   type IBaseAcTransaction,
   type IWithdrawalProposal,
-  keyError,
   L2Regex,
   TransactionLayer,
 } from '@helium-pay/backend';
@@ -74,7 +73,7 @@ export const useVerifyTxnAndSign = () => {
           tokenSymbol,
         };
         if (activeAccount.identity === l2TransactionData.toAddress)
-          throw new Error(keyError.noSelfSend);
+          return 'NoSelfSend';
 
         const txBody = await nitr0genApi.L2Transaction(
           cacheOtk,

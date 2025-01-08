@@ -247,8 +247,10 @@ export class Nitr0genApi {
     if (response.data.$umid) {
       response.data.$umid = 'AS' + response.data.$umid;
     }
-    if (response.data.$summary?.errors?.length > 0) {
-      throw new Error(response.data.$summary.errors[0]);
+    if (!response.data.$summary.commit) {
+      throw new Error(
+        response.data?.$summary?.errors?.[0] ?? 'Unknown AC Error'
+      );
     }
     return response.data;
   }

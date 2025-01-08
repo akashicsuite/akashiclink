@@ -59,8 +59,6 @@ export const SendAddressInput = ({
   const { chain } = useAppSelector(selectFocusCurrencyDetail);
   const addresses = useOwnerKeys(activeAccount?.identity ?? '').keys;
 
-  const walletAddress = addresses.find((k) => k.coinSymbol === chain)?.address;
-
   const validateAddress = debounce(async (input: string) => {
     setAlert(formAlertResetState);
 
@@ -71,7 +69,7 @@ export const SendAddressInput = ({
     // Not allow sending to self address
     if (
       userInput === activeAccount?.identity ||
-      userInput === walletAddress ||
+      addresses.find((a) => a.address === userInput) ||
       userInput === activeAccount?.alias
     ) {
       setAlert(errorAlertShell('NoSelfSend'));
