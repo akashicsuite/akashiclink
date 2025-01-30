@@ -43,9 +43,9 @@ const ECPubASN = asn1.define('ECPubASN', function () {
 function extractNestedKeys(asn: any, type = 'privateKey'): string {
   if (asn[type]) {
     if (asn[type].data) {
-      return asn[type].data.toString('hex');
+      return asn[type].data.toString('hex') as string;
     } else {
-      return asn[type].toString('hex');
+      return asn[type].toString('hex') as string;
     }
   } else if (asn.ECNested) {
     return extractNestedKeys(asn.ECNested, type);
@@ -83,5 +83,5 @@ export function encodeECPublicKey(key: Buffer, label = 'PUBLIC KEY'): string {
       label: label,
       partial: true,
     }
-  );
+  ) as string;
 }

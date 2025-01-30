@@ -144,7 +144,7 @@ export async function fetchNodesPing(
 ): Promise<NodesPingInfo[]> {
   const cookieMap = await CapacitorCookies.getCookies();
   if (!hardRefresh && cookieMap[`nodePingData`]) {
-    return JSON.parse(cookieMap[`nodePingData`]);
+    return JSON.parse(cookieMap[`nodePingData`]) as NodesPingInfo[];
   }
   const isProd = process.env.REACT_APP_ENV === 'prod';
   const nodeEntries = Object.entries(

@@ -5,6 +5,7 @@ import type { IWalletCurrency } from '../constants/currencies';
  */
 export class CurrencyMap<T> extends Map {
   get(c: IWalletCurrency) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return super.get(this.toKey(c));
   }
 

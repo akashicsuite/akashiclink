@@ -42,30 +42,30 @@ export const nitr0genNativeCoin = '#native';
 
 enum ProductionContracts {
   Namespace = 'akashicchain',
-  Create = '50e1372f0d3805dac4a51299bb0e99960862d7d01f247e85725d99011682b8ac@1.0.0', // Only supports trx, eth, bnb + testnets
-  CreateSecondaryOtk = '178106a54eec05c747a9704ea32e39fd6fa656322c92bb3ec3ba37899f25c27f@1.0.0',
-  CryptoTransfer = '2bae6ea681826c0307ee047ef68eb0cf53487a257c498de7d081d66de119d666@1.1.1',
-  DiffConsensus = '94479927cbe0860a3f51cbd36230faef7d1b69974323a83c8abcc78e3d0e8dd9@1.0.0',
-  Onboard = 'a456ddc07da6d46a6897d24de188e767b87a9d9f2f3c617d858aaf819e0e5bce@1.0.0',
+  Create = '50e1372f0d3805dac4a51299bb0e99960862d7d01f247e85725d99011682b8ac@1', // Only supports trx, eth, bnb + testnets
+  CreateSecondaryOtk = '178106a54eec05c747a9704ea32e39fd6fa656322c92bb3ec3ba37899f25c27f@1',
+  CryptoTransfer = '2bae6ea681826c0307ee047ef68eb0cf53487a257c498de7d081d66de119d666@1',
+  DiffConsensus = '94479927cbe0860a3f51cbd36230faef7d1b69974323a83c8abcc78e3d0e8dd9@1',
+  Onboard = 'a456ddc07da6d46a6897d24de188e767b87a9d9f2f3c617d858aaf819e0e5bce@1',
   NFTNamespace = 'akashicnft',
-  NFTTransfer = 'e7ba6aa2aea7ae33f6bce49a07e6f8a2e6a5983e66b44f236e76cf689513c20a@1.0.0',
-  NFTAasRecord = '6b1acfbfba1f54571036fd579f509f4c60ac1e363c111f70815bea33957cf64a@1.0.0',
+  NFTTransfer = 'e7ba6aa2aea7ae33f6bce49a07e6f8a2e6a5983e66b44f236e76cf689513c20a@1',
+  NFTAasRecord = '6b1acfbfba1f54571036fd579f509f4c60ac1e363c111f70815bea33957cf64a@1',
   NFTAasRecordTesting = 'DNE',
 }
 
 enum TestNetContracts {
   Namespace = 'akashicchain',
-  Create = 'ad171259a7c628ba6993c6bd555f07111525128194aa4226662e48a0b0a93116@1.0.0',
-  CreateSecondaryOtk = '3030f7c2bda3a02330ef3bfd9a1a1f66fec4a96c0c04c019b64255a4e8ba31ca@1.0.0',
-  CryptoTransfer = 'a32a8bc21ceaeeaa671573126a246c15ec4dc3a5c825e3cffc9441636019acb1@1.1.1',
-  DiffConsensus = '17be1db84dbf81c1ff1b2f5aebd4ba4e95d81338daf98d7c2bc7b54ad8994d1c@1.0.0',
-  Onboard = 'c19c6f4d3c443ae7abb14d17d33b29d134df8d11bdabc568bd23f7023ee991fd@1.0.0',
+  Create = 'ad171259a7c628ba6993c6bd555f07111525128194aa4226662e48a0b0a93116@1',
+  CreateSecondaryOtk = '3030f7c2bda3a02330ef3bfd9a1a1f66fec4a96c0c04c019b64255a4e8ba31ca@1',
+  CryptoTransfer = 'a32a8bc21ceaeeaa671573126a246c15ec4dc3a5c825e3cffc9441636019acb1@1',
+  DiffConsensus = '17be1db84dbf81c1ff1b2f5aebd4ba4e95d81338daf98d7c2bc7b54ad8994d1c@1',
+  Onboard = 'c19c6f4d3c443ae7abb14d17d33b29d134df8d11bdabc568bd23f7023ee991fd@1',
   NFTNamespace = 'akashicnft',
-  NFTTransfer = '604fd945206ef3bf410a714971152576e75ad98bec9eaef169a5c6fffcf4c2d1@1.0.0',
+  NFTTransfer = '604fd945206ef3bf410a714971152576e75ad98bec9eaef169a5c6fffcf4c2d1@1',
   // The "Testing" contract has a 60s cooldown on Alias-linking (vs 72hrs for
   // real contract)
-  NFTAasRecord = '8a3be7eb9f042f7d95ec52a9fe3d2ce5f4169d8661e6972e18a9a4d31f97fb30@1.0.0',
-  NFTAasRecordTesting = '461846656354b677f530a978b249b0b5373a0c576ed3947a6ecebed7c3fec1b5@1.0.2',
+  NFTAasRecord = '8a3be7eb9f042f7d95ec52a9fe3d2ce5f4169d8661e6972e18a9a4d31f97fb30@1',
+  NFTAasRecordTesting = '461846656354b677f530a978b249b0b5373a0c576ed3947a6ecebed7c3fec1b5@1',
 }
 
 const NFT_RECORD_TYPE = 'wallet';
@@ -98,6 +98,11 @@ function addExpireToTxBody<T extends IBaseAcTransaction>(txBody: T): T {
   txBody.$tx.$expire = new Date(Date.now() + 60 * 1000).toISOString();
 
   return txBody;
+}
+
+function isActiveLedgerResponse(data: unknown): data is ActiveLedgerResponse {
+  if (typeof data !== 'object' || data === null) return false;
+  return '$umid' in data && '$summary' in data;
 }
 
 /**
@@ -239,18 +244,20 @@ export class Nitr0genApi {
       'Ap-Client': Capacitor.getPlatform(),
     };
 
-    const response = await requestFunction(url, tx, {
+    const response = await requestFunction<T>(url, tx, {
       ...(method === 'get' ? { timeout, headers } : { headers }),
     });
 
     // Prefix "AS" to umids for "L2-hashes"
-    if (response.data.$umid) {
-      response.data.$umid = 'AS' + response.data.$umid;
-    }
-    if (!response.data.$summary.commit) {
-      throw new Error(
-        response.data?.$summary?.errors?.[0] ?? 'Unknown AC Error'
-      );
+    if (isActiveLedgerResponse(response.data)) {
+      if (response.data.$umid) {
+        response.data.$umid = 'AS' + response.data.$umid;
+      }
+      if (!response.data.$summary.commit) {
+        throw new Error(
+          response.data?.$summary?.errors?.[0] ?? 'Unknown AC Error'
+        );
+      }
     }
     return response.data;
   }
@@ -453,7 +460,7 @@ export class Nitr0genApi {
    *
    * Dev-info: Relevant return is response.$umid (which is the "l2-hash")
    */
-  async L2Transaction(
+  async l2Transaction(
     otk: IKeyExtended,
     details: L2TxDetail
   ): Promise<IBaseAcTransaction> {

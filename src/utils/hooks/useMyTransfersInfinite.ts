@@ -18,7 +18,10 @@ import {
 import fetcher from '../ownerFetcher';
 import { useAccountStorage } from './useLocalAccounts';
 
-const transferMeFetcher = async (path: string, config?: AxiosRequestConfig) => {
+const transferMeFetcher = async (
+  path: string,
+  config?: AxiosRequestConfig
+): Promise<IOwnerTransactionsResponse> => {
   const hideSmallTransactions = await Preferences.get({
     key: 'hide-small-balances',
   });
@@ -31,7 +34,8 @@ const transferMeFetcher = async (path: string, config?: AxiosRequestConfig) => {
           : 'true'
       }`
     : '';
-  return await fetcher(url, config);
+  const data = await fetcher(url, config);
+  return data as IOwnerTransactionsResponse;
 };
 
 export const useMyTransfersInfinite = (limit = 100, query = {}) => {

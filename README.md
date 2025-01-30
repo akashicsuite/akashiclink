@@ -82,8 +82,8 @@ yarn build:dev
 1. Set the `.env` with
 
 ```text
-REACT_APP_PUBLIC_URL=https://api.akashicpay.com
-REACT_APP_API_BASE_URL=https://api.akashicpay.com/api/v0
+REACT_APP_PUBLIC_URL=https://api.akashicscan.com
+REACT_APP_API_BASE_URL=https://api.akashicscan.com/api/v0
 ```
 
 2. Build extension

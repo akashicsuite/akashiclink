@@ -53,7 +53,9 @@ export function WalletConnection() {
   const web3wallet = useWeb3Wallet();
 
   const { activeAccount, cacheOtk } = useAccountStorage();
-  const { keys: addresses } = useOwnerKeys(activeAccount?.identity ?? '');
+  const { keys: addresses, isLoading: isLoadingAddresses } = useOwnerKeys(
+    activeAccount?.identity ?? ''
+  );
 
   const signAuthorizeActionMessage = useSignAuthorizeActionMessage();
 
@@ -308,7 +310,9 @@ export function WalletConnection() {
               <OutlineButton
                 expand="block"
                 onClick={onClickRejectConnect}
-                disabled={!sessionProposalId || isProcessing}
+                disabled={
+                  !sessionProposalId || isProcessing || isLoadingAddresses
+                }
               >
                 {t('Deny')}
               </OutlineButton>
@@ -317,7 +321,9 @@ export function WalletConnection() {
               <PrimaryButton
                 expand="block"
                 onClick={onClickApproveConnect}
-                isLoading={!sessionProposalId || isProcessing}
+                isLoading={
+                  !sessionProposalId || isProcessing || isLoadingAddresses
+                }
               >
                 {t('Confirm')}
               </PrimaryButton>

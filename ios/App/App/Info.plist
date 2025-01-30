@@ -49,8 +49,8 @@
 	<true/>
 	<key>WKAppBoundDomains</key>
 	<array>
-		<string>api.akashicpay.com</string>
-		<string>api.staging-akashicpay.com</string>
+		<string>api.akashicscan.com</string>
+		<string>api.staging-akashicscan.com</string>
 	</array>
 </dict>
 </plist>

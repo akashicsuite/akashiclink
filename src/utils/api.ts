@@ -10,19 +10,27 @@ import type {
 
 import { axiosBase } from './axios-helper';
 
+const apiCall = async <T>(
+  url: string,
+  method: 'GET' | 'POST' = 'GET',
+  data?: unknown
+): Promise<T> => {
+  const response = await axiosBase.request<T>({ url, method, data });
+  if (response.status >= 400) {
+    const errorData = response.data as { message?: string };
+    const errorMessage =
+      errorData?.message ?? `Request failed with status ${response.status}`;
+    throw new Error(errorMessage);
+  }
+  return response.data;
+};
+
 export const OwnersAPI = {
   retrieveIdentity: async (
     retrieveData: IRetrieveIdentity
   ): Promise<IRetrieveIdentityResponse> => {
-    const response = await axiosBase.get(
-      `/owner/retrieve-identity?publicKey=${retrieveData.publicKey}`
-    );
-    const { data, status } = response;
-    if (status >= 400) {
-      throw new Error(data.message);
-    }
-
-    return response.data;
+    const url = `/owner/retrieve-identity?publicKey=${retrieveData.publicKey}`;
+    return await apiCall<IRetrieveIdentityResponse>(url);
   },
 
   lookForL2Address: async (
@@ -30,39 +38,26 @@ export const OwnersAPI = {
   ): Promise<ILookForL2AddressResponse> => {
     let requestUrl = `/nft/look-for-l2-address?to=${l2Check.to}`;
     if (l2Check.coinSymbol) requestUrl += `&coinSymbol=${l2Check.coinSymbol}`;
-    const response = await axiosBase.get(requestUrl);
-    const { data, status } = response;
-    if (status >= 400) {
-      throw new Error(data.message);
-    }
-    return response.data;
+    return await apiCall<ILookForL2AddressResponse>(requestUrl);
   },
 
   prepareL1Txn: async (
     transactionData: IWithdrawalProposal
   ): Promise<IPrepareL1TxnResponse> => {
-    const response = await axiosBase.post(
+    return await apiCall<IPrepareL1TxnResponse>(
       `/l1-txn-orchestrator/prepare-withdrawal`,
+      'POST',
       JSON.stringify(transactionData)
     );
-    const { data, status } = response;
-    if (status >= 400) {
-      throw new Error(data.message);
-    }
-
-    return response.data;
   },
 
   generateSecondaryOtk: async (
     signedReq: ICreateSecondaryOtk
   ): Promise<void> => {
-    const response = await axiosBase.post(
+    apiCall<void>(
       `/owner/generate-secondary-otk`,
+      'POST',
       JSON.stringify(signedReq)
     );
-    const { data, status } = response;
-    if (status >= 400) {
-      throw new Error(data);
-    }
   },
 };

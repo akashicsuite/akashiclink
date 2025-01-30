@@ -153,7 +153,7 @@ export const useAccountStorage = () => {
     return JSON.parse(
       decipher.update(encryptedOtkBuff.toString('utf8'), 'hex', 'utf8') +
         decipher.final('utf8')
-    );
+    ) as FullOtk;
   };
 
   const getLocalOtkAndCache = async (

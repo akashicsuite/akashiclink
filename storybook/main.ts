@@ -33,6 +33,7 @@ const config: StorybookConfig = {
    * However the latest build has a conflict in the webpack version that it uses
    */
   webpackFinal: (webpackConfig) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     webpackConfigExtender.run(webpackConfig, __dirname, true),
 
   docs: {

@@ -25,12 +25,15 @@ const config: CapacitorConfig = {
           cleartext: true,
         }
       : {
-          allowNavigation: ['api.akashicpay.com', 'api.staging-akashicpay.com'],
+          allowNavigation: [
+            'api.akashicscan.com',
+            'api.staging-akashicscan.com',
+          ],
           ...(process.env.PLATFORM === 'ios' && {
             hostname:
               process.env.FLAVORS === 'staging'
-                ? 'api.staging-akashicpay.com'
-                : 'api.akashicpay.com',
+                ? 'api.staging-akashicscan.com'
+                : 'api.akashicscan.com',
           }),
         },
 };

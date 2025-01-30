@@ -75,7 +75,7 @@ export const useVerifyTxnAndSign = () => {
         if (activeAccount.identity === l2TransactionData.toAddress)
           return 'NoSelfSend';
 
-        const txBody = await nitr0genApi.L2Transaction(
+        const txBody = await nitr0genApi.l2Transaction(
           cacheOtk,
           // AC needs smallest units, so we convert
           convertObjectCurrencies(l2TransactionData, convertToSmallestUnit)

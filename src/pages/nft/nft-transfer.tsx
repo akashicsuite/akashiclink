@@ -342,7 +342,6 @@ export function NftTransfer() {
                   expand="block"
                   disabled={!inputValue || !searched}
                   isLoading={loading}
-                  /* eslint-disable-next-line sonarjs/no-misused-promises */
                   onClick={transferNft}
                 >
                   {t('Send')}
@@ -352,7 +351,6 @@ export function NftTransfer() {
                 <WhiteButton
                   expand="block"
                   disabled={loading}
-                  /* eslint-disable-next-line sonarjs/no-misused-promises */
                   onClick={() =>
                     // TODO move to a hook!
                     historyGoBackOrReplace(urls.nft, { nft: state })

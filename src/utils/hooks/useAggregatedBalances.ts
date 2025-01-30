@@ -42,7 +42,9 @@ export function useFocusCurrencySymbolsAndBalances() {
   const nativeCoin = NetworkDictionary[walletCurrency.chain].nativeCoin;
   const delegatedFee =
     delegatedFeeList.find(
-      (fee) => fee.coinSymbol === TEST_TO_MAIN.get(walletCurrency.chain)
+      (fee) =>
+        fee.coinSymbol ===
+        (TEST_TO_MAIN.get(walletCurrency.chain) || walletCurrency.chain)
     )?.delegatedFee ?? '0';
 
   return {
