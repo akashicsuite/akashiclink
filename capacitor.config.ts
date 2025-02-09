@@ -32,8 +32,8 @@ const config: CapacitorConfig = {
           ...(process.env.PLATFORM === 'ios' && {
             hostname:
               process.env.FLAVORS === 'staging'
-                ? 'api.staging-akashicscan.com'
-                : 'api.akashicscan.com',
+                ? 'api.staging-akashicpay.com'
+                : 'api.akashicpay.com',
           }),
         },
 };
