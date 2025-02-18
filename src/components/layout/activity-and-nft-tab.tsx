@@ -50,14 +50,12 @@ const NoDataWrapper = styled.div({
   position: 'relative',
 });
 
-export const ActivityAndNftTabs = ({
-  setNftTab,
-  nftTab,
-  fromNfts = false,
+const ActivityAndNftTabs = ({
+  openTab,
+  setOpenTab,
 }: {
-  setNftTab: Dispatch<SetStateAction<boolean>>;
-  nftTab: boolean;
-  fromNfts: boolean;
+  openTab: null | string;
+  setOpenTab: Dispatch<SetStateAction<string>>;
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -66,10 +64,10 @@ export const ActivityAndNftTabs = ({
       <TabButton
         style={{ width: '50%', marginInline: '0' }}
         id="activity"
-        className={!nftTab ? 'open' : ''}
+        className={openTab === 'activity' ? 'open' : ''}
         onClick={() =>
-          !fromNfts
-            ? setNftTab(false)
+          openTab !== 'activity'
+            ? setOpenTab('activity')
             : history.push(akashicPayPath(urls.activity))
         }
       >
@@ -77,15 +75,26 @@ export const ActivityAndNftTabs = ({
       </TabButton>
       <TabButton
         style={{ width: '50%', marginInline: '0' }}
-        id={'nft'}
+        id="nft"
         onClick={() => {
-          if (!fromNfts) {
-            history.push(akashicPayPath(urls.nfts));
-          }
+          openTab === 'nft'
+            ? setOpenTab('nft')
+            : history.push(akashicPayPath(urls.nfts));
         }}
-        className={nftTab ? 'open' : ''}
+        className={openTab === 'nft' ? 'open' : ''}
       >
         NFT
+      </TabButton>
+      <TabButton
+        style={{ width: '50%', marginInline: '0' }}
+        id="smart-scan"
+        onClick={() => {
+          setOpenTab('smart-scan');
+          history.push(akashicPayPath(urls.addressScreening));
+        }}
+        className={openTab === 'smart-scan' ? 'open' : ''}
+      >
+        {t('SmartScan')}
       </TabButton>
     </Tabs>
   );
@@ -94,7 +103,7 @@ export const ActivityAndNftTabs = ({
 export function ActivityAndNftTab() {
   const itemDisplayLimit = 3;
   const history = useHistory<LocationState>();
-  const [isNftTab, setIsNftTab] = useState(false);
+  const [openTab, setOpenTab] = useState('activity');
   const { transfers, isLoading } = useMyTransfersInfinite();
   const { transfers: nftTransfers, isLoading: isLoadingNft } =
     useNftTransfersMe();
@@ -104,15 +113,12 @@ export function ActivityAndNftTab() {
     nftTransfers
   );
 
-  const isActivityTabReady = !isNftTab && !isLoading && !isLoadingNft;
+  const isActivityTabReady =
+    openTab === 'activity' && !isLoading && !isLoadingNft;
 
   return (
     <>
-      <ActivityAndNftTabs
-        nftTab={isNftTab}
-        setNftTab={setIsNftTab}
-        fromNfts={false}
-      />
+      <ActivityAndNftTabs openTab={openTab} setOpenTab={setOpenTab} />
       <div className="vertical ion-padding-top-lg ion-padding-bottom-0 ion-padding-left-md ion-padding-right-md">
         {!isActivityTabReady && (
           <div

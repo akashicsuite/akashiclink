@@ -1,0 +1,20 @@
+ion-segment-button::part(indicator-background) {
+  background: none;
+}
+ion-segment-button::part(native) {
+  border: 1px solid var(--ion-color-grey);
+}
+ion-segment-button:first-of-type::part(native) {
+  border-top-left-radius: 100px;
+  border-bottom-left-radius: 100px;
+  border-right: none;
+}
+ion-segment-button:last-of-type::part(native) {
+  border-top-right-radius: 100px;
+  border-bottom-right-radius: 100px;
+}
+
+.segment-button-checked.md::part(native) {
+  background: var(--ion-color-primary);
+  color: var(--ion-color-on-primary);
+}

@@ -142,6 +142,7 @@
   "NonDelegated": "非代付",
   "DelegatedFeeDetail": "礦工費代付可讓使用者在各個網路中以 USDT 支付礦工費，而非使用原生幣。",
   "L2Fee": "L2 費用",
+  "NetworkFee": "网络费用",
   "GasLimit": "礦工上限",
   "GasUsed": "使用的礦工",
   "PriorityFee": "優先收費",
@@ -325,5 +326,19 @@
   "PreferredNodeMsg": "*AkashicLink 會將您的交易提交到您所選擇的節點。若該節點無法使用，則會自動重新路由至下一個最近的節點。",
   "SelectedPreferredNodeWarning": "選取的節點無法連線。選擇此節點會導致與 AkashicChain 的連線失敗。您要繼續嗎？",
   "Unreachable": "無法連線",
-  "UnreachableNode": "無法連結節點"
+  "UnreachableNode": "無法連結節點",
+  "EnterAnAddress": "輸入地址",
+  "AddressScanDesc": "接收地址的反洗錢報告。AkashicLink 部署了鏈上分析來協助追踪非法資金。",
+  "AddressScanHint": "要接收分析報告，請在下方輸入地址",
+  "SelectScanFeeCurrency": "選擇您希望支付費用的貨幣，然後點擊「掃描」以繼續",
+  "PaymentConfirmation": "付款確認",
+  "ScanAddress": "掃描地址",
+  "ViewHistory": "查看歷史",
+  "SmartScan": "智能掃描",
+  "ScanAddressReport": "掃描地址以取得分析報告",
+  "NewScan": "新掃描",
+  "Moderate": "中等",
+  "High": "高",
+  "Low": "低",
+  "Severe": "嚴重"
 }

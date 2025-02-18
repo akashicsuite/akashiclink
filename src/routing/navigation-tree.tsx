@@ -9,6 +9,9 @@ import { LAST_HISTORY_ENTRIES } from '../constants';
 import { urls } from '../constants/urls';
 import { Activity } from '../pages/activity/activity';
 import { ActivityDetails } from '../pages/activity/activity-details';
+import { AddressScreeningNewScan } from '../pages/address-screening/address-screening-new-scan';
+import { AddressScreeningNewScanConfirmation } from '../pages/address-screening/address-screening-new-scan-confirmation';
+import { AddressScreeningHistoryList } from '../pages/address-screening/AddressScreeningHistoryList';
 import { AkashicPayMain } from '../pages/akashic-main';
 import { CreateWalletPassword } from '../pages/create-wallet/create-wallet-create-password';
 import { CreateWalletSecret } from '../pages/create-wallet/create-wallet-secret';
@@ -154,6 +157,19 @@ export function NavigationTree() {
         urls.importWalletSuccessful
       )}
       {AkashicTab.registerPage(ImportWalletKeypair, urls.importWalletKeypair)}
+      {/* address scan flow */}
+      {AkashicTab.registerPage(
+        AddressScreeningHistoryList,
+        urls.addressScreening
+      )}
+      {AkashicTab.registerPage(
+        AddressScreeningNewScan,
+        urls.addressScreeningNewScan
+      )}
+      {AkashicTab.registerPage(
+        AddressScreeningNewScanConfirmation,
+        urls.addressScreeningNewScanConfirm
+      )}
       {/* US² tree */}
       {/* {Us2Tab.registerPage(Us2Main)} */}
       {/* Default redirect */}

@@ -210,3 +210,22 @@ export const ALLOWED_NETWORKS: CoinSymbol[] =
   process.env.REACT_APP_ENABLE_TESTNET_CURRENCIES === 'true'
     ? [CoinSymbol.Ethereum_Sepolia, CoinSymbol.Tron_Shasta]
     : [CoinSymbol.Ethereum_Mainnet, CoinSymbol.Tron];
+
+export const ALLOWED_ADDRESS_SCAN_CURRENCY: {
+  chain: CoinSymbol;
+  token: CurrencySymbol;
+}[] =
+  process.env.REACT_APP_ENABLE_TESTNET_CURRENCIES === 'true'
+    ? [
+        { chain: CoinSymbol.Ethereum_Sepolia, token: CurrencySymbol.USDT },
+        { chain: CoinSymbol.Tron_Shasta, token: CurrencySymbol.TETHER },
+      ]
+    : [
+        { chain: CoinSymbol.Ethereum_Mainnet, token: CurrencySymbol.USDT },
+        { chain: CoinSymbol.Tron, token: CurrencySymbol.USDT },
+      ];
+
+export const ALLOWED_NETWORK_FOR_ADDRESS_SCREENING: CoinSymbol[] = [
+  CoinSymbol.Ethereum_Mainnet,
+  CoinSymbol.Tron,
+];

@@ -142,6 +142,7 @@
   "NonDelegated": "Non-Delegated",
   "DelegatedFeeDetail": "Gas fee delegation allows users to pay the gas fee in USDT on the respective networks instead of using native coin.",
   "L2Fee": "L2 fee",
+  "NetworkFee": "Network fee",
   "GasLimit": "Gas limit",
   "GasUsed": "Gas used",
   "PriorityFee": "Priority fee",
@@ -325,5 +326,19 @@
   "PreferredNodeMsg": "*AkashicLink will submit your transactions to your selected node. In the case that it is not available, it will automatically re-route to the next fastest node.",
   "SelectedPreferredNodeWarning": "The selected node is not reachable. Selecting this node may result in a failed connection to AkashicChain. Would you like to proceed?",
   "Unreachable": "Unreachable",
-  "UnreachableNode": "Unreachable Node"
+  "UnreachableNode": "Unreachable Node",
+  "EnterAnAddress": "Enter an Address",
+  "AddressScanDesc": "Receive an anti-money laundering report on an address. AkashicLink deploys on-chain analytics to assist in tracing illicit funds.",
+  "AddressScanHint": "To receive an analysis report, input an address below",
+  "SelectScanFeeCurrency": "Select the currency you would like to pay the fee in, hit 'Scan' to proceed",
+  "PaymentConfirmation": "Payment Confirmation",
+  "ScanAddress": "Scan Address",
+  "ViewHistory": "View History",
+  "SmartScan": "Smart Scan",
+  "ScanAddressReport": "Scan an Address for an Analysis report",
+  "NewScan": "New Scan",
+  "Moderate": "Moderate",
+  "High": "High",
+  "Low": "Low",
+  "Severe": "Severe"
 }

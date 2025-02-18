@@ -152,6 +152,15 @@ http://ionicframework.com/docs/theming/ */
   --ion-initial-icon-color: #1b00b3;
   --ion-popup-initial-icon-color: #1b00b3;
   --secret-word-text: #1b00b3;
+
+  /* neutral */
+  --ion-neutral-70: #ababad;
+
+  /* Address Screening risk levelss */
+  --risk-level-severe-text: #ff5449;
+  --risk-level-high-text: #db7c22;
+  --risk-level-moderate-text: #0d97eb;
+  --risk-level-low-text: #0c7368;
 }
 
 /** Dark Colors **/
@@ -291,6 +300,9 @@ body.dark {
   --ion-initial-icon-color: #a2a2ff;
   --ion-popup-initial-icon-color: #0b006b;
   --secret-word-text: #a2a2ff;
+
+  /* neutral */
+  --ion-neutral-70: #ababad;
 }
 
 /** iOS Dark Theme */

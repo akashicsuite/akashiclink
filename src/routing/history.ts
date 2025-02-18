@@ -2,6 +2,7 @@ import { Preferences } from '@capacitor/preferences';
 import type { ITransactionProposalClientSideOtk } from '@helium-pay/backend';
 import { createMemoryHistory } from 'history';
 
+import { type AddressScanConfirmationTxnsDetail } from '../components/address-screening/types';
 import type { SendConfirmationTxnsDetail } from '../components/send-deposit/send-form/types';
 import { LAST_HISTORY_ENTRIES } from '../constants';
 import type { Url } from '../constants/urls';
@@ -27,6 +28,7 @@ export interface LocationState {
     errorMsg?: string;
     currencyDisplayName?: string;
   };
+  addressScanConfirm?: AddressScanConfirmationTxnsDetail;
   activityDetails?: {
     currentTransfer?: ITransactionRecordForExtension;
   };
