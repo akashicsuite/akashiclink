@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import chromeWebstoreUpload from 'chrome-webstore-upload';
 import fs from 'fs';
 import https from 'https';
@@ -13,6 +14,7 @@ const SLACK_URL = process.env.SLACK_URL;
 const FLAVORS = process.env.FLAVORS;
 const SKIP_UPLOAD =
   process.env.SKIP_UPLOAD === 'true' || process.env.SKIP_UPLOAD === '1';
+const DATADOG_API_KEY = process.env.DATADOG_API_KEY;
 
 const MAJOR_VERSION = process.env.MAJOR_VERSION;
 const MINOR_VERSION = process.env.MINOR_VERSION;
@@ -36,6 +38,8 @@ const zipFailMsg = `:large_red_circle: :chrome_dynosaur: [Extension] [${FLAVORS}
 const buildingMsg = `:large_yellow_circle: :google: [Extension] [${FLAVORS}] New build deployment in progress. Attempting to deploy version ${versionName}`;
 const buildSuccessMsg = `:large_green_circle: :chrome: [Extension] [${FLAVORS}] New Zip uploaded successfully!`;
 const buildFailMsg = `:large_red_circle: :chrome_dynosaur: [Extension] [${FLAVORS}] Failed to upload the Zip!`;
+const uploadSourceMapsFailMsg = `:large_red_circle: :chrome_dynosaur: [Extension] [${FLAVORS}] Failed to upload source maps to Datadog!`;
+const deleteSourceMapsFailMsg = `:large_red_circle: :chrome_dynosaur: [Extension] [${FLAVORS}] Failed to delete source maps!`;
 const zipSuccessSkipUploadMsg = `:large_green_circle: :package: [Extension] [${FLAVORS}]!`;
 const slackFields = [
   {
@@ -89,8 +93,72 @@ const slack = (msgObj) => {
   });
 };
 
+const uploadSourceMaps = async () => {
+  if (!DATADOG_API_KEY) {
+    throw new Error('DATADOG_API_KEY is not set — cannot upload source maps');
+  }
+
+  if (!fs.existsSync(buildDir)) {
+    console.warn('Build directory not found, skipping upload');
+    return;
+  }
+
+  try {
+    const command = `npx datadog-ci sourcemaps upload ${buildDir} \
+      --service akashic-wallet \
+      --release-version ${versionName} \
+      --minified-path-prefix chrome-extension://${EXTENSION_ID}/`;
+
+    // eslint-disable-next-line sonarjs/os-command
+    execSync(command, {
+      stdio: 'inherit',
+      env: { ...process.env, DATADOG_API_KEY: DATADOG_API_KEY },
+    });
+  } catch (error) {
+    await slack({
+      attachments: [
+        {
+          title: uploadSourceMapsFailMsg,
+          color: '#a40100',
+          fields: [
+            {
+              title: 'Error Message',
+              value: error,
+              short: false,
+            },
+          ],
+        },
+      ],
+    });
+  }
+};
+
+const deleteSourceMaps = async () => {
+  try {
+    // eslint-disable-next-line sonarjs/os-command
+    execSync(`find ${buildDir} -name "*.map" -delete`, { stdio: 'inherit' });
+  } catch (error) {
+    await slack({
+      attachments: [
+        {
+          title: deleteSourceMapsFailMsg,
+          color: '#a40100',
+          fields: [
+            {
+              title: 'Error Message',
+              value: error,
+              short: false,
+            },
+          ],
+        },
+      ],
+    });
+    throw error;
+  }
+};
+
 const zipExtension = async () => {
-  slack({
+  await slack({
     text: buildingMsg,
   });
 
@@ -105,27 +173,33 @@ const zipExtension = async () => {
   manifest.action.default_title = EXTENSION_NAME;
   manifest.version = versionName;
 
-  fs.writeFile(manifestJson, JSON.stringify(manifest), function writeJSON(err) {
-    if (err) return console.log(err);
+  fs.writeFileSync(manifestJson, JSON.stringify(manifest));
 
-    zipFolder(buildDir, zipName, function (err) {
-      if (err) {
-        slack({
-          attachments: [
-            {
-              title: zipFailMsg,
-              color: '#a40100',
-              fields: [
-                {
-                  title: 'Error Message',
-                  value: err,
-                  short: false,
-                },
-              ],
-            },
-          ],
-        });
-      } else if (SKIP_UPLOAD) {
+  try {
+    await uploadSourceMaps();
+
+    await deleteSourceMaps();
+
+    return new Promise((resolve, reject) => {
+      zipFolder(buildDir, zipName, function (err) {
+        if (err) {
+          slack({
+            attachments: [
+              {
+                title: zipFailMsg,
+                color: '#a40100',
+                fields: [
+                  {
+                    title: 'Error Message',
+                    value: err,
+                    short: false,
+                  },
+                ],
+              },
+            ],
+          });
+          reject(err);
+        } else if (SKIP_UPLOAD) {
           slack({
             attachments: [
               {
@@ -135,11 +209,31 @@ const zipExtension = async () => {
               },
             ],
           });
+          resolve();
         } else {
           upload();
+          resolve();
         }
+      });
     });
-  });
+  } catch (error) {
+    slack({
+      attachments: [
+        {
+          title: buildFailMsg,
+          color: '#a40100',
+          fields: [
+            {
+              title: 'Error Message',
+              value: error,
+              short: false,
+            },
+          ],
+        },
+      ],
+    });
+    process.exit(1);
+  }
 };
 
 const upload = () => {

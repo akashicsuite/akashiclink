@@ -114,6 +114,15 @@ module.exports = {
         webpackConfig.plugins.push(
           new CopyEntryRootsPlugin(['background', 'content', 'injected'])
         );
+
+        // Use SourceMapDevToolPlugin so Datadog can directly consume maps with embedded source content.
+        webpackConfig.devtool = false;
+        webpackConfig.plugins.push(
+          new webpack.SourceMapDevToolPlugin({
+            noSources: false,
+            filename: '[file].map',
+          })
+        );
       }
 
       return {
