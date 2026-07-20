@@ -14,9 +14,9 @@ const TERMS_OF_USE_LINKS = {
   [Language.enUS]:
     'https://docs.akashiclink.com/terms-of-use-and-privacy-policy',
   [Language.zhCN]:
-    'https://docs.akashiclink.com/traditionalchinese/shi-yong-tiao-kuan-yu-yin-si-quan-zheng-ce',
+    'https://docs.akashiclink.com/zh-HK/terms-of-use-and-privacy-policy',
   [Language.zhTW]:
-    'https://docs.akashiclink.com/traditionalchinese/shi-yong-tiao-kuan-yu-yin-si-quan-zheng-ce',
+    'https://docs.akashiclink.com/zh-HK/terms-of-use-and-privacy-policy',
   [Language.bnBD]:
     'https://docs.akashiclink.com/terms-of-use-and-privacy-policy',
   [Language.esES]:
@@ -27,9 +27,9 @@ const PRIVACY_POLICY_LINKS = {
   [Language.enUS]:
     'https://docs.akashiclink.com/terms-of-use-and-privacy-policy',
   [Language.zhCN]:
-    'https://docs.akashiclink.com/traditionalchinese/shi-yong-tiao-kuan-yu-yin-si-quan-zheng-ce',
+    'https://docs.akashiclink.com/zh-HK/terms-of-use-and-privacy-policy',
   [Language.zhTW]:
-    'https://docs.akashiclink.com/traditionalchinese/shi-yong-tiao-kuan-yu-yin-si-quan-zheng-ce',
+    'https://docs.akashiclink.com/zh-HK/terms-of-use-and-privacy-policy',
   [Language.bnBD]:
     'https://docs.akashiclink.com/terms-of-use-and-privacy-policy',
   [Language.esES]:
@@ -39,10 +39,8 @@ const PRIVACY_POLICY_LINKS = {
 const QUICK_GUIDE_LINKS = {
   [Language.enUS]:
     'https://docs.akashiclink.com/guides/quick-guide#import-account',
-  [Language.zhCN]:
-    'https://docs.akashiclink.com/traditional-chinese/zhi-nan/kuai-su-zhi-nan#dao-ru-zhang-hao',
-  [Language.zhTW]:
-    'https://docs.akashiclink.com/traditional-chinese/zhi-nan/kuai-su-zhi-nan#dao-ru-zhang-hao',
+  [Language.zhCN]: 'https://docs.akashiclink.com/zh-HK/guides/quick-guide',
+  [Language.zhTW]: 'https://docs.akashiclink.com/zh-HK/guides/quick-guide',
   [Language.bnBD]:
     'https://docs.akashiclink.com/guides/quick-guide#import-account',
   [Language.esES]:
