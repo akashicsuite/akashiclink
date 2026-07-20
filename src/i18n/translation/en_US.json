@@ -367,5 +367,23 @@
   "AddAddress": "Add Address",
   "EnterAName": "Enter a name",
   "SelectANetwork": "Select a network",
-  "Save": "Save"
+  "Save": "Save",
+  "currency": {
+    "USD": "US Dollar",
+    "EUR": "Euro",
+    "GBP": "British Pound",
+    "JPY": "Japanese Yen",
+    "CNY": "Chinese Yuan",
+    "INR": "Indian Rupee",
+    "AUD": "Australian Dollar",
+    "CAD": "Canadian Dollar",
+    "CHF": "Swiss Franc",
+    "HKD": "Hong Kong Dollar",
+    "SGD": "Singapore Dollar",
+    "KRW": "South Korean Won",
+    "MYR": "Malaysian Ringgit",
+    "PHP": "Philippine Peso",
+    "TWD": "New Taiwan Dollar",
+    "VND": "Vietnamese Dong"
+  }
 }

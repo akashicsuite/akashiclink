@@ -367,5 +367,23 @@
   "AddAddress": "Agregar dirección",
   "EnterAName": "Ingresa un nombre",
   "SelectANetwork": "Selecciona una red",
-  "Save": "Guardar"
+  "Save": "Guardar",
+  "currency": {
+    "USD": "Dólar estadounidense",
+    "EUR": "Euro",
+    "GBP": "Libra esterlina",
+    "JPY": "Yen japonés",
+    "CNY": "Yuan chino",
+    "INR": "Rupia india",
+    "AUD": "Dólar australiano",
+    "CAD": "Dólar canadiense",
+    "CHF": "Franco suizo",
+    "HKD": "Dólar de Hong Kong",
+    "SGD": "Dólar de Singapur",
+    "KRW": "Won surcoreano",
+    "MYR": "Rincit malayo",
+    "PHP": "Peso filipinesco",
+    "TWD": "Dólar taiwanés",
+    "VND": "Dong vietnamita"
+  }
 }
