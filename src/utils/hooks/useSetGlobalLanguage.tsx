@@ -1,10 +1,7 @@
-import {
-  DEFAULT_LANGUAGE,
-  Language,
-} from '@akashic/common-i18n/src/locales/supported-languages';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { DEFAULT_LANGUAGE, Language } from '../../i18n/supported-languages';
 import { APP_LANGUAGE } from '../preference-keys';
 import { useLocalStorage } from './useLocalStorage';
 

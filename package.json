@@ -27,7 +27,6 @@
     "@activeledger/sdk": "^1.3.6",
     "@activeledger/sdk-bip39": "1.0.3",
     "@akashic/as-backend": "workspace:^",
-    "@akashic/common-i18n": "workspace:^",
     "@akashic/core-lib": "workspace:^",
     "@akashic/nitr0gen": "workspace:^",
     "@datadog/browser-rum": "5.0.0",

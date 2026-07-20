@@ -1,7 +1,6 @@
 /* eslint-disable sonarjs/no-duplicate-string */
-import { Language } from '@akashic/common-i18n/src/locales/supported-languages';
-
 import { useSetGlobalLanguage } from '../utils/hooks/useSetGlobalLanguage';
+import { Language } from './supported-languages';
 
 const INFO_SITE_LINKS = {
   [Language.enUS]: 'https://www.akashiclink.com/en-US',

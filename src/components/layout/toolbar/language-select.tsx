@@ -1,10 +1,10 @@
-import { LANGUAGE_LIST } from '@akashic/common-i18n/src/locales/supported-languages';
 import styled from '@emotion/styled';
 import { IonButton, IonIcon, IonItem, IonList, IonPopover } from '@ionic/react';
 import { caretDownOutline, globeOutline } from 'ionicons/icons';
 import type { SyntheticEvent } from 'react';
 import { useRef, useState } from 'react';
 
+import { LANGUAGE_LIST } from '../../../i18n/supported-languages';
 import { useSetGlobalLanguage } from '../../../utils/hooks/useSetGlobalLanguage';
 
 const LanguagePopover = styled(IonPopover)({

@@ -1,6 +1,6 @@
-import { LANGUAGE_LIST } from '@akashic/common-i18n/src/locales/supported-languages';
 import { IonRadioGroup } from '@ionic/react';
 
+import { LANGUAGE_LIST } from '../../i18n/supported-languages';
 import { useSetGlobalLanguage } from '../../utils/hooks/useSetGlobalLanguage';
 import { DownArrow } from './down-arrow';
 import { ForwardArrow } from './forward-arrow';
