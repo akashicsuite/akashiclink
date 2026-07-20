@@ -1,6 +1,5 @@
 import { L2Regex, OtkType } from '@akashic/as-backend';
 import type { CoinSymbol } from '@akashic/core-lib';
-import crypto from 'crypto';
 
 import { useAppDispatch, useAppSelector } from '../../redux/app/hooks';
 import {
@@ -12,15 +11,15 @@ import {
   setLocalAccounts,
 } from '../../redux/slices/accountSlice';
 import { getAccountUniqueId, isSameAccount } from '../account';
+import { decryptLegacyCbcWithPassword } from '../aes256cbc';
+import {
+  decryptGcmWithPassword,
+  encryptGcmWithPassword,
+  GCM_PREFIX,
+} from '../aes256gcm';
 import { ChainAPI } from '../chain-api';
 import type { FullOtk } from '../otk-generation';
 import { useSecureStorage } from './useSecureStorage';
-
-// TODO this is vulnerable to padding oracle attacks. CBC should be replaced
-//  with GCM (or similar), but we'll need to be careful about backwards
-//  compatibility. https://sonarsource.atlassian.net/browse/RSPEC-5542
-const algorithm = 'aes-256-cbc';
-const secretIv = process.env.REACT_APP_SECRETIV ?? '6RxIESTJ1eJLpjpe';
 
 export interface LocalAccount {
   identity: string;
@@ -192,21 +191,25 @@ export const useAccountStorage = () => {
     publicKey?: string;
     password: string;
   }): Promise<FullOtk | undefined> => {
-    const encryptedOtk = await getItem(
-      getAccountUniqueId({ identity, otkType, publicKey })
-    );
-
+    const accountId = getAccountUniqueId({ identity, otkType, publicKey });
+    const encryptedOtk = await getItem(accountId);
     if (!encryptedOtk) {
       return undefined;
     }
 
-    const encryptedOtkBuff = Buffer.from(encryptedOtk, 'base64');
-    const key = genKeyFromPassword(password);
-    const decipher = crypto.createDecipheriv(algorithm, key, secretIv);
-    return JSON.parse(
-      decipher.update(encryptedOtkBuff.toString('utf8'), 'hex', 'utf8') +
-        decipher.final('utf8')
-    ) as FullOtk;
+    if (encryptedOtk.startsWith(GCM_PREFIX)) {
+      return JSON.parse(
+        decryptGcmWithPassword(encryptedOtk, password)
+      ) as FullOtk;
+    }
+    // Legacy CBC path — decrypt then migrate to GCM
+    const cbcDecryptedOtk = decryptLegacyCbcWithPassword(
+      encryptedOtk,
+      password
+    );
+    // Re-encrypt with GCM so this account is migrated going forward
+    await setItem(accountId, encryptGcmWithPassword(cbcDecryptedOtk, password));
+    return JSON.parse(cbcDecryptedOtk) as FullOtk;
   };
 
   const getLocalOtkAndCache = async ({
@@ -300,16 +303,9 @@ export const useAccountStorage = () => {
     publicKey?: string;
     password: string;
   }) => {
-    const key = genKeyFromPassword(password);
-    // eslint-disable-next-line sonarjs/encryption-secure-mode
-    const cipher = crypto.createCipheriv(algorithm, key, secretIv);
-    const encryptedOtk = Buffer.from(
-      cipher.update(JSON.stringify(otk), 'utf8', 'hex') + cipher.final('hex')
-    ).toString('base64');
-
     await setItem(
       getAccountUniqueId({ identity: otk.identity, otkType, publicKey }),
-      encryptedOtk
+      encryptGcmWithPassword(JSON.stringify(otk), password)
     );
   };
 
@@ -356,15 +352,6 @@ export const useAccountStorage = () => {
     await removeItem(accountUniqueId);
 
     dispatch(setCacheOtkState(null));
-  };
-
-  // key min length is 32 byte
-  const genKeyFromPassword = (password: string) => {
-    return crypto
-      .createHash('sha256')
-      .update(password)
-      .digest('hex')
-      .substring(0, 32);
   };
 
   const localAccountsWithName: LocalAccount[] = localAccounts.map(

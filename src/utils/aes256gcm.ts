@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 const ALGO = 'aes-256-gcm';
-const GCM_PREFIX = 'gcm:';
+export const GCM_PREFIX = 'gcm:';
 
 const IV_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
