@@ -53,6 +53,28 @@ module.exports = {
       '@babel/preset-typescript',
     ];
 
+    // CRA's asset catch-all does not exclude `.cjs`, so packages that resolve
+    // to explicit CommonJS files via package exports (e.g. axios → *.cjs) are
+    // emitted as static media URLs instead of JS modules.
+    // https://github.com/facebook/create-react-app/issues/12700
+    // https://github.com/facebook/create-react-app/pull/12021
+    for (const rule of webpackConfig.module.rules) {
+      if (!Array.isArray(rule.oneOf)) {
+        continue;
+      }
+
+      rule.oneOf.splice(rule.oneOf.length - 1, 0, {
+        test: /\.cjs$/,
+        type: 'javascript/auto',
+      });
+
+      rule.oneOf[rule.oneOf.length - 1].exclude = [
+        /\.(js|mjs|jsx|cjs|ts|tsx)$/,
+        /\.html$/,
+        /\.json$/,
+      ];
+    }
+
     if (storybook) {
       // Fix to multiple copies of react
       // https://github.com/storybookjs/storybook/issues/23295#issuecomment-1629918584
