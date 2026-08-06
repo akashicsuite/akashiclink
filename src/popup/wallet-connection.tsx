@@ -75,7 +75,10 @@ export function WalletConnection() {
         },
       };
       const signInRequest = popupData?.signInRequest;
-      if (signInRequest?.message === PersonalSignMessage.SIGN_IN_AKASHIC_PAY) {
+      if (
+        signInRequest?.message === PersonalSignMessage.SIGN_IN_AKASHIC_PAY ||
+        signInRequest?.message === PersonalSignMessage.SIGN_IN_BM
+      ) {
         result.signInSignature = signMessage({
           message: signInRequest.message,
           identity: activeAccount.identity,
