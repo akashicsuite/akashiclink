@@ -17,6 +17,8 @@
     "lint:fix": "yarn lint --fix",
     "prettier:check": "npx prettier --check \"**/*.ts\"",
     "typecheck": "tsc --project ./tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test-watch": "vitest",
     "storybook": "REACT_APP_API_BASE_URL=http://localhost:6006/api DISABLE_ESLINT_PLUGIN=true storybook dev -p 6006 -c ./storybook",
     "test-storybook": "TARGET_URL=http://localhost:6006 test-storybook --config-dir storybook --verbose",
     "test-coverage": "yarn test-storybook --coverage",
@@ -130,6 +132,7 @@
     "serve": "14.2.0",
     "storybook": "^8.3.6",
     "turbo": "2.9.14",
+    "vitest": "^4.1.7",
     "watch": "1.0.2",
     "zip-folder": "1.0.0"
   },

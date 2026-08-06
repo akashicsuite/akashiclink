@@ -1,3 +1,4 @@
+import { KeyError } from '@akashic/as-backend';
 import { datadogRum } from '@datadog/browser-rum';
 import { IonCol, IonRow } from '@ionic/react';
 import { useEffect, useState } from 'react';
@@ -5,9 +6,11 @@ import { useTranslation } from 'react-i18next';
 
 import { urls } from '../../constants/urls';
 import { historyResetStackAndRedirect } from '../../routing/history';
+import { OwnersAPI } from '../../utils/api';
 import { getErrorMessageTKey } from '../../utils/error-utils';
 import { useIosScrollPasswordKeyboardIntoView } from '../../utils/hooks/useIosScrollPasswordKeyboardIntoView';
 import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
+import { verifyKeyHealth } from '../../utils/otk-generation';
 import { AccountSelection } from '../account-selection/account-selection';
 import {
   CustomAlert,
@@ -25,7 +28,7 @@ import { Spinner } from '../common/loader/spinner';
  * - Upload button triggering login request and redirect is successfull
  */
 export function LoginForm({ isPopup = false }) {
-  const { getLocalOtkAndCache } = useAccountStorage();
+  const { getLocalOtkAndCache, setCacheOtk } = useAccountStorage();
   const { t } = useTranslation();
   const [alert, setAlert] = useState(formAlertResetState);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,6 +72,29 @@ export function LoginForm({ isPopup = false }) {
         throw new Error(
           `localSelectedOtk not found for account ${activeAccount.identity}. This may be due to an unmigrated legacy account.`
         );
+      }
+
+      // Guard against expired / invalid keys before entering the app:
+      //  1. Self-signature test — the decrypted key pair is internally
+      //     consistent (catches a locally corrupted key).
+      //  2. Active-OTK check — the key is still in its owner's active key list
+      //     on chain (AC). A removed/revoked OTK keeps a valid local key pair
+      //     (so it passes the self-signature test) and is never deleted from
+      //     the immutable chain, so the identity's live authorities list on
+      //     chain is the only source of truth for whether it is still
+      //     authorized.
+      // Either failure clears the cached OTK and surfaces the error here
+      // instead of letting the user proceed to the app.
+      const isKeyValid =
+        verifyKeyHealth(localSelectedOtk) &&
+        (await OwnersAPI.verifyOtkActive(
+          activeAccount.identity,
+          localSelectedOtk.key.pub.pkcs8pem
+        ));
+
+      if (!isKeyValid) {
+        setCacheOtk(null);
+        throw new Error(KeyError.invalidPrivateKey);
       }
 
       datadogRum.setUser({

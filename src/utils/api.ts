@@ -15,6 +15,7 @@ import {
 import { isAxiosError } from 'axios';
 
 import { axiosBase } from './axios-helper';
+import { ChainAPI } from './chain-api';
 
 const apiCall = async <T>(
   url: string,
@@ -38,6 +39,29 @@ export const OwnersAPI = {
   ): Promise<IRetrieveIdentityResponse> => {
     const url = `/v0/owner/retrieve-identity?publicKey=${retrieveData.publicKey}`;
     return await apiCall<IRetrieveIdentityResponse>(url);
+  },
+
+  /**
+   * Verifies an OTK is still an active key for its owner by reading the
+   * identity's authorities directly from the chain (AC)
+   * When an OTK is removed/revoked (e.g. a customer-service
+   * key removed by the primary key) it disappears from the identity's live
+   * `authorities` list
+   *
+   * Fails open: only a successful response whose `authorities` list omits the
+   * key is treated as inactive; any error (e.g. AC being unreachable) returns
+   * `true` so a transient outage does not lock users out.
+   */
+  verifyOtkActive: async (
+    identity: string,
+    publicKey: string
+  ): Promise<boolean> => {
+    try {
+      const { authorities } = await ChainAPI.findIdentityStream({ identity });
+      return authorities.some((authority) => authority.public === publicKey);
+    } catch {
+      return true;
+    }
   },
 
   lookForL2Address: async (

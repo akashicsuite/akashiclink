@@ -109,6 +109,36 @@ export function signData(
   }
 }
 
+// Fixed, deterministic payload used purely to exercise the key pair during the
+// login-time key-health check. Its contents are irrelevant — it only needs to
+// be stable so the same value is both signed and verified.
+export const KEY_HEALTH_PAYLOAD: Record<string, unknown> = {
+  check: 'key-health',
+};
+
+/**
+ * Self-signature test verifying that an OTK's key pair is still functional.
+ *
+ * Signs a fixed payload with the private key, then verifies the resulting
+ * signature against the public key using ActiveLedger's secp256k1
+ * implementation. Returns `false` (never throws) when signing fails, produces
+ * no signature, or the signature cannot be verified — e.g. because the key has
+ * expired or is otherwise invalid.
+ */
+export function verifyKeyHealth(otk: FullOtk): boolean {
+  try {
+    const signature = signData(otk.key.prv.pkcs8pem, KEY_HEALTH_PAYLOAD);
+    if (!signature) {
+      return false;
+    }
+
+    const keyPair = new ActiveCrypto.KeyPair('secp256k1', otk.key.pub.pkcs8pem);
+    return keyPair.verify(KEY_HEALTH_PAYLOAD, signature);
+  } catch {
+    return false;
+  }
+}
+
 const secretPhraseDictionary = [
   'abandon',
   'ability',
