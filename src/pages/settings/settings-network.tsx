@@ -13,7 +13,10 @@ import {
 } from '../../components/settings/base-components';
 import { SettingItem } from '../../components/settings/setting-item';
 import { PREFERRED_NODE_KEY } from '../../utils/cookies-keys';
-import { fetchNodesPingFromCookies } from '../../utils/nitr0gen/nitr0gen.utils';
+import {
+  fetchNodesPingFromCookies,
+  resetNitr0genApi,
+} from '../../utils/nitr0gen/nitr0gen.utils';
 
 type Node = {
   key: string;
@@ -56,6 +59,7 @@ export function SettingsNetwork() {
   const updatePreferredNodeKey = (key: string) => {
     Cookies.set(PREFERRED_NODE_KEY, key);
     setPreferredNodeKey(key);
+    resetNitr0genApi();
   };
 
   const handleNodeSelect = (node: Node) => {
@@ -82,9 +86,9 @@ export function SettingsNetwork() {
             style={{ position: 'absolute', bottom: 0, right: 0 }}
             borderRadius="8px"
           >
-              <IonIcon
-                slot="icon-only"
-                className="icon-button"
+            <IonIcon
+              slot="icon-only"
+              className="icon-button"
               src={`/assets/images/refresh.svg`}
               style={{ width: '24px', height: '24px' }}
             />

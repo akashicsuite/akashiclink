@@ -37,6 +37,10 @@ export async function getNitr0genApi(): Promise<Nitr0genApi> {
   return nitr0genApiInstance;
 }
 
+export function resetNitr0genApi(): void {
+  nitr0genApiInstance = null;
+}
+
 export async function chooseBestNodesFromCookies(
   nodeEntry: 'general' | 'minigate'
 ) {
