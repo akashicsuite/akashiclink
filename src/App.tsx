@@ -19,6 +19,7 @@ import { IonApp, setupIonicReact } from '@ionic/react';
 import { IonReactMemoryRouter } from '@ionic/react-router';
 import { useEffect } from 'react';
 
+import TrackingConsentManager from './components/analytics/TrackingConsentManager';
 import { DepositModalContextProvider } from './components/deposit/deposit-modal-context-provider';
 import { SendFormContextProvider } from './components/send/send-modal-context-provider';
 import { PopupTree } from './popup/popup-tree';
@@ -61,6 +62,7 @@ export default function App() {
 
   return (
     <IonApp>
+      <TrackingConsentManager />
       <IonReactMemoryRouter history={history}>
         <DepositModalContextProvider>
           <SendFormContextProvider>

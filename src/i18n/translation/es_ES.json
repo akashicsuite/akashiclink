@@ -248,6 +248,7 @@
   "OnlyOneAAS": "Ya has vinculado otro alias Akashic a tu cuenta. Solo se permite un enlace AAS por cuenta.",
   "Settings": "Configuración",
   "PrivacyPolicy": "Política de privacidad",
+  "ManageCookiePreferences": "Gestionar preferencias de cookies",
   "VisitOurWebsite": "Visita nuestro sitio web",
   "UpdateNow": "Actualizar ahora",
   "UpdatesAvailable": "Actualizaciones disponibles",
@@ -390,5 +391,42 @@
     "PHP": "Peso filipinesco",
     "TWD": "Dólar taiwanés",
     "VND": "Dong vietnamita"
+  },
+  "cookieConsent": {
+    "consentModal": {
+      "title": "Usamos cookies",
+      "description": "Usamos cookies para mejorar tu experiencia y entender cómo se usa nuestra extensión. Puedes aceptar todas las cookies o gestionar tus preferencias a continuación.",
+      "acceptAllBtn": "Aceptar todo",
+      "acceptNecessaryBtn": "Rechazar todo",
+      "showPreferencesBtn": "Gestionar preferencias",
+      "closeIconLabel": "Cerrar"
+    },
+    "preferencesModal": {
+      "title": "Gestionar preferencias de cookies",
+      "acceptAllBtn": "Aceptar todo",
+      "acceptNecessaryBtn": "Rechazar todo",
+      "savePreferencesBtn": "Guardar preferencias",
+      "closeIconLabel": "Cerrar ventana",
+      "sections": [
+        {
+          "title": "Acerca de las cookies",
+          "description": "Usamos cookies para garantizar que nuestra extensión funcione correctamente y para entender cómo los visitantes usan nuestra plataforma. Puedes elegir qué cookies opcionales permitir a continuación."
+        },
+        {
+          "title": "Estrictamente necesarias",
+          "description": "Estas cookies son necesarias para el funcionamiento de la extensión y no pueden desactivarse.",
+          "linkedCategory": "necessary"
+        },
+        {
+          "title": "Rendimiento y análisis",
+          "description": "Estas cookies nos ayudan a entender cómo los usuarios interactúan con nuestra extensión. Todos los datos son anónimos y no pueden usarse para identificarte. Para más información, consulta nuestra <a href=\"https://docs.akashicpay.com/introduction/privacy-policy\" target=\"_blank\" rel=\"noopener noreferrer\">Política de Privacidad</a>.",
+          "linkedCategory": "analytics"
+        },
+        {
+          "title": "Más información",
+          "description": "Para cualquier pregunta sobre el uso de cookies, <a href=\"https://t.me/akashicpay_support_bot\" target=\"_blank\" rel=\"noopener noreferrer\">contáctanos</a>."
+        }
+      ]
+    }
   }
 }

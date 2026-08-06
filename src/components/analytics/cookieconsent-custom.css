@@ -1,0 +1,118 @@
+/* Ensure Ionic overlays (ion-popover z-index ~1001) appear above the consent modal */
+:root {
+  --cc-z-index: 999;
+}
+
+#cc-main {
+  --cc-font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --cc-modal-border-radius: 1.5rem;
+  --cc-btn-border-radius: 6rem;
+
+  /* Pass pointer events through the invisible wrapper; only the visible .cm / .pm-wrapper
+     need to intercept clicks. This prevents #cc-main from blocking IonPopover items. */
+  pointer-events: none;
+
+  --cc-bg: var(--ion-background-color);
+  --cc-primary-color: var(--ion-text-color);
+  --cc-secondary-color: #787677;
+
+  /* primary button (Accept all) */
+  --cc-btn-primary-bg: var(--ion-color-primary);
+  --cc-btn-primary-color: var(--ion-color-primary-contrast);
+  --cc-btn-primary-border-color: var(--ion-color-primary);
+  --cc-btn-primary-hover-bg: var(--ion-color-primary-shade);
+  --cc-btn-primary-hover-color: var(--ion-color-primary-contrast);
+  --cc-btn-primary-hover-border-color: var(--ion-color-primary-shade);
+
+  /* secondary button (Reject all) */
+  --cc-btn-secondary-bg: transparent;
+  --cc-btn-secondary-color: var(--ion-color-primary);
+  --cc-btn-secondary-border-color: var(--ion-color-primary);
+  --cc-btn-secondary-hover-bg: var(--ion-modal-background);
+  --cc-btn-secondary-hover-color: var(--ion-color-primary);
+  --cc-btn-secondary-hover-border-color: var(--ion-color-primary);
+
+  --cc-toggle-on-bg: var(--ion-color-primary);
+  --cc-link-color: var(--ion-color-primary);
+
+  & .pm__section,
+  & .pm__section--toggle,
+  & .pm__section-title {
+    border-radius: 0.75rem;
+  }
+
+  & .pm__section--toggle .pm__section-desc-wrapper {
+    border-radius: 0 0 0.75rem 0.75rem;
+  }
+
+  & .pm__section--toggle .pm__section-title:hover {
+    border-color: inherit;
+  }
+
+  & .cm__btns {
+    border-top: 0;
+  }
+
+  & .cm__btn--close,
+  & .cm__btn--close:hover {
+    background: transparent;
+    border: none;
+  }
+
+  & .cm__btn--close svg {
+    stroke: var(--ion-color-primary);
+  }
+
+  & .cm__btn--close:hover svg {
+    stroke: var(--ion-color-primary-shade);
+  }
+}
+
+/* Restore pointer events on the visible modal content */
+#cc-main .cm,
+#cc-main .pm-wrapper {
+  pointer-events: auto;
+}
+
+/* dark mode — wallet-extension uses body.dark class.
+   dark theme: primary=#c2c1ff, background=#060030 */
+body.dark #cc-main {
+  /* readable muted label on dark bg */
+  --cc-secondary-color: #b2b1b8;
+
+  /* use modal-background equiv for category blocks */
+  --cc-cookie-category-block-bg: #06004b;
+  --cc-cookie-category-block-border: #06004b;
+  --cc-cookie-category-block-hover-bg: var(--ion-background-color);
+  --cc-cookie-category-block-hover-border: var(--ion-background-color);
+
+  /* primary.main in dark = #c2c1ff (light purple), button text must be dark */
+  --cc-btn-primary-color: var(--ion-background-color);
+  --cc-btn-primary-hover-bg: #ffffff;
+  --cc-btn-primary-hover-color: var(--ion-background-color);
+  --cc-btn-primary-hover-border-color: #ffffff;
+  --cc-btn-secondary-hover-bg: rgba(194, 193, 255, 0.15);
+
+  --cc-toggle-readonly-bg: rgba(255, 255, 255, 0.15);
+  --cc-toggle-readonly-knob-bg: rgba(255, 255, 255, 0.6);
+  --cc-toggle-readonly-knob-icon-color: rgba(6, 0, 48, 0.25);
+  --cc-toggle-off-bg: rgba(255, 255, 255, 0.38);
+
+  /* suppress section title hover background in dark mode */
+  --cc-cookie-category-block-hover-bg: var(--cc-cookie-category-block-bg);
+  --cc-cookie-category-block-hover-border: var(
+    --cc-cookie-category-block-border
+  );
+
+  & .pm__section-arrow svg {
+    stroke: var(--ion-text-color);
+  }
+}
+
+body.dark #cc-main .toggle__icon-on svg {
+  stroke: rgba(6, 0, 48, 0.8);
+}
+
+body.dark #cc-main .toggle__icon-off svg {
+  stroke: rgba(6, 0, 48, 0.65);
+}

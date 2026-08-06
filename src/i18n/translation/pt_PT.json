@@ -290,6 +290,7 @@
   "OnlyOneAAS": "You have already linked another Akashic Alias to your Account. Only one AAS Link is allowed per Account.",
   "Settings": "Settings",
   "PrivacyPolicy": "Privacy Policy",
+  "ManageCookiePreferences": "Manage Cookie Preferences",
   "VisitOurWebsite": "Visit our website",
   "UpdateNow": "Update Now",
   "UpdatesAvailable": "Updates Available",
@@ -418,5 +419,42 @@
   "EnterAName": "Introduza um nome",
   "SelectANetwork": "Selecione uma rede",
   "Save": "Guardar",
-  "Currency": "Moeda"
+  "Currency": "Moeda",
+  "cookieConsent": {
+    "consentModal": {
+      "title": "We use cookies",
+      "description": "We use cookies to improve your experience and understand how our extension is used. You can accept all cookies or manage your preferences below.",
+      "acceptAllBtn": "Accept all",
+      "acceptNecessaryBtn": "Reject all",
+      "showPreferencesBtn": "Manage preferences",
+      "closeIconLabel": "Close"
+    },
+    "preferencesModal": {
+      "title": "Manage cookie preferences",
+      "acceptAllBtn": "Accept all",
+      "acceptNecessaryBtn": "Reject all",
+      "savePreferencesBtn": "Save preferences",
+      "closeIconLabel": "Close modal",
+      "sections": [
+        {
+          "title": "About cookies",
+          "description": "We use cookies to ensure our extension functions correctly and to understand how visitors use our platform. You can choose which optional cookies to allow below."
+        },
+        {
+          "title": "Strictly necessary",
+          "description": "These cookies are required for the extension to function and cannot be disabled.",
+          "linkedCategory": "necessary"
+        },
+        {
+          "title": "Performance and analytics",
+          "description": "These cookies help us understand how users interact with our extension. All data is anonymised and cannot be used to identify you. For more information, see our <a href=\"https://docs.akashicpay.com/introduction/privacy-policy\" target=\"_blank\" rel=\"noopener noreferrer\">Privacy Policy</a>.",
+          "linkedCategory": "analytics"
+        },
+        {
+          "title": "More information",
+          "description": "For any questions about our use of cookies, please <a href=\"https://t.me/akashicpay_support_bot\" target=\"_blank\" rel=\"noopener noreferrer\">contact us</a>."
+        }
+      ]
+    }
+  }
 }

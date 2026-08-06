@@ -5,6 +5,7 @@ import { IonButton, IonIcon, IonModal } from '@ionic/react';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as CookieConsent from 'vanilla-cookieconsent';
 
 import { LINK_TYPE, useI18nInfoUrls } from '../../i18n/links';
 import { useCurrentAppInfo } from '../../utils/hooks/useCurrentAppInfo';
@@ -157,6 +158,12 @@ export function AboutUs({
       header: t('TermsOfUse'),
       onClick: async () => {
         window.open(infoUrls[LINK_TYPE.TermsOfUse], '_blank');
+      },
+    },
+    {
+      header: t('ManageCookiePreferences'),
+      onClick: async () => {
+        CookieConsent.showPreferences();
       },
       isDivider: true,
     },

@@ -249,6 +249,7 @@
   "OnlyOneAAS": "您已經將另一個 Akashic 域名連結到您的地址。每個地址僅允許一個 AAS 連結。",
   "Settings": "設定",
   "PrivacyPolicy": "隱私政策",
+  "ManageCookiePreferences": "管理 Cookie 偏好設定",
   "VisitOurWebsite": "造訪我們的網站",
   "UpdateNow": "現在更新",
   "UpdatesAvailable": "可用更新",
@@ -390,5 +391,42 @@
     "PHP": "菲律賓披索",
     "TWD": "新台幣",
     "VND": "越南盾"
+  },
+  "cookieConsent": {
+    "consentModal": {
+      "title": "我們使用 Cookie",
+      "description": "我們使用 Cookie 來改善您的體驗並了解我們的擴充套件的使用情況。您可以接受所有 Cookie，或在下方管理您的偏好設定。",
+      "acceptAllBtn": "全部接受",
+      "acceptNecessaryBtn": "全部拒絕",
+      "showPreferencesBtn": "管理偏好設定",
+      "closeIconLabel": "關閉"
+    },
+    "preferencesModal": {
+      "title": "管理 Cookie 偏好設定",
+      "acceptAllBtn": "全部接受",
+      "acceptNecessaryBtn": "全部拒絕",
+      "savePreferencesBtn": "儲存偏好設定",
+      "closeIconLabel": "關閉視窗",
+      "sections": [
+        {
+          "title": "關於 Cookie",
+          "description": "我們使用 Cookie 來確保我們的擴充套件正常運作，並了解訪客如何使用我們的平台。您可以在下方選擇允許哪些可選 Cookie。"
+        },
+        {
+          "title": "必要",
+          "description": "這些 Cookie 是擴充套件運作所必需的，無法被停用。",
+          "linkedCategory": "necessary"
+        },
+        {
+          "title": "效能與分析",
+          "description": "這些 Cookie 幫助我們了解使用者如何與我們的擴充套件互動。所有數據均已匿名處理，無法用於識別您的身份。如需更多資訊，請參閱我們的<a href=\"https://docs.akashicpay.com/introduction/privacy-policy\" target=\"_blank\" rel=\"noopener noreferrer\">隱私權政策</a>。",
+          "linkedCategory": "analytics"
+        },
+        {
+          "title": "更多資訊",
+          "description": "如有任何關於我們使用 Cookie 的問題，請<a href=\"https://t.me/akashicpay_support_bot\" target=\"_blank\" rel=\"noopener noreferrer\">聯絡我們</a>。"
+        }
+      ]
+    }
   }
 }
