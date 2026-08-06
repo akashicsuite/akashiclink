@@ -20,6 +20,7 @@ import {
 import { PrimaryButton } from '../common/buttons';
 import { StyledInput } from '../common/input/styled-input';
 import { Spinner } from '../common/loader/spinner';
+import { ForgotYourPasswordButton } from './forgot-your-password-button';
 
 /**
  * Form allowing user to login
@@ -143,6 +144,9 @@ export function LoginForm({ isPopup = false }) {
           >
             {t('Unlock')}
           </PrimaryButton>
+        </IonCol>
+        <IonCol size="12">
+          <ForgotYourPasswordButton />
         </IonCol>
       </IonRow>
     </>
