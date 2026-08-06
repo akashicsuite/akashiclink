@@ -1,15 +1,13 @@
-import {
-  getCurrencyIcon,
-  type IWalletScreeningObject,
-} from '@akashic/as-backend';
+import type { IWalletScreeningObject } from '@akashic/as-backend';
 import styled from '@emotion/styled';
-import { IonImg, IonText } from '@ionic/react';
+import { IonText } from '@ionic/react';
 import { type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { urls } from '../../constants/urls';
 import { historyGo } from '../../routing/history';
 import { formatDate } from '../../utils/formatDate';
+import { CryptoCurrencyIcon } from '../common/chain-icon/crypto-currency-icon';
 import { Divider } from '../common/divider';
 
 const AddressScreeningWrapper = styled.div<{ hover: boolean }>((props) => ({
@@ -99,14 +97,7 @@ export function AddressScreeningHistoryItem({
       >
         <IconWrapper>
           <TypeIcon>
-            <IonImg
-              alt=""
-              src={getCurrencyIcon({ coinSymbol: screening.coinSymbol })}
-              style={{
-                height: '32px',
-                width: '32px',
-              }}
-            />
+            <CryptoCurrencyIcon coinSymbol={screening.coinSymbol} size={32} />
           </TypeIcon>
           <FlexWrapper>
             <AccountHash className="ion-text-size-xxs">
