@@ -18,8 +18,7 @@ export function useCryptoCurrencySymbolsAndBalances(
     walletCurrency.tokenSymbol
   );
   const { balance: nativeCoinBalance } = useCryptoCurrencyBalance(
-    walletCurrency.coinSymbol,
-    walletCurrency.tokenSymbol
+    walletCurrency.coinSymbol
   );
 
   const isCurrencyTypeToken = typeof walletCurrency.tokenSymbol !== 'undefined';
