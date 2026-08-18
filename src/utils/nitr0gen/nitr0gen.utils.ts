@@ -1,19 +1,13 @@
 import {
   ACEnvironment,
   createNitr0genUrl,
-  fetchNodesPing,
   getFastestNodeKey,
   getNodes,
   Nitr0genApi,
-  type NodesPingInfo,
 } from '@akashic/nitr0gen';
 import Cookies from 'js-cookie';
 
-import {
-  FASTEST_NODE_KEY,
-  NODE_PING_DATA,
-  PREFERRED_NODE_KEY,
-} from '../cookies-keys';
+import { FASTEST_NODE_KEY, PREFERRED_NODE_KEY } from '../cookies-keys';
 
 let nitr0genApiInstance: Nitr0genApi | null = null;
 
@@ -27,18 +21,13 @@ export async function getNitr0genApi(): Promise<Nitr0genApi> {
             ? ACEnvironment.TESTNET
             : ACEnvironment.STAGING,
       dbIndex: parseInt(process.env.REACT_APP_REDIS_DB_INDEX!, 10),
-      preferredNodeKey:
-        Cookies.get(PREFERRED_NODE_KEY) ||
-        Cookies.get(FASTEST_NODE_KEY) ||
-        undefined,
+      // Resolved live on every operation. undefined = Auto (nitr0gen picks the
+      // fastest reachable node from its cached pings).
+      getPreferredNodeKey: () => Cookies.get(PREFERRED_NODE_KEY) || undefined,
       needServerTime: true,
     });
   }
   return nitr0genApiInstance;
-}
-
-export function resetNitr0genApi(): void {
-  nitr0genApiInstance = null;
 }
 
 export async function chooseBestNodesFromCookies(
@@ -75,25 +64,4 @@ export async function chooseBestNodesFromCookies(
   });
 
   return createNitr0genUrl(node[nodeKey], nodeEntry);
-}
-export async function fetchNodesPingFromCookies(
-  hardRefresh: boolean
-): Promise<NodesPingInfo[]> {
-  const cachedNodePingData = Cookies.get(NODE_PING_DATA);
-
-  if (!hardRefresh && cachedNodePingData) {
-    return JSON.parse(cachedNodePingData) as NodesPingInfo[];
-  }
-  const nodePingData = await fetchNodesPing(
-    process.env.REACT_APP_ENV === 'prod'
-      ? ACEnvironment.MAINNET
-      : process.env.REACT_APP_ENV === 'preprod'
-        ? ACEnvironment.TESTNET
-        : ACEnvironment.STAGING
-  );
-
-  Cookies.set(NODE_PING_DATA, JSON.stringify(nodePingData), {
-    expires: 1, // 1 day
-  });
-  return nodePingData;
 }

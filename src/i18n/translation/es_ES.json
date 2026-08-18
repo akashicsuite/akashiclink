@@ -292,6 +292,7 @@
   "SendBpByAlias": "No se puede enviar a la cuenta comercial por Akashic Alias",
   "SelectYourPreferredNode": "Por favor, selecciona tu nodo preferido.",
   "Node": "Nodo",
+  "Auto": "Auto",
   "Preferred": "(Preferido*)",
   "PreferredNodeMsg": "*AkashicLink enviará tus transacciones al nodo seleccionado. En caso de que no esté disponible, se redirigirá automáticamente al siguiente nodo más rápido.",
   "SelectedPreferredNodeWarning": "El nodo seleccionado no es accesible. Seleccionar este nodo puede provocar un fallo en la conexión con AkashicChain. ¿Desea continuar?",

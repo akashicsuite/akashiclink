@@ -1,3 +1,4 @@
+import { ACEnvironment, getNodePings } from '@akashic/nitr0gen';
 import styled from '@emotion/styled';
 import { IonAlert, IonIcon } from '@ionic/react';
 import { checkmark, ellipse } from 'ionicons/icons';
@@ -13,15 +14,22 @@ import {
 } from '../../components/settings/base-components';
 import { SettingItem } from '../../components/settings/setting-item';
 import { PREFERRED_NODE_KEY } from '../../utils/cookies-keys';
-import {
-  fetchNodesPingFromCookies,
-  resetNitr0genApi,
-} from '../../utils/nitr0gen/nitr0gen.utils';
 
 type Node = {
   key: string;
   ping: number;
 };
+
+// Sentinel for the "Auto" selection — no persisted preferred node, nitr0gen
+// resolves the fastest reachable node at operation time.
+const AUTO = 'auto';
+
+const env =
+  process.env.REACT_APP_ENV === 'prod'
+    ? ACEnvironment.MAINNET
+    : process.env.REACT_APP_ENV === 'preprod'
+      ? ACEnvironment.TESTNET
+      : ACEnvironment.STAGING;
 
 const PingStatus = styled.span`
   gap: 4px;
@@ -33,33 +41,32 @@ export function SettingsNetwork() {
 
   const [nodes, setNodes] = useState<Node[]>([]);
   const [unreachableNode, setUnreachableNode] = useState<Node | null>(null);
-  const [preferredNodeKey, setPreferredNodeKey] = useState<string>(
-    Cookies.get(PREFERRED_NODE_KEY) ?? ''
+  // Currently selected: a node key, or AUTO when nothing is persisted.
+  const [selectedKey, setSelectedKey] = useState<string>(
+    Cookies.get(PREFERRED_NODE_KEY) || AUTO
   );
 
-  useEffect(() => {
-    const isPreferredNodeKeyValid = nodes.some(
-      (n) => n.key === preferredNodeKey
-    );
-
-    if (nodes.length) {
-      const minNode = nodes.reduce((min, node) =>
-        node.ping < min.ping ? node : min
-      );
-      if (!preferredNodeKey || !isPreferredNodeKeyValid)
-        setPreferredNodeKey(minNode.key);
-    }
-  }, [nodes]);
-
   const loadNodes = async () => {
-    const nodesList = await fetchNodesPingFromCookies(true);
+    const nodesList = await getNodePings(env, true);
     setNodes(nodesList);
+    // Clear a stale preferred-node cookie that no longer maps to a node, so the
+    // api singleton resolves Auto instead of an invalid preference.
+    const preferred = Cookies.get(PREFERRED_NODE_KEY);
+    if (preferred && !nodesList.some((node) => node.key === preferred)) {
+      Cookies.remove(PREFERRED_NODE_KEY);
+      setSelectedKey(AUTO);
+    }
   };
 
   const updatePreferredNodeKey = (key: string) => {
-    Cookies.set(PREFERRED_NODE_KEY, key);
-    setPreferredNodeKey(key);
-    resetNitr0genApi();
+    if (key === AUTO) {
+      Cookies.remove(PREFERRED_NODE_KEY);
+    } else {
+      Cookies.set(PREFERRED_NODE_KEY, key);
+    }
+    setSelectedKey(key);
+    // The api singleton resolves the preference live on the next operation — no
+    // rebuild needed.
   };
 
   const handleNodeSelect = (node: Node) => {
@@ -101,42 +108,59 @@ export function SettingsNetwork() {
           {t('SelectYourPreferredNode')}
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {nodes.map((node, index) => (
-            <SettingItem
-              key={node.key}
-              backgroundColor="var(--ion-background)"
-              header={`${t('Node')} ${++index} ${
-                node.key === preferredNodeKey ? t('Preferred') : ''
-              }`}
-              onClick={() => handleNodeSelect(node)}
-              EndComponent={() => (
-                <PingStatus className="ion-text-size-xs">
-                  <IonIcon
-                    className="ion-text-size-xxs"
-                    icon={ellipse}
-                    style={{
-                      color:
-                        node.ping === 0
-                          ? 'var(--ion-color-warning-text)'
-                          : node.ping >= 200
-                            ? '#F7931A'
-                            : 'var(--ion-color-success)',
-                    }}
-                  />
-                  <span style={{ color: 'var(--ion-color-secondary-text)' }}>
-                    {node.ping === 0 ? t('Unreachable') : `${node.ping}ms`}
-                  </span>
-                </PingStatus>
-              )}
-              isAccordion={false}
-              icon={preferredNodeKey === node.key ? checkmark : ''}
-              headerStyle={{
-                color: 'var(--ion-color-secondary-text)',
-                fontSize: '0.875rem',
-              }}
-              iconStyle={{ color: 'var(--ion-color-primary-10)' }}
-            />
-          ))}
+          {[{ key: AUTO }, ...nodes].map((item, index) => {
+            // Auto is the first row (no ping); real nodes carry a ping.
+            const node = 'ping' in item ? item : undefined;
+            const selected = selectedKey === item.key;
+            return (
+              <SettingItem
+                key={item.key}
+                backgroundColor="var(--ion-background)"
+                header={
+                  node
+                    ? `${t('Node')} ${index} ${selected ? t('Preferred') : ''}`
+                    : t('Auto')
+                }
+                onClick={() =>
+                  node ? handleNodeSelect(node) : updatePreferredNodeKey(AUTO)
+                }
+                EndComponent={
+                  node
+                    ? () => (
+                        <PingStatus className="ion-text-size-xs">
+                          <IonIcon
+                            className="ion-text-size-xxs"
+                            icon={ellipse}
+                            style={{
+                              color:
+                                node.ping === 0
+                                  ? 'var(--ion-color-warning-text)'
+                                  : node.ping >= 200
+                                    ? '#F7931A'
+                                    : 'var(--ion-color-success)',
+                            }}
+                          />
+                          <span
+                            style={{ color: 'var(--ion-color-secondary-text)' }}
+                          >
+                            {node.ping === 0
+                              ? t('Unreachable')
+                              : `${node.ping}ms`}
+                          </span>
+                        </PingStatus>
+                      )
+                    : undefined
+                }
+                isAccordion={false}
+                icon={selected ? checkmark : ''}
+                headerStyle={{
+                  color: 'var(--ion-color-secondary-text)',
+                  fontSize: '0.875rem',
+                }}
+                iconStyle={{ color: 'var(--ion-color-primary-10)' }}
+              />
+            );
+          })}
         </div>
         <h5
           className="ion-text-size-xxs ion-margin-top-xs"
