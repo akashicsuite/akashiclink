@@ -1,16 +1,8 @@
 import { L2Regex, truncateToMaxDecimals } from '@akashic/as-backend';
 import styled from '@emotion/styled';
 import type { InputChangeEventDetail, InputCustomEvent } from '@ionic/react';
-import {
-  IonChip,
-  IonCol,
-  IonIcon,
-  IonInput,
-  IonRow,
-  IonText,
-} from '@ionic/react';
+import { IonChip, IonCol, IonInput, IonRow, IonText } from '@ionic/react';
 import Big from 'big.js';
-import { closeOutline, warningOutline } from 'ionicons/icons';
 import debounce from 'lodash.debounce';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +20,7 @@ import { TextButton } from '../../common/buttons';
 import { L2Icon } from '../../common/chain-icon/l2-icon';
 import { NetworkIcon } from '../../common/chain-icon/network-icon';
 import { SendFormContext } from '../send-modal-context-provider';
+import { FirstTimeAddressWarning } from './first-time-address-warning';
 import { SendTxnDetailBox } from './send-txn-detail-box';
 import { SendTxnDetailBoxWithDelegateOption } from './send-txn-detail-box-with-delegate-option';
 import type { ValidatedAddressPair } from './types';
@@ -249,62 +242,10 @@ export const SendAmountInputAndDetail = ({
         </IonRow>
       )}
       {isFirstTimeInteractionWithAddress && !isFirstTimeWarningDismissed && (
-        <div
-          style={
-            !isL2 && isCurrencyTypeToken
-              ? {
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  zIndex: 10,
-                }
-              : { marginTop: 'auto', padding: '8px 0' }
-          }
-        >
-          <div style={{ position: 'relative' }}>
-            <AlertBox
-              state={{
-                success: false,
-                visible: true,
-                message: 'FirstTimeAddressWarning',
-              }}
-              customStyle={{
-                container: {
-                  borderLeft: '8px solid var(--ion-color-primary)',
-                  borderTop: '1px solid var(--ion-color-primary)',
-                  borderRight: '1px solid var(--ion-color-primary)',
-                  borderBottom: '1px solid var(--ion-color-primary)',
-                  padding: '12px',
-                  justifyContent: 'flex-start',
-                  gap: '12px',
-                  backgroundColor: 'var(--ion-background-color)',
-                },
-                text: {
-                  color: 'var(--ion-color-inverse-surface)',
-                  textAlign: 'left',
-                  margin: 0,
-                },
-                icon: {
-                  color: 'var(--ion-color-primary)',
-                },
-              }}
-              icon={warningOutline}
-            />
-            <IonIcon
-              icon={closeOutline}
-              onClick={() => setIsFirstTimeWarningDismissed(true)}
-              style={{
-                position: 'absolute',
-                top: '8px',
-                right: '8px',
-                cursor: 'pointer',
-                fontSize: '20px',
-                color: 'var(--ion-color-primary)',
-              }}
-            />
-          </div>
-        </div>
+        <FirstTimeAddressWarning
+          floating={!isL2 && isCurrencyTypeToken}
+          onDismiss={() => setIsFirstTimeWarningDismissed(true)}
+        />
       )}
     </div>
   );

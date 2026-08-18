@@ -178,6 +178,7 @@ export function AlertBox({
   state,
   style,
   customStyle,
+  icon,
   iconOverride,
   onDismiss,
 }: {
@@ -217,16 +218,18 @@ export function AlertBox({
     color,
   };
 
-  const defaultIcon = (
-    <ErrorOutlineIcon
-      style={{
-        width: '24px',
-        height: '24px',
-        flexShrink: 0,
-        marginRight: '8px',
-        ...iconStyle,
-      }}
-    />
+  const defaultIconStyle = {
+    width: '24px',
+    height: '24px',
+    flexShrink: 0,
+    marginRight: '8px',
+    ...iconStyle,
+  };
+
+  const defaultIcon = icon ? (
+    <IonIcon icon={icon} style={defaultIconStyle} />
+  ) : (
+    <ErrorOutlineIcon style={defaultIconStyle} />
   );
 
   return (
