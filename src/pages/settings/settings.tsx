@@ -15,6 +15,7 @@ import {
 } from '../../components/settings/base-components';
 import type { SettingItemProps } from '../../components/settings/setting-item';
 import { SettingItem } from '../../components/settings/setting-item';
+import { ADDRESS_BOOK_ENABLED } from '../../constants/feature-flags';
 import { SUPPORT_MAIL, urls } from '../../constants/urls';
 import { useAppSelector } from '../../redux/app/hooks';
 import { selectTheme } from '../../redux/slices/preferenceSlice';
@@ -38,7 +39,7 @@ export function Settings() {
         history.push(akashicPayPath(urls.settingsGeneral));
       },
     },
-    ...(process.env.REACT_APP_ENABLE_ADDRESS_BOOK === 'true'
+    ...(ADDRESS_BOOK_ENABLED
       ? [
           {
             header: t('AddressBook'),

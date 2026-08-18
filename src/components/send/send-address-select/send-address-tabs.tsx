@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { ADDRESS_BOOK_ENABLED } from '../../../constants/feature-flags';
 import { AddressBookList } from './address-book-list';
 import { MyAccountList } from './my-account-list';
 import { RecentAddressList } from './recent-address-list';
@@ -71,7 +72,7 @@ export const SendAddressTabs: FC<SendAddressTabsProps> = ({
         >
           {t('Recent')}
         </Tab>
-        {process.env.REACT_APP_ENABLE_ADDRESS_BOOK === 'true' && (
+        {ADDRESS_BOOK_ENABLED && (
           <Tab
             isActive={activeTab === 'addressBook'}
             onClick={() => handleTabChange('addressBook')}
@@ -92,10 +93,9 @@ export const SendAddressTabs: FC<SendAddressTabsProps> = ({
       {activeTab === 'myAccount' && (
         <MyAccountList onSelectAddress={onSelectAddress} />
       )}
-      {process.env.REACT_APP_ENABLE_ADDRESS_BOOK === 'true' &&
-        activeTab === 'addressBook' && (
-          <AddressBookList onSelectAddress={onSelectAddress} />
-        )}
+      {ADDRESS_BOOK_ENABLED && activeTab === 'addressBook' && (
+        <AddressBookList onSelectAddress={onSelectAddress} />
+      )}
     </TabsContainer>
   );
 };
