@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import { OwnersAPI } from '../../../utils/api';
 import { getErrorMessageTKey } from '../../../utils/error-utils';
+import { useAddressBook } from '../../../utils/hooks/useAddressBook';
 import { useAccountStorage } from '../../../utils/hooks/useLocalAccounts';
 import { useOwnerKeys } from '../../../utils/hooks/useOwnerKeys';
 import {
@@ -25,9 +26,11 @@ import {
   formAlertResetState,
 } from '../../common/alert/alert';
 import { StyledInput } from '../../common/input/styled-input';
+import { SendAddressTabs } from '../send-address-select/send-address-tabs';
 import { SendFormContext } from '../send-modal-context-provider';
-import { SendAddressTabs } from './send-address-tabs';
 import type { ValidatedAddressPair } from './types';
+
+const addressBookEnabled = process.env.REACT_APP_ENABLE_ADDRESS_BOOK === 'true';
 
 const LockedAddress = styled(IonItem)({
   ['&::part(native)']: {
@@ -36,7 +39,7 @@ const LockedAddress = styled(IonItem)({
     borderStyle: 'solid',
     borderWidth: 1,
     borderRadius: 8,
-    height: 40,
+    minHeight: 40,
     fontSize: '0.75rem',
     '--inner-padding-end': '2px', // Reduce end padding
     '--padding-start': '8px', // Optional: adjust start padding
@@ -87,6 +90,7 @@ export const SendAddressInput = ({
     currency: { coinSymbol },
   } = useContext(SendFormContext);
   const addresses = useOwnerKeys(activeAccount?.identity ?? '').keys;
+  const { findContactByAddress } = useAddressBook();
 
   const validateAddressInput = async (input: string) => {
     setAlert(formAlertResetState);
@@ -193,7 +197,7 @@ export const SendAddressInput = ({
           </h2>
         </IonText>
       </IonCol>
-      <IonCol size={'13'}>
+      <IonCol size={'12'}>
         {validatedAddressPair.userInputToAddress === '' && (
           <StyledInput
             ref={inputRef}
@@ -203,38 +207,52 @@ export const SendAddressInput = ({
             onIonInput={onAddressChange}
           />
         )}
-        {validatedAddressPair.userInputToAddress !== '' && (
-          <LockedAddress lines="full">
-            <IonLabel
-              className="ion-text-bold"
-              style={{
-                fontSize: calculateSendAddressFontSize(
-                  validatedAddressPair.userInputToAddress
-                ),
-                wordBreak: 'break-all',
-              }}
-            >
-              {validatedAddressPair.userInputToAddress}
-            </IonLabel>
-            <IonButton
-              onClick={onAddressClear}
-              fill="clear"
-              slot="end"
-              style={{
-                marginLeft: 0,
-                marginRight: 0,
-                paddingLeft: 0,
-                paddingRight: 0,
-              }}
-            >
-              <IonIcon
-                slot="icon-only"
-                icon={closeOutline}
-                style={{ width: '16px', height: '16px' }}
-              ></IonIcon>
-            </IonButton>
-          </LockedAddress>
-        )}
+        {validatedAddressPair.userInputToAddress !== '' &&
+          (() => {
+            const contact = addressBookEnabled
+              ? findContactByAddress(
+                  validatedAddressPair.userInputToAddress,
+                  coinSymbol
+                )
+              : undefined;
+            const address = validatedAddressPair.userInputToAddress;
+
+            return (
+              <LockedAddress lines="full">
+                <IonLabel
+                  className="ion-text-bold"
+                  style={{ wordBreak: 'break-all' }}
+                >
+                  {contact && <div>{contact.name}</div>}
+                  <div
+                    style={{
+                      fontSize: calculateSendAddressFontSize(address),
+                      ...(contact && { fontWeight: 400 }),
+                    }}
+                  >
+                    {address}
+                  </div>
+                </IonLabel>
+                <IonButton
+                  onClick={onAddressClear}
+                  fill="clear"
+                  slot="end"
+                  style={{
+                    marginLeft: 0,
+                    marginRight: 0,
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                  }}
+                >
+                  <IonIcon
+                    slot="icon-only"
+                    icon={closeOutline}
+                    style={{ width: '16px', height: '16px' }}
+                  ></IonIcon>
+                </IonButton>
+              </LockedAddress>
+            );
+          })()}
       </IonCol>
       {alert.visible && (
         <IonCol size={'12'}>

@@ -37,7 +37,7 @@ const ContactNameRow = styled.div({
 
 const NetworkLabel = styled.span<{ color: string }>(({ color }) => ({
   fontSize: '0.875rem',
-  fontWeight: 600,
+  fontWeight: 700,
   color,
 }));
 
@@ -48,13 +48,13 @@ const Dot = styled.span({
 
 const ContactName = styled.span({
   fontSize: '0.875rem',
-  fontWeight: 600,
-  color: 'var(--ion-color-primary-10)',
+  fontWeight: 700,
+  color: 'var(--ion-text-color-alt)',
 });
 
 const ContactAddress = styled.span({
   fontSize: '0.75rem',
-  color: '#958e99',
+  color: 'var(--ion-color-on-surface-light)',
   marginTop: '2px',
 });
 
@@ -67,6 +67,30 @@ function getNetworkLabel(
     : t(`Chain.${network.toUpperCase()}`);
 }
 
+export const SavedAddressContact = ({
+  contact,
+}: {
+  contact: AddressBookContact;
+}) => {
+  const { t } = useTranslation();
+  const isDarkMode = useAppSelector(selectTheme) === themeType.DARK;
+
+  return (
+    <ContactInfo>
+      <ContactNameRow>
+        <NetworkLabel color={getNetworkColor(contact.network, isDarkMode)}>
+          {getNetworkLabel(contact.network, t)}
+        </NetworkLabel>
+        <Dot>&middot;</Dot>
+        <ContactName>{contact.name}</ContactName>
+      </ContactNameRow>
+      <ContactAddress>
+        {displayLongText(contact.address, 40, false, true)}
+      </ContactAddress>
+    </ContactInfo>
+  );
+};
+
 export function SavedAddressItem({
   contact,
   onClick,
@@ -74,23 +98,9 @@ export function SavedAddressItem({
   contact: AddressBookContact;
   onClick: () => void;
 }) {
-  const { t } = useTranslation();
-  const isDarkMode = useAppSelector(selectTheme) === themeType.DARK;
-
   return (
     <ContactItem onClick={onClick}>
-      <ContactInfo>
-        <ContactNameRow>
-          <NetworkLabel color={getNetworkColor(contact.network, isDarkMode)}>
-            {getNetworkLabel(contact.network, t)}
-          </NetworkLabel>
-          <Dot>&middot;</Dot>
-          <ContactName>{contact.name}</ContactName>
-        </ContactNameRow>
-        <ContactAddress>
-          {displayLongText(contact.address, 40, false, true)}
-        </ContactAddress>
-      </ContactInfo>
+      <SavedAddressContact contact={contact} />
     </ContactItem>
   );
 }

@@ -33,6 +33,18 @@ export function useAddressBook() {
     setStore({ ...store, [accountId]: newContacts });
   }
 
+  const findContactByAddress = (
+    address: string,
+    network: DepositChainOption
+  ): AddressBookContact | undefined => {
+    const normalized = address.trim().toLowerCase();
+    return contacts.find(
+      (c) =>
+        c.address.toLowerCase() === normalized &&
+        (c.network === network || c.network === 'AkashicChain')
+    );
+  };
+
   function addContact(contact: AddressBookContact): AddContactResult {
     if (!activeAccount) return { success: false, error: 'name' };
 
@@ -132,5 +144,6 @@ export function useAddressBook() {
     addContact,
     deleteContact,
     updateContact,
+    findContactByAddress,
   };
 }
