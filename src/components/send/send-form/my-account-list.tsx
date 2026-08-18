@@ -13,12 +13,17 @@ export const MyAccountList: FC<MyAccountListProps> = ({ onSelectAddress }) => {
   const { t } = useTranslation();
   const { localAccounts, activeAccount } = useAccountStorage();
 
-  // Filter out the active account to prevent self-send
-  const otherAccounts = useMemo(() => {
-    return localAccounts.filter(
-      (account) => account.identity !== activeAccount?.identity
-    );
-  }, [localAccounts, activeAccount]);
+  // Filter out the active account to prevent self-send, then dedup by
+  // identity so an L2 address held under multiple otkTypes shows only once.
+  const otherAccounts = useMemo(
+    () =>
+      localAccounts.filter(
+        (account, index, list) =>
+          account.identity !== activeAccount?.identity &&
+          list.findIndex((a) => a.identity === account.identity) === index
+      ),
+    [localAccounts, activeAccount]
+  );
 
   return (
     <AddressList
