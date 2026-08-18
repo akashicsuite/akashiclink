@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
-import { IonIcon, IonItem, IonLabel, IonList, IonText } from '@ionic/react';
-import { listOutline } from 'ionicons/icons';
+import { IonItem, IonLabel, IonList, IonText } from '@ionic/react';
 import { type ReactNode } from 'react';
 
 export const AddressListContainer = styled.div({
@@ -22,20 +21,6 @@ export const AddressItem = styled(IonItem)({
   ['&:hover::part(native)']: {
     '--background': 'var(--ion-color-light)',
   },
-});
-
-export const AddressIcon = styled(IonIcon)({
-  width: '14px',
-  height: '14px',
-  fontSize: '12px',
-  color: 'var(--ion-color-primary)',
-  marginRight: '8px',
-  border: '2px solid var(--ion-color-primary)',
-  padding: '2px',
-  boxSizing: 'border-box',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
 });
 
 export const AddressInfo = styled.div({
@@ -63,6 +48,12 @@ export const SecondaryText = styled(IonText)({
   whiteSpace: 'nowrap',
 });
 
+export const AddressAction = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  marginLeft: '8px',
+});
+
 export const EmptyState = styled.div({
   display: 'flex',
   alignItems: 'center',
@@ -77,6 +68,11 @@ interface AddressListItemProps<T> {
   keyExtractor: (item: T) => string;
   onSelectItem: (item: T) => void;
   renderContent: (item: T) => ReactNode;
+  /**
+   * Action rendered at the end of each row. Handlers inside must stop
+   * propagation, otherwise the click also selects the address.
+   */
+  renderTrailing?: (item: T) => ReactNode;
   emptyStateMessage?: string;
   isLoading?: boolean;
   loadingMessage?: string;
@@ -87,6 +83,7 @@ export const AddressList = <T,>({
   keyExtractor,
   onSelectItem,
   renderContent,
+  renderTrailing,
   emptyStateMessage,
   isLoading,
   loadingMessage,
@@ -121,10 +118,12 @@ export const AddressList = <T,>({
             button
             detail={false}
           >
-            <AddressIcon icon={listOutline} slot="start" />
             <IonLabel>
               <AddressInfo>{renderContent(item)}</AddressInfo>
             </IonLabel>
+            {renderTrailing && (
+              <AddressAction slot="end">{renderTrailing(item)}</AddressAction>
+            )}
           </AddressItem>
         ))}
       </IonList>

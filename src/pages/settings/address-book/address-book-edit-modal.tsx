@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import { IonButton, IonIcon, IonModal } from '@ionic/react';
-import { chevronDown, chevronUp } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +10,7 @@ import {
 import { StyledInput } from '../../../components/common/input/styled-input';
 import type { DepositChainOption } from '../../../utils/hooks/useAccountL1Address';
 import type { AddressBookContact } from '../../../utils/hooks/useAddressBook';
+import { NetworkSelect } from './address-book-network-select';
 import { detectNetworks } from './address-book-utils';
 
 const PRIMARY_COLOR = '--ion-color-primary';
@@ -60,63 +60,6 @@ const ErrorText = styled.span({
   fontSize: '0.75rem',
   color: 'var(--ion-color-danger)',
   paddingLeft: '16px',
-});
-
-const SelectWrapper = styled.div({
-  width: '100%',
-});
-
-const SelectLabel = styled.label({
-  display: 'block',
-  fontFamily: "'Nunito Sans', serif",
-  fontSize: '0.75rem',
-  fontWeight: 700,
-  color: 'var(--ion-color-primary-10)',
-  marginBottom: '8px',
-});
-
-const SelectTrigger = styled.button<{ isOpen: boolean }>(({ isOpen }) => ({
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '0 16px',
-  background: 'transparent',
-  border: '1px solid #958e99',
-  borderRadius: isOpen ? '8px 8px 0 0' : '8px',
-  cursor: 'pointer',
-  color: 'var(--ion-color-primary-10)',
-  fontSize: '0.75rem',
-  fontWeight: 700,
-  minHeight: '40px',
-}));
-
-const Placeholder = styled.span({
-  fontWeight: 400,
-  color: 'var(--ion-color-step-400)',
-});
-
-const OptionsList = styled.div({
-  background: 'var(--ion-background-color)',
-  border: '1px solid #958e99',
-  borderTop: 'none',
-  borderRadius: '0 0 8px 8px',
-  overflow: 'hidden',
-});
-
-const OptionItem = styled.button({
-  width: '100%',
-  padding: '12px 16px',
-  background: 'none',
-  border: 'none',
-  textAlign: 'left',
-  cursor: 'pointer',
-  color: 'var(--ion-color-primary-10)',
-  fontSize: '0.75rem',
-  fontWeight: 700,
-  '&:hover': {
-    background: 'var(--ion-color-step-50)',
-  },
 });
 
 const ModalDivider = styled.hr({
@@ -171,7 +114,6 @@ export function EditContactModal({
   const [ambiguousNetworks, setAmbiguousNetworks] = useState<
     DepositChainOption[]
   >([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [nameError, setNameError] = useState<string | undefined>(undefined);
   const [addressError, setAddressError] = useState<string | undefined>(
     undefined
@@ -183,7 +125,6 @@ export function EditContactModal({
       setAddress(contact.address);
       setNetwork(contact.network);
       setAmbiguousNetworks([]);
-      setDropdownOpen(false);
       setNameError(undefined);
       setAddressError(undefined);
     }
@@ -201,14 +142,12 @@ export function EditContactModal({
     if (matches.length === 1) {
       setNetwork(matches[0]);
       setAmbiguousNetworks([]);
-      setDropdownOpen(false);
     } else if (matches.length > 1) {
       setNetwork(undefined);
       setAmbiguousNetworks(matches);
     } else {
       setNetwork(undefined);
       setAmbiguousNetworks([]);
-      setDropdownOpen(false);
     }
   };
 
@@ -284,38 +223,11 @@ export function EditContactModal({
                 {addressError && <ErrorText>{addressError}</ErrorText>}
               </div>
               {ambiguousNetworks.length > 1 && (
-                <SelectWrapper>
-                  <SelectLabel>{t('Chain.Title')}</SelectLabel>
-                  <SelectTrigger
-                    isOpen={dropdownOpen}
-                    onClick={() => setDropdownOpen((prev) => !prev)}
-                  >
-                    {network ? (
-                      t(`Chain.${network}`)
-                    ) : (
-                      <Placeholder>{t('SelectNetwork')}</Placeholder>
-                    )}
-                    <IonIcon
-                      icon={dropdownOpen ? chevronUp : chevronDown}
-                      style={{ fontSize: '1rem', flexShrink: 0 }}
-                    />
-                  </SelectTrigger>
-                  {dropdownOpen && (
-                    <OptionsList>
-                      {ambiguousNetworks.map((chain) => (
-                        <OptionItem
-                          key={chain}
-                          onClick={() => {
-                            setNetwork(chain);
-                            setDropdownOpen(false);
-                          }}
-                        >
-                          {t(`Chain.${chain}`)}
-                        </OptionItem>
-                      ))}
-                    </OptionsList>
-                  )}
-                </SelectWrapper>
+                <NetworkSelect
+                  options={ambiguousNetworks}
+                  value={network}
+                  onChange={setNetwork}
+                />
               )}
             </ModalFormFields>
             <ModalDivider />
