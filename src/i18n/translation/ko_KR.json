@@ -300,7 +300,7 @@
   "AccountTransferInfo": "설정에서 내보낸 12단어 복구 문구 또는 키페어를 사용하여 새 앱으로 계정을 이전하세요.",
   "OldAppDeprecation": "중요: 기존 앱 사용 중단",
   "OldAppDeprecationNotice": "현재 앱은 곧 중단됩니다. 지갑에 지속적으로 액세스하려면 새 앱을 다운로드하세요.",
-  "DownloadNewAkashicLink": "AkashicLink 2.0 다운로드",
+  "DownloadNewAkashicLink": "AkashicLink 다운로드",
   "Theme": "테마",
   "LockAkashicWallet": "AkashicLink 잠금",
   "AutoLock": "자동 잠금",

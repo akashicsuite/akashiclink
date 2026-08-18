@@ -258,7 +258,7 @@
   "AccountTransferInfo": "Use the 12-word recovery phrase or KeyPair exported from Settings to migrate your accounts to the new app.",
   "OldAppDeprecation": "Important: Old App Deprecation",
   "OldAppDeprecationNotice": "The current app will be discontinued soon. Please download the new app to continue accessing your wallet without interruption.",
-  "DownloadNewAkashicLink": "Download AkashicLink 2.0",
+  "DownloadNewAkashicLink": "Download AkashicLink",
   "Theme": "Theme",
   "LockAkashicWallet": "Lock AkashicLink",
   "AutoLock": "Auto Lock",

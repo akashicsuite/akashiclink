@@ -258,7 +258,7 @@
   "AccountTransferInfo": "Utiliza la frase de recuperación de 12 palabras o el KeyPair exportado desde Configuración para migrar tus cuentas a la nueva aplicación.",
   "OldAppDeprecation": "Importante: retirada de la aplicación antigua",
   "OldAppDeprecationNotice": "La aplicación actual se descontinuará pronto. Descarga la nueva aplicación para seguir accediendo a tu monedero sin interrupciones.",
-  "DownloadNewAkashicLink": "Descargar AkashicLink 2.0",
+  "DownloadNewAkashicLink": "Descargar AkashicLink",
   "Theme": "Tema",
   "LockAkashicWallet": "Bloquear AkashicLink",
   "AutoLock": "Bloqueo automático",

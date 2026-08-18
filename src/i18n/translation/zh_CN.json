@@ -259,7 +259,7 @@
   "AccountTransferInfo": "请使用从设定中汇出的 12 字恢复密语或密钥对，将您的帐号迁移至新应用程式。",
   "OldAppDeprecation": "重要事项：旧版应用程式将停止支援",
   "OldAppDeprecationNotice": "现行应用程式即将停止服务。请下载新版应用程式，以确保您的钱包功能持续运作，不受中断影响。",
-  "DownloadNewAkashicLink": "下载 AkashicLink 2.0",
+  "DownloadNewAkashicLink": "下载 AkashicLink",
   "Theme": "主题",
   "LockAkashicWallet": "锁定 AkashicLink",
   "AutoLock": "自动锁",
