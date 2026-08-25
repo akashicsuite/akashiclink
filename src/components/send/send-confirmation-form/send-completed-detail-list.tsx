@@ -9,8 +9,10 @@ import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getPrecision } from '../../../utils/formatAmount';
+import { useAddressBook } from '../../../utils/hooks/useAddressBook';
 import { useCryptoCurrencySymbolsAndBalances } from '../../../utils/hooks/useCryptoCurrencySymbolsAndBalances';
 import { ShareActionButton } from '../../activity/share-action-button';
+import { AddressBookNameRow } from '../../common/address-book-name-row';
 import { L2Icon } from '../../common/chain-icon/l2-icon';
 import { NetworkIcon } from '../../common/chain-icon/network-icon';
 import { Divider } from '../../common/divider';
@@ -27,6 +29,7 @@ export const SendCompletedDetailList = () => {
   const { sendConfirm, currency } = useContext(SendFormContext);
   const { isCurrencyTypeToken, currencySymbol, nativeCoinSymbol } =
     useCryptoCurrencySymbolsAndBalances(currency);
+  const { findContactByAddress } = useAddressBook();
   const { coinSymbol } = currency;
 
   const txn = sendConfirm?.txn;
@@ -35,6 +38,10 @@ export const SendCompletedDetailList = () => {
   const delegatedFee = sendConfirm?.delegatedFee;
   const txHash = txnFinal?.txHash;
   const isL2 = validatedAddressPair?.isL2;
+
+  const inputContact = validatedAddressPair?.userInputToAddress
+    ? findContactByAddress(validatedAddressPair.userInputToAddress, coinSymbol)
+    : undefined;
 
   // Calculate total Amount
   const totalFee = txnFinal?.feesEstimate
@@ -109,6 +116,7 @@ export const SendCompletedDetailList = () => {
       <ListVerticalLabelValueItem
         label={t('InputAddress')}
         value={validatedAddressPair?.userInputToAddress}
+        subContent={<AddressBookNameRow name={inputContact?.name} />}
       />
       <IonItem>
         <FromToAddressBlock

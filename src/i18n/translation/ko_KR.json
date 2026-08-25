@@ -66,6 +66,7 @@
   "SelectCurrency": "통화 선택",
   "SelectNetwork": "네트워크 선택",
   "InputAddress": "입력 주소",
+  "AddressBookName": "주소록 이름",
   "TransactionSummary": "거래 요약",
   "TransactionSuccessful": "거래 성공",
   "TransactionFailed": "트랜잭션 실패",

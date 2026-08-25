@@ -7,6 +7,8 @@ import { useAppSelector } from '../../redux/app/hooks';
 import { selectTheme } from '../../redux/slices/preferenceSlice';
 import { themeType } from '../../theme/const';
 import type { ITransactionRecordForExtension } from '../../utils/formatTransfers';
+import { useAddressBook } from '../../utils/hooks/useAddressBook';
+import { AddressBookNameRow } from '../common/address-book-name-row';
 import { List } from '../common/list/list';
 import { ListVerticalLabelValueItem } from '../common/list/list-vertical-label-value-item';
 import { ListCopyTxHashItem } from '../send/copy-tx-hash';
@@ -31,6 +33,15 @@ export function BaseDetails({
 }) {
   const { t } = useTranslation();
   const storedTheme = useAppSelector(selectTheme);
+  const { findContactByAddress } = useAddressBook();
+
+  const inputAddress =
+    currentTransfer.initiatedToNonL2 && currentTransfer.initiatedToNonL2 !== ''
+      ? currentTransfer.initiatedToNonL2
+      : currentTransfer.toAddress;
+  const inputContact = inputAddress
+    ? findContactByAddress(inputAddress, currentTransfer.coinSymbol)
+    : undefined;
   const statusString = (status: string | undefined) => {
     switch (status) {
       case 'Any':
@@ -74,12 +85,8 @@ export function BaseDetails({
       <StyledList lines="none">
         <ListVerticalLabelValueItem
           label={t('InputAddress')}
-          value={
-            currentTransfer.initiatedToNonL2 &&
-            currentTransfer.initiatedToNonL2 !== ''
-              ? currentTransfer.initiatedToNonL2
-              : currentTransfer.toAddress
-          }
+          value={inputAddress}
+          subContent={<AddressBookNameRow name={inputContact?.name} />}
         />
         <FromToAddressBlock
           fromAddress={currentTransfer.fromAddress}

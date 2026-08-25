@@ -5,7 +5,9 @@ import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getPrecision } from '../../../utils/formatAmount';
+import { useAddressBook } from '../../../utils/hooks/useAddressBook';
 import { useCryptoCurrencySymbolsAndBalances } from '../../../utils/hooks/useCryptoCurrencySymbolsAndBalances';
+import { AddressBookNameRow } from '../../common/address-book-name-row';
 import { L2Icon } from '../../common/chain-icon/l2-icon';
 import { NetworkIcon } from '../../common/chain-icon/network-icon';
 import { Divider } from '../../common/divider';
@@ -20,6 +22,7 @@ export const SendConfirmationDetailList = () => {
   const { sendConfirm, currency } = useContext(SendFormContext);
   const { isCurrencyTypeToken, currencySymbol, nativeCoinSymbol } =
     useCryptoCurrencySymbolsAndBalances(currency);
+  const { findContactByAddress } = useAddressBook();
   const { coinSymbol } = currency;
 
   const txn = sendConfirm?.txn;
@@ -51,6 +54,15 @@ export const SendConfirmationDetailList = () => {
 
   const alias = validatedAddressPair?.alias ?? '-';
 
+  // The two can resolve to different contacts, e.g. an L1 address that maps to
+  // an L2 identity saved under a separate name.
+  const inputContact = validatedAddressPair?.userInputToAddress
+    ? findContactByAddress(validatedAddressPair.userInputToAddress, coinSymbol)
+    : undefined;
+  const sendToContact = validatedAddressPair?.convertedToAddress
+    ? findContactByAddress(validatedAddressPair.convertedToAddress, coinSymbol)
+    : undefined;
+
   const feeCurrencyDisplayName =
     isCurrencyTypeToken && (isL2 || !!delegatedFee)
       ? currencySymbol + (isL2 ? ` (${nativeCoinSymbol})` : '')
@@ -79,10 +91,12 @@ export const SendConfirmationDetailList = () => {
         <ListVerticalLabelValueItem
           label={t('InputAddress')}
           value={validatedAddressPair?.userInputToAddress}
+          subContent={<AddressBookNameRow name={inputContact?.name} />}
         />
         <ListVerticalLabelValueItem
           label={t('SendTo')}
           value={validatedAddressPair?.convertedToAddress}
+          subContent={<AddressBookNameRow name={sendToContact?.name} />}
         />
         <IonItem>
           <Divider

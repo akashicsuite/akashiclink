@@ -56,6 +56,7 @@
   "SelectCurrency": "মুদ্রা নির্বাচন করুন",
   "SelectNetwork": "নেটওয়ার্ক নির্বাচন করুন",
   "InputAddress": "ইনপুট ঠিকানা",
+  "AddressBookName": "ঠিকানা বইয়ের নাম",
   "TransactionSummary": "লেনদেনের সারাংশ",
   "FirstTimeAddressWarning": "এটি আপনার প্রথমবার এই ঠিকানার সাথে ইন্টারঅ্যাক্ট করা। আপনার স্থানান্তর নিরাপদ রাখতে বিশদটি দুবার পরীক্ষা করুন।",
   "TransactionSuccessful": "লেনদেন সফল",
