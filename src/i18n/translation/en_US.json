@@ -367,7 +367,7 @@
   "AddressBookAddressAlreadySaved": "Address already saved under name {{name}}",
   "AddressBookDuplicateWarningTitle": "This Name or Address is already saved.",
   "AddressBookDuplicateWarningSubtitle": "Please use a different name or address or edit the existing one.",
-  "AddressBookBelongsToL2Warning": "This address belongs to an L2 and will be saved as AkashicChain.",
+  "AddressBookBelongsToL2Warning": "This address belongs to an L2.",
   "AddressRemoved": "Address Removed",
   "AddressModified": "Address Modified",
   "AddressBookEmptyTitle": "Your Address Book is empty",

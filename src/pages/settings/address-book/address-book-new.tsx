@@ -211,9 +211,7 @@ export function AddressBookNew({ modal }: AddressBookNewProps = {}) {
 
   const canSave = modal
     ? name.trim() !== '' && network !== undefined
-    : name.trim() !== '' &&
-      address.trim() !== '' &&
-      (network !== undefined || !!resolvedL2Address);
+    : name.trim() !== '' && address.trim() !== '' && network !== undefined;
 
   const handleSave = () => {
     if (!canSave) return;
@@ -240,15 +238,13 @@ export function AddressBookNew({ modal }: AddressBookNewProps = {}) {
       return;
     }
 
-    const savedNetwork: DepositChainOption = resolvedL2Address
-      ? 'AkashicChain'
-      : network!;
-    const savedAddress = resolvedL2Address ?? address;
-
+    // Save exactly what the user typed. An L1 address linked to an L2 account
+    // is still saved as the raw L1 address on its own network — we no longer
+    // convert it to the resolved AkashicChain address.
     const result = addContact({
       name,
-      address: savedAddress,
-      network: savedNetwork,
+      address,
+      network: network!,
     });
 
     if (result.success) {
@@ -362,7 +358,7 @@ export function AddressBookNew({ modal }: AddressBookNewProps = {}) {
               icon={warningOutline}
             />
           )}
-          {ambiguousNetworks.length > 1 && !resolvedL2Address && (
+          {ambiguousNetworks.length > 1 && (
             <NetworkSelect
               options={ambiguousNetworks}
               value={network}

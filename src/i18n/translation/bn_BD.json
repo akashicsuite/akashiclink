@@ -367,7 +367,7 @@
   "AddressBookAddressAlreadySaved": "ঠিকানাটি ইতিমধ্যে {{name}} নামে সংরক্ষিত",
   "AddressBookDuplicateWarningTitle": "এই নাম বা ঠিকানা ইতিমধ্যে সংরক্ষিত।",
   "AddressBookDuplicateWarningSubtitle": "অনুগ্রহ করে একটি ভিন্ন নাম বা ঠিকানা ব্যবহার করুন অথবা বিদ্যমানটি সম্পাদনা করুন।",
-  "AddressBookBelongsToL2Warning": "এই ঠিকানাটি একটি L2-এর অন্তর্গত এবং AkashicChain হিসাবে সংরক্ষিত হবে।",
+  "AddressBookBelongsToL2Warning": "এই ঠিকানাটি একটি L2-এর অন্তর্গত।",
   "AddressRemoved": "ঠিকানা মুছে ফেলা হয়েছে",
   "AddressModified": "ঠিকানা পরিবর্তন করা হয়েছে",
   "AddressBookEmptyTitle": "আপনার ঠিকানা বই খালি",
