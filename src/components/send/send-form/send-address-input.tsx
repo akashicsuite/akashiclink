@@ -15,7 +15,6 @@ import debounce from 'lodash.debounce';
 import { useContext, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ADDRESS_BOOK_ENABLED } from '../../../constants/feature-flags';
 import { OwnersAPI } from '../../../utils/api';
 import { getErrorMessageTKey } from '../../../utils/error-utils';
 import { useAddressBook } from '../../../utils/hooks/useAddressBook';
@@ -30,6 +29,8 @@ import { StyledInput } from '../../common/input/styled-input';
 import { SendAddressTabs } from '../send-address-select/send-address-tabs';
 import { SendFormContext } from '../send-modal-context-provider';
 import type { ValidatedAddressPair } from './types';
+
+const addressBookEnabled = process.env.REACT_APP_ENABLE_ADDRESS_BOOK === 'true';
 
 const LockedAddress = styled(IonItem)({
   ['&::part(native)']: {
@@ -208,7 +209,7 @@ export const SendAddressInput = ({
         )}
         {validatedAddressPair.userInputToAddress !== '' &&
           (() => {
-            const contact = ADDRESS_BOOK_ENABLED
+            const contact = addressBookEnabled
               ? findContactByAddress(
                   validatedAddressPair.userInputToAddress,
                   coinSymbol
