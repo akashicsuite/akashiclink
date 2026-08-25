@@ -13,7 +13,7 @@ import {
 import { TransactionLayer } from '@akashic/nitr0gen';
 
 const akashicScanAccountsUrl = `${process.env.REACT_APP_SCAN_BASE_URL}/accounts`;
-const akashicScanTransactionsUrl = `${process.env.REACT_APP_SCAN_BASE_URL}/transactions`;
+export const akashicScanTransactionsUrl = `${process.env.REACT_APP_SCAN_BASE_URL}/transactions`;
 
 const PENDING_OR_QUEUED_STATUSES = [
   TransactionStatus.PENDING,

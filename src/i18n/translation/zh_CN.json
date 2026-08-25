@@ -55,6 +55,7 @@
   "SelectCurrency": "选择货币",
   "SelectNetwork": "选择网络",
   "InputAddress": "输入地址",
+  "Via": "经由",
   "AddressBookName": "地址簿名称",
   "TransactionSummary": "交易摘要",
   "FirstTimeAddressWarning": "这是您第一次与此地址进行交互。请仔细检查详细信息以确保转账安全。",

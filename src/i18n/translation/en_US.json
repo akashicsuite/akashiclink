@@ -56,6 +56,7 @@
   "SelectCurrency": "Select Currency",
   "SelectNetwork": "Select Network",
   "InputAddress": "Input Address",
+  "Via": "via",
   "AddressBookName": "Address book name",
   "TransactionSummary": "Transaction Summary",
   "FirstTimeAddressWarning": "This is your first time interacting with this address. Double-check the details to keep your transfer safe.",

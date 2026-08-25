@@ -1,5 +1,4 @@
-import { NetworkDictionary } from '@akashic/as-backend';
-import { IonItem, IonText } from '@ionic/react';
+import { IonItem } from '@ionic/react';
 import Big from 'big.js';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,12 +7,12 @@ import { getPrecision } from '../../../utils/formatAmount';
 import { useAddressBook } from '../../../utils/hooks/useAddressBook';
 import { useCryptoCurrencySymbolsAndBalances } from '../../../utils/hooks/useCryptoCurrencySymbolsAndBalances';
 import { AddressBookNameRow } from '../../common/address-book-name-row';
-import { L2Icon } from '../../common/chain-icon/l2-icon';
-import { NetworkIcon } from '../../common/chain-icon/network-icon';
 import { Divider } from '../../common/divider';
 import { List } from '../../common/list/list';
 import { ListLabelValueItem } from '../../common/list/list-label-value-item';
 import { ListVerticalLabelValueItem } from '../../common/list/list-vertical-label-value-item';
+import { NetworkDisplayRow } from '../../common/network-display-row';
+import { isL1AddressL2Bonded } from '../send-form/types';
 import { SendFormContext } from '../send-modal-context-provider';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -71,23 +70,11 @@ export const SendConfirmationDetailList = () => {
   return (
     <>
       <List lines="none">
-        <IonItem className={'ion-margin-bottom-xs'}>
-          {isL2 ? (
-            <L2Icon size={24} />
-          ) : (
-            <NetworkIcon size={24} chain={coinSymbol} />
-          )}
-          <IonText>
-            <h3 className={'ion-text-size-md ion-margin-0 ion-margin-left-xs'}>
-              {isL2
-                ? t('Chain.AkashicChain')
-                : NetworkDictionary[coinSymbol].displayName.replace(
-                    /Chain/g,
-                    ''
-                  )}
-            </h3>
-          </IonText>
-        </IonItem>
+        <NetworkDisplayRow
+          isL2={!!isL2}
+          coinSymbol={coinSymbol}
+          isL2Bonded={isL1AddressL2Bonded(validatedAddressPair)}
+        />
         <ListVerticalLabelValueItem
           label={t('InputAddress')}
           value={validatedAddressPair?.userInputToAddress}

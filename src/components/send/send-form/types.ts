@@ -37,6 +37,9 @@ export type ValidatedAddressPair = {
   initiatedToL1LedgerId?: string;
 };
 
+export const isL1AddressL2Bonded = (pair?: ValidatedAddressPair) =>
+  !!pair?.isL2 && pair.userInputToAddressType === 'l1';
+
 export const validatedAddressPairInitialState = {
   isL2: false,
   convertedToAddress: '',
