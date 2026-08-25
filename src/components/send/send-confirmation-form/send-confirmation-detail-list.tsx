@@ -91,12 +91,20 @@ export const SendConfirmationDetailList = () => {
         <ListVerticalLabelValueItem
           label={t('InputAddress')}
           value={validatedAddressPair?.userInputToAddress}
-          subContent={<AddressBookNameRow name={inputContact?.name} />}
+          subContent={
+            inputContact?.name && (
+              <AddressBookNameRow name={inputContact.name} />
+            )
+          }
         />
         <ListVerticalLabelValueItem
           label={t('SendTo')}
           value={validatedAddressPair?.convertedToAddress}
-          subContent={<AddressBookNameRow name={sendToContact?.name} />}
+          subContent={
+            sendToContact?.name && (
+              <AddressBookNameRow name={sendToContact.name} />
+            )
+          }
         />
         <IonItem>
           <Divider
