@@ -462,5 +462,7 @@
         }
       ]
     }
-  }
+  },
+  "OperationAnnouncementTitle": "중요 공지",
+  "OperationAnnouncementMessage": "AkashicChain은 2026년 8월 28일에 모든 운영을 일시적으로 중단합니다. AkashicLink에서 모든 자금을 출금하시고 추가 입금은 삼가시기 바랍니다."
 }

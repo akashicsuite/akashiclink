@@ -433,5 +433,7 @@
         }
       ]
     }
-  }
+  },
+  "OperationAnnouncementTitle": "Important Notice",
+  "OperationAnnouncementMessage": "AkashicChain will temporarily suspend its full operation on the 28th August 2026. Please withdraw all funds from AkashicLink and refrain from any further deposits."
 }
