@@ -417,6 +417,8 @@
   "AddressBookEmptyTitle": "Buku alamat Anda kosong",
   "AddressBookEmptySubtitle": "Ketuk \u201c+\u201d di kanan atas atau \u201cTambah Alamat\u201d di bawah untuk memulai.",
   "AddAddress": "Tambah Alamat",
+  "SaveToAddressBook": "Simpan ke Buku Alamat",
+  "SavedToAddressBook": "Disimpan ke Buku Alamat",
   "EnterAName": "Masukkan nama",
   "SelectANetwork": "Pilih jaringan",
   "Save": "Simpan",

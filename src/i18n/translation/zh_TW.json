@@ -371,6 +371,8 @@
   "AddressBookEmptyTitle": "您的地址簿是空的",
   "AddressBookEmptySubtitle": "點擊右上角的「+」或下方的「新增地址」即可開始。",
   "AddAddress": "新增地址",
+  "SaveToAddressBook": "儲存至地址簿",
+  "SavedToAddressBook": "已儲存至地址簿",
   "EnterAName": "輸入名稱",
   "SelectANetwork": "選擇網路",
   "Save": "儲存",
