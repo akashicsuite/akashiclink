@@ -1,4 +1,4 @@
-import { getNodePings } from '@akashic/nitr0gen';
+import { ACEnvironment, getNodePings } from '@akashic/nitr0gen';
 import styled from '@emotion/styled';
 import { IonAlert, IonIcon } from '@ionic/react';
 import { checkmark, ellipse } from 'ionicons/icons';
@@ -14,7 +14,6 @@ import {
 } from '../../components/settings/base-components';
 import { SettingItem } from '../../components/settings/setting-item';
 import { PREFERRED_NODE_KEY } from '../../utils/cookies-keys';
-import { getACEnv } from '../../utils/environment';
 
 type Node = {
   key: string;
@@ -24,6 +23,13 @@ type Node = {
 // Sentinel for the "Auto" selection — no persisted preferred node, nitr0gen
 // resolves the fastest reachable node at operation time.
 const AUTO = 'auto';
+
+const env =
+  process.env.REACT_APP_ENV === 'prod'
+    ? ACEnvironment.MAINNET
+    : process.env.REACT_APP_ENV === 'preprod'
+      ? ACEnvironment.TESTNET
+      : ACEnvironment.STAGING;
 
 const PingStatus = styled.span`
   gap: 4px;
@@ -41,7 +47,7 @@ export function SettingsNetwork() {
   );
 
   const loadNodes = async () => {
-    const nodesList = await getNodePings(getACEnv(), true);
+    const nodesList = await getNodePings(env, true);
     setNodes(nodesList);
     // Clear a stale preferred-node cookie that no longer maps to a node, so the
     // api singleton resolves Auto instead of an invalid preference.
