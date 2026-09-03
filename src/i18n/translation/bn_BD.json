@@ -56,8 +56,6 @@
   "SelectCurrency": "মুদ্রা নির্বাচন করুন",
   "SelectNetwork": "নেটওয়ার্ক নির্বাচন করুন",
   "InputAddress": "ইনপুট ঠিকানা",
-  "Via": "মাধ্যমে",
-  "AddressBookName": "ঠিকানা বইয়ের নাম",
   "TransactionSummary": "লেনদেনের সারাংশ",
   "FirstTimeAddressWarning": "এটি আপনার প্রথমবার এই ঠিকানার সাথে ইন্টারঅ্যাক্ট করা। আপনার স্থানান্তর নিরাপদ রাখতে বিশদটি দুবার পরীক্ষা করুন।",
   "TransactionSuccessful": "লেনদেন সফল",
@@ -295,7 +293,6 @@
   "SendBpByAlias": "Akashic উপনাম দ্বারা ব্যবসায়িক অ্যাকাউন্টে পাঠানো যাবে না",
   "SelectYourPreferredNode": "অনুগ্রহ করে আপনার পছন্দের নোড নির্বাচন করুন।",
   "Node": "নোড",
-  "Auto": "Auto",
   "Preferred": "(পছন্দের*)",
   "PreferredNodeMsg": "*AkashicLink আপনার নির্বাচিত নোডে আপনার লেনদেন জমা দেবে। যদি এটি উপলব্ধ না থাকে, তবে এটি স্বয়ংক্রিয়ভাবে পরবর্তী দ্রুততম নোডে পুনর্নির্দেশিত হবে।",
   "SelectedPreferredNodeWarning": "নির্বাচিত নোডটি পৌঁছানো যাচ্ছে না। এই নোড নির্বাচন করলে AkashicChain-এর সাথে সংযোগ ব্যর্থ হতে পারে। আপনি কি এগিয়ে যেতে চান?",
@@ -368,14 +365,12 @@
   "AddressBookAddressAlreadySaved": "ঠিকানাটি ইতিমধ্যে {{name}} নামে সংরক্ষিত",
   "AddressBookDuplicateWarningTitle": "এই নাম বা ঠিকানা ইতিমধ্যে সংরক্ষিত।",
   "AddressBookDuplicateWarningSubtitle": "অনুগ্রহ করে একটি ভিন্ন নাম বা ঠিকানা ব্যবহার করুন অথবা বিদ্যমানটি সম্পাদনা করুন।",
-  "AddressBookBelongsToL2Warning": "এই ঠিকানাটি একটি L2-এর অন্তর্গত।",
+  "AddressBookBelongsToL2Warning": "এই ঠিকানাটি একটি L2-এর অন্তর্গত এবং AkashicChain হিসাবে সংরক্ষিত হবে।",
   "AddressRemoved": "ঠিকানা মুছে ফেলা হয়েছে",
   "AddressModified": "ঠিকানা পরিবর্তন করা হয়েছে",
   "AddressBookEmptyTitle": "আপনার ঠিকানা বই খালি",
   "AddressBookEmptySubtitle": "শুরু করতে উপরের ডানদিকে \u201c+\u201d বা নীচে \u201cঠিকানা যোগ করুন\u201d ট্যাপ করুন।",
   "AddAddress": "ঠিকানা যোগ করুন",
-  "SaveToAddressBook": "ঠিকানা বইতে সংরক্ষণ করুন",
-  "SavedToAddressBook": "ঠিকানা বইতে সংরক্ষিত",
   "EnterAName": "একটি নাম লিখুন",
   "SelectANetwork": "একটি নেটওয়ার্ক নির্বাচন করুন",
   "Save": "সংরক্ষণ করুন",
@@ -433,7 +428,5 @@
         }
       ]
     }
-  },
-  "OperationAnnouncementTitle": "গুরুত্বপূর্ণ বিজ্ঞপ্তি",
-  "OperationAnnouncementMessage": "AkashicChain ২০২৬ সালের ২৮শে আগস্ট তার পূর্ণাঙ্গ কার্যক্রম সাময়িকভাবে স্থগিত করবে। অনুগ্রহ করে AkashicLink থেকে সমস্ত তহবিল তুলে নিন এবং আর কোনো অর্থ জমা করা থেকে বিরত থাকুন।"
+  }
 }

@@ -55,8 +55,6 @@
   "SelectCurrency": "選擇貨幣",
   "SelectNetwork": "選擇網路",
   "InputAddress": "輸入地址",
-  "Via": "經由",
-  "AddressBookName": "地址簿名稱",
   "TransactionSummary": "交易摘要",
   "FirstTimeAddressWarning": "這是您第一次與此地址進行交互。請仔細檢查詳細信息以確保轉帳安全。",
   "TransactionSuccessful": "交易成功",
@@ -295,7 +293,6 @@
   "SendBpByAlias": "無法透過 Akashic 地址發送商業帳號",
   "SelectYourPreferredNode": "請選擇您偏好的節點。",
   "Node": "節點",
-  "Auto": "自動",
   "Preferred": "首選",
   "PreferredNodeMsg": "*AkashicLink 會將您的交易提交到您所選擇的節點。若該節點無法使用，則會自動重新路由至下一個最近的節點。",
   "SelectedPreferredNodeWarning": "選取的節點無法連線。選擇此節點會導致與 AkashicChain 的連線失敗。您要繼續嗎？",
@@ -368,14 +365,12 @@
   "AddressBookAddressAlreadySaved": "地址已儲存在名稱 {{name}} 下",
   "AddressBookDuplicateWarningTitle": "此名稱或地址已被儲存。",
   "AddressBookDuplicateWarningSubtitle": "請使用不同的名稱或地址，或編輯現有的。",
-  "AddressBookBelongsToL2Warning": "此地址屬於 L2。",
+  "AddressBookBelongsToL2Warning": "此地址屬於 L2，將被儲存為 AkashicChain。",
   "AddressRemoved": "地址已刪除",
   "AddressModified": "地址已修改",
   "AddressBookEmptyTitle": "您的地址簿是空的",
   "AddressBookEmptySubtitle": "點擊右上角的「+」或下方的「新增地址」即可開始。",
   "AddAddress": "新增地址",
-  "SaveToAddressBook": "儲存至地址簿",
-  "SavedToAddressBook": "已儲存至地址簿",
   "EnterAName": "輸入名稱",
   "SelectANetwork": "選擇網路",
   "Save": "儲存",
@@ -433,7 +428,5 @@
         }
       ]
     }
-  },
-  "OperationAnnouncementTitle": "重要通知",
-  "OperationAnnouncementMessage": "AkashicChain 將於 2026 年 8 月 28 日暫時停止所有營運。請將所有資金從 AkashicLink 提領出來，並請勿再進行任何存款。"
+  }
 }

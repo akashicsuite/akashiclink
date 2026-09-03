@@ -66,8 +66,6 @@
   "SelectCurrency": "Select Currency",
   "SelectNetwork": "Select Network",
   "InputAddress": "Input Address",
-  "Via": "via",
-  "AddressBookName": "Address book name",
   "TransactionSummary": "Transaction Summary",
   "TransactionSuccessful": "Transaction Successful",
   "TransactionFailed": "Transaction Failed",
@@ -356,7 +354,6 @@
   "SendBpByAlias": "Cannot send to business account by Akashic Alias",
   "SelectYourPreferredNode": "Please select your preferred node.",
   "Node": "Node",
-  "Auto": "Auto",
   "Preferred": "(Preferred*)",
   "PreferredNodeMsg": "*AkashicLink will submit your transactions to your selected node. In the case that it is not available, it will automatically re-route to the next fastest node.",
   "SelectedPreferredNodeWarning": "The selected node is not reachable. Selecting this node may result in a failed connection to AkashicChain. Would you like to proceed?",
@@ -413,14 +410,12 @@
   "AddressBookAddressAlreadySaved": "O endereço já está guardado com o nome {{name}}",
   "AddressBookDuplicateWarningTitle": "Este nome ou endereço já está guardado.",
   "AddressBookDuplicateWarningSubtitle": "Por favor, use um nome ou endereço diferente ou edite o existente.",
-  "AddressBookBelongsToL2Warning": "Este endereço pertence a uma L2.",
+  "AddressBookBelongsToL2Warning": "Este endereço pertence a uma L2 e será guardado como AkashicChain.",
   "AddressRemoved": "Endereço removido",
   "AddressModified": "Endereço modificado",
   "AddressBookEmptyTitle": "O seu livro de endereços está vazio",
   "AddressBookEmptySubtitle": "Toque no \u201c+\u201d no canto superior direito ou em \u201cAdicionar endereço\u201d abaixo para começar.",
   "AddAddress": "Adicionar endereço",
-  "SaveToAddressBook": "Guardar no livro de endereços",
-  "SavedToAddressBook": "Guardado no livro de endereços",
   "EnterAName": "Introduza um nome",
   "SelectANetwork": "Selecione uma rede",
   "Save": "Guardar",
@@ -461,7 +456,5 @@
         }
       ]
     }
-  },
-  "OperationAnnouncementTitle": "Aviso Importante",
-  "OperationAnnouncementMessage": "A AkashicChain irá suspender temporariamente todas as suas operações a 28 de agosto de 2026. Por favor, levante todos os seus fundos da AkashicLink e evite efetuar novos depósitos."
+  }
 }

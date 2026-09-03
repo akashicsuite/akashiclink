@@ -66,8 +66,6 @@
   "SelectCurrency": "통화 선택",
   "SelectNetwork": "네트워크 선택",
   "InputAddress": "입력 주소",
-  "Via": "경유",
-  "AddressBookName": "주소록 이름",
   "TransactionSummary": "거래 요약",
   "TransactionSuccessful": "거래 성공",
   "TransactionFailed": "트랜잭션 실패",
@@ -357,7 +355,6 @@
   "SendBpByAlias": "Akashic Alias 으로 비즈니스 계정으로 보낼 수 없습니다",
   "SelectYourPreferredNode": "원하는 노드를 선택하세요.",
   "Node": "노드",
-  "Auto": "Auto",
   "Preferred": "(선호*)",
   "PreferredNodeMsg": "*AkashicLink 는 선택한 노드에 트랜잭션을 제출합니다. 해당 노드를 사용할 수 없는 경우, 가장 빠른 다음 노드로 자동 재라우팅됩니다.",
   "SelectedPreferredNodeWarning": "선택한 노드에 연결할 수 없습니다. 이 노드를 선택하면 AkashicChain 에 연결하지 못할 수 있습니다. 계속 진행하시겠습니까?",
@@ -414,14 +411,12 @@
   "AddressBookAddressAlreadySaved": "주소가 이미 {{name}} 이름으로 저장되어 있습니다",
   "AddressBookDuplicateWarningTitle": "이 이름 또는 주소가 이미 저장되어 있습니다.",
   "AddressBookDuplicateWarningSubtitle": "다른 이름이나 주소를 사용하거나 기존 항목을 편집하세요.",
-  "AddressBookBelongsToL2Warning": "이 주소는 L2에 속합니다.",
+  "AddressBookBelongsToL2Warning": "이 주소는 L2에 속하며 AkashicChain으로 저장됩니다.",
   "AddressRemoved": "주소가 삭제되었습니다",
   "AddressModified": "주소가 수정되었습니다",
   "AddressBookEmptyTitle": "주소록이 비어 있습니다",
   "AddressBookEmptySubtitle": "오른쪽 상단의 \u201c+\u201d 또는 아래의 \u201c주소 추가\u201d를 탭하여 시작하세요.",
   "AddAddress": "주소 추가",
-  "SaveToAddressBook": "주소록에 저장",
-  "SavedToAddressBook": "주소록에 저장됨",
   "EnterAName": "이름을 입력하세요",
   "SelectANetwork": "네트워크를 선택하세요",
   "Save": "저장",
@@ -462,7 +457,5 @@
         }
       ]
     }
-  },
-  "OperationAnnouncementTitle": "중요 공지",
-  "OperationAnnouncementMessage": "AkashicChain은 2026년 8월 28일에 모든 운영을 일시적으로 중단합니다. AkashicLink에서 모든 자금을 출금하시고 추가 입금은 삼가시기 바랍니다."
+  }
 }

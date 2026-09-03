@@ -56,8 +56,6 @@
   "SelectCurrency": "Seleccionar moneda",
   "SelectNetwork": "Seleccionar red",
   "InputAddress": "Introducir dirección",
-  "Via": "vía",
-  "AddressBookName": "Nombre en la libreta de direcciones",
   "TransactionSummary": "Resumen de la transacción",
   "FirstTimeAddressWarning": "Esta es tu primera vez interactuando con esta dirección. Verifica los detalles para mantener tu transferencia segura.",
   "TransactionSuccessful": "Transacción realizada correctamente",
@@ -294,7 +292,6 @@
   "SendBpByAlias": "No se puede enviar a la cuenta comercial por Akashic Alias",
   "SelectYourPreferredNode": "Por favor, selecciona tu nodo preferido.",
   "Node": "Nodo",
-  "Auto": "Auto",
   "Preferred": "(Preferido*)",
   "PreferredNodeMsg": "*AkashicLink enviará tus transacciones al nodo seleccionado. En caso de que no esté disponible, se redirigirá automáticamente al siguiente nodo más rápido.",
   "SelectedPreferredNodeWarning": "El nodo seleccionado no es accesible. Seleccionar este nodo puede provocar un fallo en la conexión con AkashicChain. ¿Desea continuar?",
@@ -368,14 +365,12 @@
   "AddressBookAddressAlreadySaved": "La dirección ya está guardada bajo el nombre {{name}}",
   "AddressBookDuplicateWarningTitle": "Este nombre o dirección ya está guardado.",
   "AddressBookDuplicateWarningSubtitle": "Por favor, usa un nombre o dirección diferente o edita el existente.",
-  "AddressBookBelongsToL2Warning": "Esta dirección pertenece a una L2.",
+  "AddressBookBelongsToL2Warning": "Esta dirección pertenece a una L2 y se guardará como AkashicChain.",
   "AddressRemoved": "Dirección eliminada",
   "AddressModified": "Dirección modificada",
   "AddressBookEmptyTitle": "Tu libreta de direcciones está vacía",
   "AddressBookEmptySubtitle": "Toca el \u201c+\u201d en la esquina superior derecha o \u201cAgregar dirección\u201d abajo para comenzar.",
   "AddAddress": "Agregar dirección",
-  "SaveToAddressBook": "Guardar en la libreta de direcciones",
-  "SavedToAddressBook": "Guardado en la libreta de direcciones",
   "EnterAName": "Ingresa un nombre",
   "SelectANetwork": "Selecciona una red",
   "Save": "Guardar",
@@ -433,7 +428,5 @@
         }
       ]
     }
-  },
-  "OperationAnnouncementTitle": "Aviso importante",
-  "OperationAnnouncementMessage": "AkashicChain suspenderá temporalmente todas sus operaciones el 28 de agosto de 2026. Por favor, retira todos tus fondos de AkashicLink y evita realizar más ingresos."
+  }
 }
