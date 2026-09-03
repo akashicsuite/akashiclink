@@ -66,6 +66,7 @@
   "SelectCurrency": "Select Currency",
   "SelectNetwork": "เลือกเครือข่าย",
   "InputAddress": "Input Address",
+  "Via": "ผ่าน",
   "AddressBookName": "ชื่อในสมุดที่อยู่",
   "TransactionSummary": "Transaction Summary",
   "TransactionSuccessful": "Transaction Successful",

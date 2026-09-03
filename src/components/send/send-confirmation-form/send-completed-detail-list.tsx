@@ -3,7 +3,7 @@ import {
   suffixForSolanaDevnetURL,
 } from '@akashic/as-backend';
 import { CoinSymbol } from '@akashic/core-lib';
-import { IonItem, IonText } from '@ionic/react';
+import { IonItem } from '@ionic/react';
 import Big from 'big.js';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,16 +11,15 @@ import { useTranslation } from 'react-i18next';
 import { getPrecision } from '../../../utils/formatAmount';
 import { useAddressBook } from '../../../utils/hooks/useAddressBook';
 import { useCryptoCurrencySymbolsAndBalances } from '../../../utils/hooks/useCryptoCurrencySymbolsAndBalances';
-import { ShareActionButton } from '../../activity/share-action-button';
 import { AddressBookNameRow } from '../../common/address-book-name-row';
-import { L2Icon } from '../../common/chain-icon/l2-icon';
-import { NetworkIcon } from '../../common/chain-icon/network-icon';
 import { Divider } from '../../common/divider';
 import { List } from '../../common/list/list';
 import { ListLabelValueItem } from '../../common/list/list-label-value-item';
 import { ListVerticalLabelValueItem } from '../../common/list/list-vertical-label-value-item';
+import { NetworkDisplayRow } from '../../common/network-display-row';
 import { ListCopyTxHashItem } from '../copy-tx-hash';
 import { FromToAddressBlock } from '../from-to-address-block';
+import { isL1AddressL2Bonded } from '../send-form/types';
 import { SendFormContext } from '../send-modal-context-provider';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -94,25 +93,11 @@ export const SendCompletedDetailList = () => {
 
   return (
     <List lines="none">
-      <IonItem className={'ion-margin-bottom-xs'}>
-        {isL2 ? (
-          <L2Icon size={24} />
-        ) : (
-          <NetworkIcon size={24} chain={coinSymbol} />
-        )}
-        <IonText>
-          <h3 className={'ion-text-size-md ion-margin-0 ion-margin-left-xs'}>
-            {isL2
-              ? t('Chain.AkashicChain')
-              : NetworkDictionary[coinSymbol].displayName.replace(/Chain/g, '')}
-          </h3>
-        </IonText>
-        {txHash && (
-          <div className={'ion-margin-left-auto'}>
-            <ShareActionButton link={getUrl('transaction', !!isL2, txHash)} />
-          </div>
-        )}
-      </IonItem>
+      <NetworkDisplayRow
+        isL2={!!isL2}
+        coinSymbol={coinSymbol}
+        isL2Bonded={isL1AddressL2Bonded(validatedAddressPair)}
+      />
       <ListVerticalLabelValueItem
         label={t('InputAddress')}
         value={validatedAddressPair?.userInputToAddress}
