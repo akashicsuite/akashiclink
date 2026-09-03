@@ -416,6 +416,8 @@
   "AddressBookEmptyTitle": "O seu livro de endereços está vazio",
   "AddressBookEmptySubtitle": "Toque no \u201c+\u201d no canto superior direito ou em \u201cAdicionar endereço\u201d abaixo para começar.",
   "AddAddress": "Adicionar endereço",
+  "SaveToAddressBook": "Guardar no livro de endereços",
+  "SavedToAddressBook": "Guardado no livro de endereços",
   "EnterAName": "Introduza um nome",
   "SelectANetwork": "Selecione uma rede",
   "Save": "Guardar",
