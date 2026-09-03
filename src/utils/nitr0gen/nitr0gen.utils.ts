@@ -1,4 +1,5 @@
 import {
+  ACEnvironment,
   createNitr0genUrl,
   getFastestNodeKey,
   getNodes,
@@ -7,14 +8,18 @@ import {
 import Cookies from 'js-cookie';
 
 import { FASTEST_NODE_KEY, PREFERRED_NODE_KEY } from '../cookies-keys';
-import { getACEnv } from '../environment';
 
 let nitr0genApiInstance: Nitr0genApi | null = null;
 
 export async function getNitr0genApi(): Promise<Nitr0genApi> {
   if (!nitr0genApiInstance) {
     nitr0genApiInstance = new Nitr0genApi({
-      environment: getACEnv(),
+      environment:
+        process.env.REACT_APP_ENV === 'prod'
+          ? ACEnvironment.MAINNET
+          : process.env.REACT_APP_ENV === 'preprod'
+            ? ACEnvironment.TESTNET
+            : ACEnvironment.STAGING,
       dbIndex: parseInt(process.env.REACT_APP_REDIS_DB_INDEX!, 10),
       // Resolved live on every operation. undefined = Auto (nitr0gen picks the
       // fastest reachable node from its cached pings).
@@ -28,7 +33,13 @@ export async function getNitr0genApi(): Promise<Nitr0genApi> {
 export async function chooseBestNodesFromCookies(
   nodeEntry: 'general' | 'minigate'
 ) {
-  const node = getNodes(getACEnv());
+  const node = getNodes(
+    process.env.REACT_APP_ENV === 'prod'
+      ? ACEnvironment.MAINNET
+      : process.env.REACT_APP_ENV === 'preprod'
+        ? ACEnvironment.TESTNET
+        : ACEnvironment.STAGING
+  );
   const preferredNode = Cookies.get(PREFERRED_NODE_KEY);
 
   if (preferredNode) {
@@ -40,7 +51,13 @@ export async function chooseBestNodesFromCookies(
     return createNitr0genUrl(node[fastestNode], nodeEntry);
   }
 
-  const nodeKey = await getFastestNodeKey(getACEnv());
+  const nodeKey = await getFastestNodeKey(
+    process.env.REACT_APP_ENV === 'prod'
+      ? ACEnvironment.MAINNET
+      : process.env.REACT_APP_ENV === 'preprod'
+        ? ACEnvironment.TESTNET
+        : ACEnvironment.STAGING
+  );
 
   Cookies.set(FASTEST_NODE_KEY, nodeKey, {
     expires: 1, // 1 day

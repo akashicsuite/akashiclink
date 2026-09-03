@@ -292,6 +292,7 @@
   "SendBpByAlias": "Cannot send to business account by Akashic Alias",
   "SelectYourPreferredNode": "Please select your preferred node.",
   "Node": "Node",
+  "Auto": "Auto",
   "Preferred": "(Preferred*)",
   "PreferredNodeMsg": "*AkashicLink will submit your transactions to your selected node. In the case that it is not available, it will automatically re-route to the next fastest node.",
   "SelectedPreferredNodeWarning": "The selected node is not reachable. Selecting this node may result in a failed connection to AkashicChain. Would you like to proceed?",

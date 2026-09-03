@@ -15,7 +15,7 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import './theme/common.scss';
 
-import { getNodePings } from '@akashic/nitr0gen';
+import { ACEnvironment, getNodePings } from '@akashic/nitr0gen';
 import { IonApp, setupIonicReact } from '@ionic/react';
 import { IonReactMemoryRouter } from '@ionic/react-router';
 import { useEffect } from 'react';
@@ -29,11 +29,17 @@ import { selectTheme } from './redux/slices/preferenceSlice';
 import { history } from './routing/history';
 import { NavigationTree } from './routing/navigation-tree';
 import { themeType } from './theme/const';
-import { getACEnv } from './utils/environment';
 import { useIdleTime } from './utils/hooks/useIdleTime';
 import { useSetGlobalLanguage } from './utils/hooks/useSetGlobalLanguage';
 
 setupIonicReact();
+
+const env =
+  process.env.REACT_APP_ENV === 'prod'
+    ? ACEnvironment.MAINNET
+    : process.env.REACT_APP_ENV === 'preprod'
+      ? ACEnvironment.TESTNET
+      : ACEnvironment.STAGING;
 
 const InitializeApp = () => {
   // Initialize language
@@ -43,7 +49,7 @@ const InitializeApp = () => {
   // fastest-first instead of falling back to default order. The popup's
   // in-memory cache is lost on close, so warm it each open.
   useEffect(() => {
-    void getNodePings(getACEnv(), true);
+    void getNodePings(env, true);
   }, []);
 
   // Initialize theme
