@@ -3,13 +3,15 @@ import { IonIcon } from '@ionic/react';
 import { type FC, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ADDRESS_BOOK_ENABLED } from '../../../constants/feature-flags';
 import { AddressBookNew } from '../../../pages/settings/address-book/address-book-new';
 import { useAddressBook } from '../../../utils/hooks/useAddressBook';
 import { useRecentAddressesSentTo } from '../../../utils/hooks/useRecentAddressesSentTo';
 import { SendFormContext } from '../send-modal-context-provider';
 import { AddressList } from './address-list';
 import { RecentAddressListItem } from './recent-address-list-item';
+
+const ADDRESS_BOOK_ENABLED =
+  process.env.REACT_APP_ENABLE_ADDRESS_BOOK === 'true';
 
 const SaveButton = styled.button({
   display: 'flex',
@@ -28,6 +30,8 @@ const SaveButton = styled.button({
     background: 'var(--ion-color-step-100)',
   },
 });
+
+const addressBookEnabled = process.env.REACT_APP_ENABLE_ADDRESS_BOOK === 'true';
 
 export const RecentAddressList: FC<{
   onSelectAddress: (address: string) => void;
@@ -78,7 +82,7 @@ export const RecentAddressList: FC<{
             address={item.address}
             lastInteraction={item.lastInteraction}
             contact={
-              ADDRESS_BOOK_ENABLED
+              addressBookEnabled
                 ? findContactByAddress(item.address, currency.coinSymbol)
                 : undefined
             }
