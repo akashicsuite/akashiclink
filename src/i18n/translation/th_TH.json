@@ -413,7 +413,7 @@
   "AddressBookAddressAlreadySaved": "ที่อยู่นี้ถูกบันทึกไว้แล้วภายใต้ชื่อ {{name}}",
   "AddressBookDuplicateWarningTitle": "ชื่อหรือที่อยู่นี้ถูกบันทึกไว้แล้ว",
   "AddressBookDuplicateWarningSubtitle": "กรุณาใช้ชื่อหรือที่อยู่อื่น หรือแก้ไขรายการที่มีอยู่",
-  "AddressBookBelongsToL2Warning": "ที่อยู่นี้เป็นของ L2 และจะถูกบันทึกเป็น AkashicChain",
+  "AddressBookBelongsToL2Warning": "ที่อยู่นี้เป็นของ L2",
   "AddressRemoved": "ลบที่อยู่แล้ว",
   "AddressModified": "แก้ไขที่อยู่แล้ว",
   "AddressBookEmptyTitle": "สมุดที่อยู่ของคุณว่างเปล่า",

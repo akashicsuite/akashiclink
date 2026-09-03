@@ -367,7 +367,7 @@
   "AddressBookAddressAlreadySaved": "地址已儲存在名稱 {{name}} 下",
   "AddressBookDuplicateWarningTitle": "此名稱或地址已被儲存。",
   "AddressBookDuplicateWarningSubtitle": "請使用不同的名稱或地址，或編輯現有的。",
-  "AddressBookBelongsToL2Warning": "此地址屬於 L2，將被儲存為 AkashicChain。",
+  "AddressBookBelongsToL2Warning": "此地址屬於 L2。",
   "AddressRemoved": "地址已刪除",
   "AddressModified": "地址已修改",
   "AddressBookEmptyTitle": "您的地址簿是空的",

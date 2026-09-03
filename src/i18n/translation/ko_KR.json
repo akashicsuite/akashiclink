@@ -413,7 +413,7 @@
   "AddressBookAddressAlreadySaved": "주소가 이미 {{name}} 이름으로 저장되어 있습니다",
   "AddressBookDuplicateWarningTitle": "이 이름 또는 주소가 이미 저장되어 있습니다.",
   "AddressBookDuplicateWarningSubtitle": "다른 이름이나 주소를 사용하거나 기존 항목을 편집하세요.",
-  "AddressBookBelongsToL2Warning": "이 주소는 L2에 속하며 AkashicChain으로 저장됩니다.",
+  "AddressBookBelongsToL2Warning": "이 주소는 L2에 속합니다.",
   "AddressRemoved": "주소가 삭제되었습니다",
   "AddressModified": "주소가 수정되었습니다",
   "AddressBookEmptyTitle": "주소록이 비어 있습니다",

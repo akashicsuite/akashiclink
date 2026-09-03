@@ -412,7 +412,7 @@
   "AddressBookAddressAlreadySaved": "O endereço já está guardado com o nome {{name}}",
   "AddressBookDuplicateWarningTitle": "Este nome ou endereço já está guardado.",
   "AddressBookDuplicateWarningSubtitle": "Por favor, use um nome ou endereço diferente ou edite o existente.",
-  "AddressBookBelongsToL2Warning": "Este endereço pertence a uma L2 e será guardado como AkashicChain.",
+  "AddressBookBelongsToL2Warning": "Este endereço pertence a uma L2.",
   "AddressRemoved": "Endereço removido",
   "AddressModified": "Endereço modificado",
   "AddressBookEmptyTitle": "O seu livro de endereços está vazio",

@@ -413,7 +413,7 @@
   "AddressBookAddressAlreadySaved": "Alamat sudah tersimpan dengan nama {{name}}",
   "AddressBookDuplicateWarningTitle": "Nama atau alamat ini sudah tersimpan.",
   "AddressBookDuplicateWarningSubtitle": "Silakan gunakan nama atau alamat lain atau edit yang sudah ada.",
-  "AddressBookBelongsToL2Warning": "Alamat ini milik L2 dan akan disimpan sebagai AkashicChain.",
+  "AddressBookBelongsToL2Warning": "Alamat ini milik L2.",
   "AddressRemoved": "Alamat dihapus",
   "AddressModified": "Alamat diubah",
   "AddressBookEmptyTitle": "Buku alamat Anda kosong",
