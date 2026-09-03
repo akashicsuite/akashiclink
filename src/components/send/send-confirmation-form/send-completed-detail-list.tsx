@@ -116,7 +116,9 @@ export const SendCompletedDetailList = () => {
       <ListVerticalLabelValueItem
         label={t('InputAddress')}
         value={validatedAddressPair?.userInputToAddress}
-        subContent={<AddressBookNameRow name={inputContact?.name} />}
+        subContent={
+          inputContact?.name && <AddressBookNameRow name={inputContact.name} />
+        }
       />
       <IonItem>
         <FromToAddressBlock
