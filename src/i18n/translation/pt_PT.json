@@ -461,5 +461,7 @@
         }
       ]
     }
-  }
+  },
+  "OperationAnnouncementTitle": "Aviso Importante",
+  "OperationAnnouncementMessage": "A AkashicChain irá suspender temporariamente todas as suas operações a 28 de agosto de 2026. Por favor, levante todos os seus fundos da AkashicLink e evite efetuar novos depósitos."
 }

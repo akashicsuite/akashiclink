@@ -462,5 +462,7 @@
         }
       ]
     }
-  }
+  },
+  "OperationAnnouncementTitle": "ประกาศสำคัญ",
+  "OperationAnnouncementMessage": "AkashicChain จะระงับการดำเนินงานทั้งหมดชั่วคราวในวันที่ 28 สิงหาคม 2026 กรุณาถอนเงินทั้งหมดออกจาก AkashicLink และงดการฝากเงินเพิ่มเติม"
 }
