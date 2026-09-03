@@ -86,11 +86,7 @@ export function BaseDetails({
         <ListVerticalLabelValueItem
           label={t('InputAddress')}
           value={inputAddress}
-          subContent={
-            inputContact?.name && (
-              <AddressBookNameRow name={inputContact.name} />
-            )
-          }
+          subContent={<AddressBookNameRow name={inputContact?.name} />}
         />
         <FromToAddressBlock
           fromAddress={currentTransfer.fromAddress}

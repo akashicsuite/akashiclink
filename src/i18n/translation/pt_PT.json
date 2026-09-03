@@ -66,6 +66,7 @@
   "SelectCurrency": "Select Currency",
   "SelectNetwork": "Select Network",
   "InputAddress": "Input Address",
+  "AddressBookName": "Address book name",
   "TransactionSummary": "Transaction Summary",
   "TransactionSuccessful": "Transaction Successful",
   "TransactionFailed": "Transaction Failed",
