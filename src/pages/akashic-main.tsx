@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useHistory } from 'react-router';
 
 import { WelcomeScreen } from '../components/common/loader/welcomeScreen';
-import { OperationAnnouncementAlert } from '../components/layout/operation-announcement-alert';
+import { AnnouncementAlert } from '../components/layout/announcement-alert';
 import { PublicLayout } from '../components/page-layout/public-layout';
 import { CreateOrImportForm } from '../components/wallet-setup/create-or-import-form';
 import { LoginForm } from '../components/wallet-setup/login-form';
@@ -59,7 +59,9 @@ export function AkashicPayMain({ isPopup = false }) {
           <CreateOrImportForm />
         )}
       </PublicLayout>
-      {!showSplash && <OperationAnnouncementAlert />}
+      {!showSplash && (
+        <AnnouncementAlert messageKey={'OperationAnnouncementMessage'} />
+      )}
     </>
   );
 }

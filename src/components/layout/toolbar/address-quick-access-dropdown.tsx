@@ -24,8 +24,6 @@ export const AddressQuickAccessDropdown = () => {
     <>
       {/* isTrigger is sort of a hotfix for now. should consider refactor AddressQuickAccessDropdownItem */}
       <AddressQuickAccessDropdownItem
-        isTrigger
-        triggerId="click-trigger"
         address={activeAccount?.identity ?? ''}
         chain={'AkashicChain'}
         displayName={
@@ -37,10 +35,6 @@ export const AddressQuickAccessDropdown = () => {
         style={{ marginLeft: -12, paddingLeft: 12 }}
         onClickIcon={() => {
           setShowModal(true);
-        }}
-        onClickLabel={(e) => {
-          popoverRef.current!.event = e;
-          setPopoverOpen(!popoverOpen);
         }}
       />
       <IonPopover

@@ -435,5 +435,6 @@
     }
   },
   "OperationAnnouncementTitle": "Important Notice",
-  "OperationAnnouncementMessage": "AkashicChain will temporarily suspend its full operation on the 28th August 2026. Please withdraw all funds from AkashicLink and refrain from any further deposits."
+  "OperationAnnouncementMessage": "AkashicChain will temporarily suspend its full operation on the 28th August 2026. Please withdraw all funds from AkashicLink and refrain from any further deposits.",
+  "ServiceTerminationMessage": "As AkashicChain is shutting down, all deposit addresses has been removed from the app. You can now only withdraw your fund, please do so as soon as possible."
 }

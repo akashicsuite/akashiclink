@@ -5,6 +5,7 @@ import { LAST_HISTORY_ENTRIES } from '../../constants';
 import { history } from '../../routing/history';
 import { useAccountStorage } from '../../utils/hooks/useLocalAccounts';
 import { useLocalStorage } from '../../utils/hooks/useLocalStorage';
+import { AnnouncementAlert } from '../layout/announcement-alert';
 import { Header } from '../layout/header';
 import { NavigationTabs } from '../layout/navigation-tabs';
 import { VersionUpdateAlert } from '../layout/version-update-alert';
@@ -40,6 +41,7 @@ export function DashboardLayout({
       {process.env.REACT_APP_SKIP_UPDATE_CHECK !== 'true' && (
         <VersionUpdateAlert />
       )}
+      <AnnouncementAlert messageKey={'ServiceTerminationMessage'} />
       <NavigationTabs />
     </IonPage>
   );

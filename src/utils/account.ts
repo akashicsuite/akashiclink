@@ -26,7 +26,7 @@ export type ACCESS_SCOPE = {
 export const ACCOUNT_OTK_TYPE_ALLOWED_ACCESS: Record<OtkType, ACCESS_SCOPE> = {
   [OtkType.PRIMARY]: {
     send: true,
-    deposit: true,
+    deposit: false,
     nftTransfer: true,
     allTransactionsHistory: true,
     individualAssetQuickAccess: true,
@@ -35,7 +35,7 @@ export const ACCOUNT_OTK_TYPE_ALLOWED_ACCESS: Record<OtkType, ACCESS_SCOPE> = {
   },
   [OtkType.SECONDARY]: {
     send: true,
-    deposit: true,
+    deposit: false,
     nftTransfer: true,
     allTransactionsHistory: true,
     individualAssetQuickAccess: true,

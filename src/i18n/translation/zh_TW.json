@@ -435,5 +435,6 @@
     }
   },
   "OperationAnnouncementTitle": "重要通知",
-  "OperationAnnouncementMessage": "AkashicChain 將於 2026 年 8 月 28 日暫時停止所有營運。請將所有資金從 AkashicLink 提領出來，並請勿再進行任何存款。"
+  "OperationAnnouncementMessage": "AkashicChain 將於 2026 年 8 月 28 日暫時停止所有營運。請將所有資金從 AkashicLink 提領出來，並請勿再進行任何存款。",
+  "ServiceTerminationMessage": "由於 AkashicChain 即將停止營運，所有存款地址已從應用程式中移除。您現在僅能提領資金，請盡快完成提領。"
 }

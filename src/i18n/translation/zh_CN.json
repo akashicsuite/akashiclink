@@ -435,5 +435,6 @@
     }
   },
   "OperationAnnouncementTitle": "重要通知",
-  "OperationAnnouncementMessage": "AkashicChain 将于 2026 年 8 月 28 日暂时暂停全部运营。请从 AkashicLink 提取所有资金，并请勿再进行任何充值。"
+  "OperationAnnouncementMessage": "AkashicChain 将于 2026 年 8 月 28 日暂时暂停全部运营。请从 AkashicLink 提取所有资金，并请勿再进行任何充值。",
+  "ServiceTerminationMessage": "由于 AkashicChain 即将停止运营，所有充值地址已从应用中移除。您现在仅能提取资金，请尽快完成提取。"
 }

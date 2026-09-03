@@ -464,5 +464,6 @@
     }
   },
   "OperationAnnouncementTitle": "중요 공지",
-  "OperationAnnouncementMessage": "AkashicChain은 2026년 8월 28일에 모든 운영을 일시적으로 중단합니다. AkashicLink에서 모든 자금을 출금하시고 추가 입금은 삼가시기 바랍니다."
+  "OperationAnnouncementMessage": "AkashicChain은 2026년 8월 28일에 모든 운영을 일시적으로 중단합니다. AkashicLink에서 모든 자금을 출금하시고 추가 입금은 삼가시기 바랍니다.",
+  "ServiceTerminationMessage": "AkashicChain이 서비스를 종료함에 따라 앱에서 모든 입금 주소가 삭제되었습니다. 이제 자금 출금만 가능하오니 가능한 한 빨리 출금해 주시기 바랍니다."
 }

@@ -464,5 +464,6 @@
     }
   },
   "OperationAnnouncementTitle": "Pemberitahuan Penting",
-  "OperationAnnouncementMessage": "AkashicChain akan menghentikan sementara seluruh operasionalnya pada 28 Agustus 2026. Harap tarik semua dana Anda dari AkashicLink dan hindari melakukan deposit lebih lanjut."
+  "OperationAnnouncementMessage": "AkashicChain akan menghentikan sementara seluruh operasionalnya pada 28 Agustus 2026. Harap tarik semua dana Anda dari AkashicLink dan hindari melakukan deposit lebih lanjut.",
+  "ServiceTerminationMessage": "Karena AkashicChain akan ditutup, semua alamat deposit telah dihapus dari aplikasi. Kini Anda hanya dapat menarik dana Anda, harap segera lakukan."
 }

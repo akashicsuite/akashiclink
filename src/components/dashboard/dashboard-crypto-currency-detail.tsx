@@ -103,9 +103,11 @@ export function DashboardCryptoCurrencyDetail({
         </IonCol>
         {address && (
           <>
-            <IonCol size={'10'} offset={'1'}>
-              <CopyBox label={t('DepositAddress')} text={address ?? '-'} />
-            </IonCol>
+            {isDepositAllowed && (
+              <IonCol size={'10'} offset={'1'}>
+                <CopyBox label={t('DepositAddress')} text={address ?? '-'} />
+              </IonCol>
+            )}
             <IonCol size={'5'} offset={'1'}>
               <PrimaryButton
                 disabled={!isSendAllowed}
@@ -128,7 +130,7 @@ export function DashboardCryptoCurrencyDetail({
             </IonCol>
           </>
         )}
-        {!address && (
+        {isDepositAllowed && !address && (
           <IonCol size={'8'} offset={'2'} className={'ion-text-align-center'}>
             <GenerateL1AddressButton
               chain={walletCurrency.coinSymbol}
